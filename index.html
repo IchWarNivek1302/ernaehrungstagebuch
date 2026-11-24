@@ -5,12 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ernährungstagebuch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Fredoka:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Fredoka:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#F4F2EC">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<script>try{document.documentElement.dataset.theme=localStorage.getItem("et-theme")||"auto";}catch(e){document.documentElement.dataset.theme="auto";}</script>
+<script>window.ET_FONTS={"System": "-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Arial,sans-serif", "Manrope": "'Manrope',sans-serif", "Nunito": "'Nunito',sans-serif", "Fredoka": "'Fredoka',sans-serif", "Outfit": "'Outfit',sans-serif", "Space Grotesk": "'Space Grotesk',sans-serif", "Playfair Display": "'Playfair Display',serif", "Cormorant Garamond": "'Cormorant Garamond',serif"};
+window.etApplyTheme=function(t,c){var r=document.documentElement,K=['--bg','--card','--ink','--brand','--muted','--faint','--line','--soft','--brand-2','--brand-soft','--on-brand','--font','--font-head','--head-w','color-scheme'];
+K.forEach(function(k){r.style.removeProperty(k);});r.dataset.theme=t||'auto';if(t!=='individuell'||!c)return;
+var lum=function(h){h=String(h).replace('#','');var v=[0,2,4].map(function(i){var x=parseInt(h.substr(i,2),16)/255;return x<=.03928?x/12.92:Math.pow((x+.055)/1.055,2.4);});return .2126*v[0]+.7152*v[1]+.0722*v[2];};
+var mix=function(a,p,b){return 'color-mix(in srgb,'+a+' '+p+'%,'+b+')';},F=window.ET_FONTS;
+var s={'--bg':c.bg,'--card':c.card,'--ink':c.ink,'--brand':c.brand,'--muted':mix(c.ink,62,c.bg),'--faint':mix(c.ink,42,c.bg),'--line':mix(c.ink,12,c.card),'--soft':mix(c.ink,6,c.card),'--brand-2':mix(c.brand,80,'#ffffff'),'--brand-soft':mix(c.brand,16,c.card),'--on-brand':lum(c.brand)>.45?'#111111':'#ffffff','--font':F[c.font]||F.System,'--font-head':F[c.head]||F.System,'--head-w':'700','color-scheme':lum(c.bg)<.3?'dark':'light'};
+for(var k in s)r.style.setProperty(k,s[k]);};
+try{window.etApplyTheme(localStorage.getItem('et-theme')||'auto',JSON.parse(localStorage.getItem('et-custom')||'null'));}catch(e){document.documentElement.dataset.theme='auto';}</script>
 <style>
 :root{
   --bg:#F4F2EC; --card:#FFFFFF; --ink:#1E2320; --muted:#6C726E; --faint:#9AA09C; --line:#E6E2D8; --soft:#EEEBE3;
@@ -22,12 +29,11 @@
 }
 @media (prefers-color-scheme:dark){ :root[data-theme=auto]{ --bg:#141816; --card:#1D2220; --ink:#ECEFEC; --muted:#A3AAA6; --faint:#79807C; --line:#2C3330; --soft:#252B28; --brand:#7CC2A8; --brand-2:#93D1B9; --brand-soft:#21332C; --on-brand:#0F1A16; --bad:#F07A6A; --bad-soft:#3A2522; --prot:#7DB6E0; --prot-soft:#1F2E3A; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25); color-scheme:dark; } }
 :root[data-theme=dunkel]{ --bg:#141816; --card:#1D2220; --ink:#ECEFEC; --muted:#A3AAA6; --faint:#79807C; --line:#2C3330; --soft:#252B28; --brand:#7CC2A8; --brand-2:#93D1B9; --brand-soft:#21332C; --on-brand:#0F1A16; --bad:#F07A6A; --bad-soft:#3A2522; --prot:#7DB6E0; --prot-soft:#1F2E3A; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25); color-scheme:dark; }
-:root[data-theme=fancy]{ --bg:#10201C; --card:#172B26; --ink:#F2ECDD; --muted:#BDB39D; --faint:#877F6C; --line:#2A403A; --soft:#1F3631; --brand:#D4B26A; --brand-2:#E6CB8E; --brand-soft:#2B3A2D; --on-brand:#10201C; --bad:#E8907A; --bad-soft:#3C2B25; --prot:#9CC6D8; --prot-soft:#1E3439; --m1:#D4B26A; --m2:#7FB2C9; --m3:#B99BD9; --m4:#E3907F; --shadow:0 1px 0 rgba(212,178,106,.08),0 10px 28px rgba(0,0,0,.35); --font:'Manrope',system-ui,sans-serif; --font-head:'Cormorant Garamond',Georgia,serif; --head-w:700; color-scheme:dark; }
+:root[data-theme=ozean]{ --bg:#EAF4F6; --card:#FFFFFF; --ink:#0E2A36; --muted:#557482; --faint:#8AA5B0; --line:#D3E6EB; --soft:#DDEEF2; --brand:#0B7A8C; --brand-2:#1497AA; --brand-soft:#D3EEF2; --on-brand:#FFFFFF; --bad:#D94F3D; --bad-soft:#FBE3DF; --prot:#3557C9; --prot-soft:#E1E7FA; --m1:#F2A93B; --m2:#1497AA; --m3:#6B6FD6; --m4:#EF7C6A; --r:20px; --shadow:0 1px 2px rgba(14,42,54,.05),0 8px 24px rgba(14,42,54,.08); --font:'Outfit',system-ui,sans-serif; --font-head:'Outfit',system-ui,sans-serif; --head-w:650; }
 :root[data-theme=lovely]{ --bg:#FFF0F4; --card:#FFFFFF; --ink:#3B2330; --muted:#8C6979; --faint:#BA99A8; --line:#F5D8E1; --soft:#FCE5EC; --brand:#D6457A; --brand-2:#E86C98; --brand-soft:#FBE0EA; --on-brand:#FFFFFF; --bad:#C2334F; --bad-soft:#FBDDE2; --prot:#8A5CC2; --prot-soft:#EEE3FA; --m1:#F4A261; --m2:#7AA7E0; --m3:#B57BD8; --m4:#EE7EA4; --r:24px; --shadow:0 2px 4px rgba(214,69,122,.06),0 10px 26px rgba(214,69,122,.10); --font:'Nunito',system-ui,sans-serif; --font-head:'Nunito',system-ui,sans-serif; --head-w:800; }
 :root[data-theme=funny]{ --bg:#FFF5D1; --card:#FFFFFF; --ink:#1B1B3A; --muted:#5E5B7A; --faint:#9A97B3; --line:#EFE0A8; --soft:#FFEFB5; --brand:#5B3DF5; --brand-2:#7A61FF; --brand-soft:#E8E3FF; --on-brand:#FFFFFF; --bad:#FF3D63; --bad-soft:#FFE0E6; --prot:#00A3A3; --prot-soft:#D6F5F2; --m1:#FFB000; --m2:#00AEEF; --m3:#B14CFF; --m4:#FF5C8A; --r:22px; --shadow:3px 3px 0 #1B1B3A; --font:'Fredoka',system-ui,sans-serif; --font-head:'Fredoka',system-ui,sans-serif; --head-w:650; }
 :root[data-theme=funny] .card,:root[data-theme=funny] .qc,:root[data-theme=funny] .arrow,:root[data-theme=funny] .search{border:2px solid #1B1B3A}
 :root[data-theme=funny] .fab,:root[data-theme=funny] .cbtn{border:2px solid #1B1B3A;box-shadow:3px 3px 0 #1B1B3A}
-:root[data-theme=fancy] .top h1,:root[data-theme=fancy] .ring .c b{letter-spacing:0}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 var(--font)}
 .top h1,.sheet h2,.ring .c b,.kv b,.nav .lbl b,.meal-h b,.rc .top2 b,.cmp-h b{font-family:var(--font-head);font-weight:var(--head-w)}
@@ -304,7 +310,7 @@ ol.steps li{margin-bottom:8px}
 .stale{font-size:12px;text-align:center;color:var(--muted);margin:-4px 0 10px}
 .toast button{margin-left:12px;font-weight:700;color:var(--brand-2);text-decoration:underline}
 .toast.act{pointer-events:auto}
-:root[data-theme=dunkel] .toast button,:root[data-theme=fancy] .toast button{color:#1E2320}
+:root[data-theme=dunkel] .toast button{color:#1E2320}
 @media (prefers-color-scheme:dark){:root[data-theme=auto] .toast button{color:#1E2320}}
 
 /* Häufig als kleine Chips im Plus */
@@ -321,8 +327,8 @@ ol.steps li{margin-bottom:8px}
 .xbtn{position:absolute;right:10px;top:6px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--muted);font-size:22px;line-height:1}
 .xbtn:active{background:var(--soft)}
 /* Claude-Knopf */
-.cbtn{position:fixed;z-index:31;right:calc(max(16px,calc(50% - 264px)) + 70px);bottom:calc(84px + var(--safe-b));height:46px;padding:0 14px 0 12px;border-radius:16px;background:var(--card);color:var(--brand);display:flex;align-items:center;gap:7px;font-weight:700;font-size:14px;box-shadow:var(--shadow);text-decoration:none}
-.cbtn svg{width:20px;height:20px}
+.cbtn{position:fixed;z-index:31;right:calc(max(16px,calc(50% - 264px)) + 56px);bottom:calc(84px + var(--safe-b));width:38px;height:38px;border-radius:13px;background:var(--card);color:var(--brand);display:grid;place-items:center;box-shadow:var(--shadow);text-decoration:none}
+.cbtn svg{width:19px;height:19px}
 /* Theme-Auswahl */
 .themes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:22px}
 .themes button{border:2px solid var(--line);border-radius:14px;padding:8px 6px 9px;font-size:13px;font-weight:650}
@@ -332,6 +338,23 @@ ol.steps li{margin-bottom:8px}
 .bar.c i{background:var(--m1)} .bar.f i{background:var(--m3)}
 .chip .bar{height:5px;margin-top:5px}
 [hidden]{display:none!important}
+
+.custom{background:var(--soft);border-radius:16px;padding:12px;margin:-12px 0 22px}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.cgrid label{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:12px;padding:8px 10px;font-size:13.5px;font-weight:600}
+.cgrid input[type=color]{width:34px;height:34px;border:0;border-radius:10px;padding:0;background:none;flex:none}
+.custom select{width:100%;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px;font-size:14px}
+.custom .f{margin-bottom:8px}
+
+.fab{width:46px!important;height:46px!important;border-radius:16px!important;bottom:calc(80px + var(--safe-b))!important}
+.fab svg{width:22px!important;height:22px!important}
+#btnReload{position:relative}
+#btnReload.pending::after{content:attr(data-n);position:absolute;top:3px;right:2px;min-width:16px;height:16px;border-radius:8px;background:var(--brand);color:var(--on-brand);font-size:10px;font-weight:700;display:grid;place-items:center;padding:0 4px}
+#btnReload.offline::after{background:var(--warn)}
+#view.sl{animation:slL .22s ease-out}#view.sr{animation:slR .22s ease-out}
+@keyframes slL{from{opacity:.4;transform:translateX(26px)}to{opacity:1;transform:none}}
+@keyframes slR{from{opacity:.4;transform:translateX(-26px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#view.sl,#view.sr{animation:none}}
 </style>
 </head>
 <body>
@@ -354,7 +377,6 @@ ol.steps li{margin-bottom:8px}
 <div class="toast" id="toast"></div>
 
 <script>
-
 /* ================= Grundlagen ================= */
 const MEALS=['Frühstück','Mittagessen','Abendessen','Snacks / Sonstiges'];
 const MEAL_SHORT={'Frühstück':'Frühstück','Mittagessen':'Mittag','Abendessen':'Abend','Snacks / Sonstiges':'Snacks'};
@@ -411,9 +433,16 @@ const mealByTime=hm=>{const h=parseInt(hm)+parseInt(hm.slice(3))/60;if(h<10.5)re
 const relDay=s=>{const t=today();if(s===t)return 'Heute';if(s===addDays(t,-1))return 'Gestern';if(s===addDays(t,-2))return 'Vorgestern';return null;};
 
 
-const THEMES=[['auto','Automatisch',['#F4F2EC','#141816','#2E5D50']],['hell','Hell',['#F4F2EC','#FFFFFF','#2E5D50']],['dunkel','Dunkel',['#141816','#1D2220','#7CC2A8']],['fancy','Fancy',['#10201C','#172B26','#D4B26A']],['lovely','Lovely',['#FFF0F4','#FBE0EA','#D6457A']],['funny','Funny',['#FFF5D1','#FFB000','#5B3DF5']]];
-function applyTheme(t){document.documentElement.dataset.theme=t||'auto';try{localStorage.setItem('et-theme',t||'auto');}catch(e){}
-  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()||'#F4F2EC';}
+const THEMES=[['auto','Automatisch',['#F4F2EC','#141816','#2E5D50']],['hell','Hell',['#F4F2EC','#FFFFFF','#2E5D50']],['dunkel','Dunkel',['#141816','#1D2220','#7CC2A8']],['ozean','Ozean',['#EAF4F6','#D3EEF2','#0B7A8C']],['lovely','Lovely',['#FFF0F4','#FBE0EA','#D6457A']],['funny','Funny',['#FFF5D1','#FFB000','#5B3DF5']],['individuell','Individuell',null]];
+const FONT_LIST=Object.keys(window.ET_FONTS);
+const CUSTOM_DEF={bg:'#F4F2EC',card:'#FFFFFF',ink:'#1E2320',brand:'#2E5D50',font:'System',head:'System'};
+function applyTheme(t,custom){
+  if(!THEMES.some(x=>x[0]===t))t='auto';
+  const c=Object.assign({},CUSTOM_DEF,custom||{});
+  try{localStorage.setItem('et-theme',t);localStorage.setItem('et-custom',JSON.stringify(c));}catch(e){}
+  window.etApplyTheme(t,c);
+  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()||'#F4F2EC';
+}
 
 /* ================= Datenzugriff ================= */
 const store={get(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},del(k){try{localStorage.removeItem(k);}catch(e){}}};
@@ -422,9 +451,9 @@ const DEMO=!!(window.PREVIEW||window.DEMO||location.hash.indexOf('demo')>=0);
 const LIVE=!DEMO&&!!(CONN&&CONN.url&&CONN.key);
 function api(url,key,fn,args){
   return fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key,fn,args})})
-    .then(r=>{if(!r.ok)throw new Error('Server antwortet nicht ('+r.status+').');return r.json();})
-    .then(j=>{if(!j.ok)throw new Error(j.error||'Unbekannter Fehler');return j.result;})
-    .catch(e=>{throw new Error(e.message==='Failed to fetch'?'Keine Verbindung zum Sheet. Internet an?':e.message);});
+    .then(r=>{if(!r.ok){const er=new Error('Server antwortet nicht ('+r.status+').');er.net=true;throw er;}return r.json();},
+          e=>{const er=new Error('Keine Verbindung zum Sheet. Internet an?');er.net=true;throw er;})
+    .then(j=>{if(!j.ok)throw new Error(j.error||'Unbekannter Fehler');return j.result;});
 }
 function call(fn,...args){
   if(!LIVE) return new Promise((res,rej)=>setTimeout(()=>{try{res(Demo[fn](...args));}catch(e){rej(e);}},120));
@@ -590,6 +619,110 @@ function itemRow(x){
     return `<button class="item" data-act="item" data-id="${id}"><div class="it-main"><div class="it-name">${esc(e.name)}</div><div class="it-sub">${esc(e.amount)}${e.time?' · '+e.time:''}</div></div><div class="it-val"><b class="num">${k(e.kcal)}</b><small class="num">${g1(e.p)} g E</small></div></button>`;}
   return `<button class="item" data-act="item" data-id="${id}"><div class="it-main"><div class="it-name"><span class="tag">Rezept</span>${esc(x.recipe)}</div><div class="it-sub">${esc(x.amount)} · ${x.rows.length} Zutaten${x.time?' · '+x.time:''}</div></div><div class="it-val"><b class="num">${k(x.kcal)}</b><small class="num">${g1(x.p)} g E</small></div></button>`;
 }
+
+/* ================= Sofort-Änderungen + Speichern im Hintergrund =================
+   Jede Änderung wird sofort lokal angezeigt und in eine Warteschlange gelegt.
+   Die Warteschlange wird der Reihe nach ans Sheet geschickt (auch nach App-Neustart
+   oder wenn kurz kein Netz da ist). Danach holt die App einmal still den echten Stand. */
+const Q={q:[],map:{},seq:1,busy:false,ver:0,fails:0};
+(function(){const s=store.get('et-queue');if(s){Q.q=s.q||[];Q.map=s.map||{};Q.seq=s.seq||1;}})();
+function qSave(){store.set('et-queue',{q:Q.q,map:Q.map,seq:Q.seq});}
+const newTmp=p=>p+(Q.seq++)+'-'+Date.now().toString(36);
+const resolveId=v=>typeof v==='string'?(Q.map[v]!==undefined?Q.map[v]:null):v;
+function findRow(id){const real=resolveId(id);return S.data.diary.find(r=>r[0]===id||(real!==null&&r[0]===real));}
+
+const NUMI=[6,7,8,9,11,12,13,15,16];
+const scl=(v,i,f)=>v===''||v===null?v:(i===6?Math.round(v*f):r1(v*f));
+function scaleAmount(txt,f){
+  txt=String(txt||'');if(f===1)return txt;
+  const fmt=n=>String(r1(n)).replace('.',','),nm=a=>parseFloat(a.replace(',','.')),gram=/(\d+(?:[.,]\d+)?)(\s*)(g|ml)\b/;
+  const lead=txt.match(/^(ca\.\s*)?(\d+(?:[.,]\d+)?)/);
+  if(lead){const rest=txt.slice(lead[0].length);
+    if(/von \d+(?:[.,]\d+)? Portion/.test(txt)||/^\s*(g|ml)\b/.test(rest))return (lead[1]||'')+fmt(nm(lead[2])*f)+rest;
+    return (lead[1]||'')+fmt(nm(lead[2])*f)+rest.replace(gram,(m,a,sp,u)=>fmt(nm(a)*f)+sp+u);}
+  if(gram.test(txt))return txt.replace(gram,(m,a,sp,u)=>fmt(nm(a)*f)+sp+u);
+  return fmt(f)+' × '+txt;
+}
+
+/* Lokale Änderungen am Datenstand (gleiche Logik wie im Script) */
+const L={
+  addEntries(rows){const temp=rows.map(r=>{const id=newTmp('t');S.data.diary.push([id].concat(r));return id;});return {temp};},
+  repeatRows(rows,date,time,meal,f){f=f||1;const temp=[];
+    rows.forEach(id=>{const src=findRow(id);if(!src)return;const n=src.slice();n[0]=newTmp('t');n[1]=date;n[2]=time;n[3]=meal;
+      if(f!==1){NUMI.forEach(i=>n[i]=scl(n[i],i,f));n[5]=scaleAmount(n[5],f);}S.data.diary.push(n);temp.push(n[0]);});
+    return {temp};},
+  updateRows(items,f,meal,date,time){items.forEach(it=>{const r=findRow(it.row);if(!r)return;if(date)r[1]=date;if(time)r[2]=time;if(meal)r[3]=meal;
+    if(f&&f!==1){NUMI.forEach(i=>r[i]=scl(r[i],i,f));r[5]=scaleAmount(r[5],f);}});return {};},
+  deleteRows(items){
+    const ids=new Set(items.map(it=>{const r=findRow(it.row);return r?r[0]:null;}));
+    const nums=[...ids].filter(x=>typeof x==='number').sort((a,b)=>a-b);
+    S.data.diary=S.data.diary.filter(r=>!ids.has(r[0]));
+    if(nums.length)S.data.diary.forEach(r=>{if(typeof r[0]==='number'){let n=0;for(const d of nums)if(d<r[0])n++;r[0]-=n;}});
+    return {};},
+  addInbox(e){const id=newTmp('i');S.data.inbox.push(Object.assign({row:id},e));return {temp:[id]};},
+  updateInbox(row,e){const it=S.data.inbox.find(x=>x.row===row||x.row===resolveId(row));if(it)Object.assign(it,e);return {};},
+  deleteInbox(row){S.data.inbox=S.data.inbox.filter(x=>x.row!==row&&x.row!==resolveId(row));return {};},
+  addComplaint(c){S.data.complaints.push(c);return {};},
+  saveGoals(g){S.data.goals={kcalDay:g.kcalDay,proteinDay:g.proteinDay,kcalWeek:g.kcalWeek};S.data.settings.goals2={carbs:g.carbs||0,fat:g.fat||0};return {};},
+  saveSettings(s){S.data.settings=s;return {};}
+};
+
+/* Änderung übernehmen: sofort anzeigen, im Hintergrund speichern */
+function commit(fn,args){
+  const out=L[fn](...JSON.parse(JSON.stringify(args)));
+  index();render();
+  if(LIVE){
+    Q.q.push({fn,args,temp:out.temp||null});Q.ver++;qSave();
+    store.set(CACHE,{t:Date.now(),d:S.data});
+    pump();
+  }
+  return out;
+}
+function resolveArgs(op){
+  const a=JSON.parse(JSON.stringify(op.args));
+  const must=v=>{const r=resolveId(v);if(r===null||r===undefined)throw new Error('Eintrag wurde nicht gespeichert.');return r;};
+  if(op.fn==='repeatRows')a[0]=a[0].map(must);
+  if(op.fn==='updateRows'||op.fn==='deleteRows')a[0]=a[0].map(it=>Object.assign({},it,{row:must(it.row)}));
+  if(op.fn==='updateInbox'||op.fn==='deleteInbox')a[0]=must(a[0]);
+  return a;
+}
+function pump(){
+  if(!LIVE||Q.busy||!Q.q.length){updateSyncBadge();return;}
+  Q.busy=true;updateSyncBadge();
+  const op=Q.q[0];let args;
+  try{args=resolveArgs(op);}catch(e){Q.q.shift();qSave();Q.busy=false;toast('Konnte nicht speichern: '+e.message,true);Q.ver++;pump();scheduleResync(true);return;}
+  api(CONN.url,CONN.key,op.fn,args).then(r=>{
+    if(op.temp&&r){const real=r.added||(r.row!=null?[r.row]:[]);op.temp.forEach((t,i)=>{if(real[i]!=null)Q.map[t]=real[i];});}
+    if(op.fn==='deleteRows'){const del=args[0].map(i=>i.row).sort((x,y)=>x-y);
+      for(const key in Q.map){const v=Q.map[key];if(key[0]==='t'&&typeof v==='number'){let n=0;for(const d of del)if(d<v)n++;Q.map[key]=v-n;}}}
+    Q.q.shift();Q.fails=0;qSave();Q.busy=false;
+    if(Q.q.length)pump();else{updateSyncBadge();scheduleResync();}
+  }).catch(e=>{
+    Q.busy=false;
+    if(e.net){Q.fails++;updateSyncBadge();if(Q.fails===1)toast('Gerade keine Verbindung. Wird gespeichert, sobald wieder Netz da ist.');setTimeout(pump,Math.min(60000,4000*Q.fails));}
+    else{Q.q.shift();qSave();toast('Nicht gespeichert: '+e.message,true);Q.ver++;if(Q.q.length)pump();else scheduleResync(true);}
+  });
+}
+function updateSyncBadge(){
+  const b=$('#btnReload');if(!b)return;
+  const n=Q.q.length;b.dataset.n=n?String(n):'';b.classList.toggle('pending',!!n);b.classList.toggle('offline',!!n&&Q.fails>0);
+  b.classList.toggle('spin',Q.busy&&!Q.fails);
+}
+/* Stiller Abgleich mit dem Sheet, wenn nichts mehr wartet */
+function scheduleResync(now){
+  clearTimeout(Q.rt);
+  Q.rt=setTimeout(()=>resync(),now?200:1500);
+}
+function resync(manual){
+  if(!LIVE)return Promise.resolve();
+  if(Q.q.length||Q.busy){if(manual)toast('Speichere noch '+Q.q.length+' Änderung'+(Q.q.length>1?'en':'')+' …');pump();return Promise.resolve();}
+  const v=Q.ver;if(manual)$('#btnReload').classList.add('spin');
+  return api(CONN.url,CONN.key,'getData',[]).then(d=>{
+    $('#btnReload').classList.remove('spin');S.lastSync=Date.now();
+    if(Q.ver===v&&!Q.q.length){apply(d);if(manual)toast('Aktualisiert');}
+  }).catch(e=>{$('#btnReload').classList.remove('spin');if(manual)toast(e.message,true);});
+}
+window.addEventListener('online',()=>pump());
 /* ================= Woche ================= */
 function weekAgg(mon){
   const r={kcal:0,p:0,c:0,f:0,days:0,meals:{}};MEALS.forEach(m=>r.meals[m]={kcal:0,p:0});
@@ -840,7 +973,7 @@ function miniNut(kc,p,f){return `<div style="grid-column:span 2"><small>kcal</sm
 function factorHtml(cur){return `<label class="f"><span>Menge</span></label><div class="facts">${[0.5,1,1.5,2,3].map(f=>`<button class="${f===cur?'on':''}" data-act="factor" data-f="${f}">${f===0.5?'½':f===1.5?'1½':f}×</button>`).join('')}</div>`;}
 function resultsHtml(){
   const q=S.add.q.trim();
-  const rec=recentList().filter(x=>!q||norm((x.recipe||x.name)+' '+x.amount).includes(norm(q))).slice(0,q?6:5);
+  const rec=recentList().filter(x=>!q||norm((x.recipe||x.name)+' '+x.amount).includes(norm(q))).slice(0,q?8:(S.data.settings.recentN||20));
   S.add.recList=rec;
   let h='';
   if(!q&&mods().haeufig){const fq=frequent();if(fq.length)h+=`<div class="res-h">Häufig</div><div class="fchips">${fq.map((x,i)=>`<button class="fchip" data-act="pickFreq" data-i="${i}" style="--mc:${MEAL_COLOR[x.meal]||'var(--m4)'}"><i></i><span>${esc(x.recipe||x.name)}</span><small class="num">${k(x.kcal)}</small></button>`).join('')}</div>`;}
@@ -921,12 +1054,24 @@ function openSettings(){
   <div class="row2"><label class="f"><span>Kohlenhydrate pro Tag (g)</span><input class="in-t num" inputmode="numeric" id="gC" value="${g2().carbs||''}" placeholder="kein Ziel"></label>
   <label class="f"><span>Fett pro Tag (g)</span><input class="in-t num" inputmode="numeric" id="gF" value="${g2().fat||''}" placeholder="kein Ziel"></label></div>
   <button class="btn" data-act="saveGoals" style="margin-bottom:22px">Ziele speichern</button>
-  <h3>Aussehen</h3><div class="themes">${THEMES.map(([key,l,c])=>`<button data-act="theme" data-t="${key}" class="${(S.data.settings.theme||'auto')===key?'on':''}"><span class="sw3">${c.map(x=>`<i style="background:${x}"></i>`).join('')}</span>${l}</button>`).join('')}</div>
-  <h3>Bereiche</h3>
+  <h3>Aussehen</h3><div class="themes">${THEMES.map(([key,l,c])=>{const cc=c||[cust().bg,cust().card,cust().brand];return `<button data-act="theme" data-t="${key}" class="${curTheme()===key?'on':''}"><span class="sw3">${cc.map(x=>`<i style="background:${x}"></i>`).join('')}</span>${l}</button>`;}).join('')}</div>
+  <div id="customBox">${curTheme()==='individuell'?customHtml():''}</div>
+  <h3>Bedienung</h3>
+  <div class="sw"><div><b>Zwischen Reitern wischen</b><span>Links/rechts wischen wechselt Heute, Woche, Monat …</span></div><label class="tg"><input type="checkbox" data-opt="swipe" ${S.data.settings.swipe!==false?'checked':''}><i></i></label></div>
+  <div class="sw"><div><b>Zuletzt gegessen</b><span>So viele Einträge im Plus-Menü</span></div><select class="in-t" style="width:84px" data-opt="recentN">${[10,20,30,50].map(n=>`<option ${(S.data.settings.recentN||20)===n?'selected':''}>${n}</option>`).join('')}</select></div>
+  <h3 style="margin-top:18px">Bereiche</h3>
   ${MODULES.map(x=>`<div class="sw"><div><b>${x.title}</b><span>${x.desc}</span></div><label class="tg"><input type="checkbox" data-mod="${x.key}" ${m[x.key]?'checked':''}><i></i></label></div>`).join('')}
   ${LIVE?`<h3 style="margin-top:22px">Verbindung</h3><div class="small muted" style="margin-bottom:10px">Verbunden mit deinem Google Sheet.</div><button class="btn ghost" data-act="disconnect">Verbindung trennen</button>`:''}
   <p class="hint">${LIVE?'Daten kommen live aus deinem Google Sheet.':'Vorschau: Änderungen werden nicht gespeichert.'}</p>`);
 }
+const curTheme=()=>{const t=S.data.settings.theme||'auto';return THEMES.some(x=>x[0]===t)?t:'auto';};
+const cust=()=>Object.assign({},CUSTOM_DEF,S.data.settings.custom||{});
+function customHtml(){
+  const c=cust(),col=(k,l)=>`<label><input type="color" data-cc="${k}" value="${c[k]}">${l}</label>`;
+  const sel=(k,l)=>`<label class="f"><span>${l}</span><select data-cf="${k}">${FONT_LIST.map(f=>`<option ${c[k]===f?'selected':''}>${f}</option>`).join('')}</select></label>`;
+  return `<div class="custom"><div class="cgrid">${col('bg','Hintergrund')}${col('card','Karten')}${col('ink','Text')}${col('brand','Akzent')}</div>${sel('font','Schrift')}${sel('head','Schrift für Überschriften und Zahlen')}</div>`;
+}
+function saveLook(){clearTimeout(S.lookT);S.lookT=setTimeout(()=>commit('saveSettings',[S.data.settings]),700);}
 function openMore(){
   const list=MODULES.filter(x=>x.page&&mods()[x.key]);
   openSheet(`<h2>Mehr</h2><p class="sub">Weitere Bereiche lassen sich in den Einstellungen einschalten.</p>${list.map(x=>`<button class="menu-item" data-act="goview" data-view="${x.key}">${ICON[x.key]}<div>${x.title}<span>${x.desc}</span></div></button>`).join('')}`);
@@ -940,24 +1085,23 @@ function toast(msg,err,action){
   clearTimeout(t._h);t._h=setTimeout(()=>t.className='toast',action?6000:err?4500:2600);
 }
 function busy(on){$('#btnReload').classList.toggle('spin',on);}
-function apply(data,fromCache){S.data=data;applyTheme(data.settings&&data.settings.theme);if(!fromCache){S.stale=null;if(LIVE)store.set(CACHE,{t:Date.now(),d:data});}index();render();}
+function apply(data,fromCache){S.data=data;applyTheme(data.settings&&data.settings.theme,data.settings&&data.settings.custom);if(!fromCache&&LIVE)store.set(CACHE,{t:Date.now(),d:data});index();render();}
 function run(fn,args,ok,keepOpen){
   busy(true);
   const btn=document.activeElement&&document.activeElement.classList.contains('btn')?document.activeElement:null;if(btn)btn.disabled=true;
   return call(fn,...args).then(d=>{busy(false);if(d&&d.diary)apply(d);if(!keepOpen)closeSheet();if(ok)toast(ok);return d;})
     .catch(e=>{busy(false);if(btn)btn.disabled=false;toast((e&&e.message)||String(e),true);return null;});
 }
-function undoAdded(d){
-  if(!d||!d.added)return;
-  const set=new Set(d.added);
-  const items=S.data.diary.filter(r=>set.has(r[0])).map(r=>({row:r[0],date:r[1],name:r[4]}));
-  run('deleteRows',[items],'Rückgängig gemacht.');
+function undoTemp(temp){
+  const items=(temp||[]).map(t=>{const r=findRow(t);return r&&{row:r[0],date:r[1],name:r[4]};}).filter(Boolean);
+  if(items.length){commit('deleteRows',[items]);toast('Rückgängig gemacht.');}
 }
-function doneAdd(d,date,msg){
-  if(!d)return;
+function doneAdd(o,date,msg){
+  closeSheet();
   if(S.view!=='heute'||S.day!==date){S.day=date;go('heute');}
-  toast(msg,false,{label:'Rückgängig',fn:()=>undoAdded(d)});
+  toast(msg,false,{label:'Rückgängig',fn:()=>undoTemp(o.temp)});
 }
+function done(msg){closeSheet();if(msg)toast(msg);}
 
 document.addEventListener('click',ev=>{
   const tab=ev.target.closest('.tab[data-tab]');
@@ -978,10 +1122,10 @@ document.addEventListener('click',ev=>{
   case 'edit':openEdit();break;
   case 'del':
     if(!S.delArm){S.delArm=true;el.textContent='Wirklich?';el.style.background='var(--bad)';el.style.color='#fff';break;}
-    run('deleteRows',[refs(S.sel)],'Gelöscht.');break;
+    commit('deleteRows',[refs(S.sel)]);done('Gelöscht.');break;
   case 'saveEdit':{
     const f=editFactor();
-    run('updateRows',[refs(S.sel),Math.round(f*10000)/10000,pickedMeal(),val('eDate'),val('eTime')],'Gespeichert.');break;}
+    commit('updateRows',[refs(S.sel),Math.round(f*10000)/10000,pickedMeal(),val('eDate'),val('eTime')]);done('Gespeichert.');break;}
   case 'factor':
     el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));
     if(S.add&&S.add.step==='recent'&&$('#rnut')){A.factor=+el.dataset.f;$('#rnut').innerHTML=miniNut(A.recent.kcal,A.recent.p,A.factor);}
@@ -1012,7 +1156,10 @@ document.addEventListener('click',ev=>{
       .catch(e=>{el.disabled=false;el.textContent='Verbinden';toast(e.message,true);});
     break;}
   case 'demo':location.hash='demo';location.reload();break;
-  case 'theme':applyTheme(el.dataset.t);el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));{const st=JSON.parse(JSON.stringify(S.data.settings));st.theme=el.dataset.t;S.data.settings=st;if(LIVE)store.set(CACHE,{t:Date.now(),d:S.data});call('saveSettings',st).catch(e=>toast('Nicht gespeichert: '+(e.message||e),true));}break;
+  case 'theme':{
+    const st=JSON.parse(JSON.stringify(S.data.settings));st.theme=el.dataset.t;S.data.settings=st;
+    applyTheme(st.theme,st.custom);el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));
+    $('#customBox').innerHTML=st.theme==='individuell'?customHtml():'';saveLook();break;}
   case 'pickRecent':A.recent=A.recList[+el.dataset.i];A.factor=1;A.step='recent';drawAdd();break;
   case 'pickFood':{
     const fd=A.foodList[+el.dataset.i];A.food=fd;A.portion=fd[9]?'1 '+(fd[8]||'Portion'):'';A.g=fd[9]||100;A.step='food';drawAdd();break;}
@@ -1023,43 +1170,51 @@ document.addEventListener('click',ev=>{
   case 'saveFood':{
     const g=parseFloat(val('fg').replace(',','.'));if(!(g>0)){toast('Bitte eine Menge in Gramm angeben.',true);return;}
     A.date=val('fDate');A.time=val('fTime');const meal=pickedMeal();
-    run('addEntries',[[foodRow(A.food,g,meal,A.date,A.time,A.portion&&Math.abs(A.food[9]*parseFloat(A.portion.replace('½','0.5'))-g)<0.01?A.portion:'')]]).then(d=>doneAdd(d,A.date,'Eingetragen: '+A.food[0]));break;}
+    doneAdd(commit('addEntries',[[foodRow(A.food,g,meal,A.date,A.time,A.portion&&Math.abs(A.food[9]*parseFloat(A.portion.replace('½','0.5'))-g)<0.01?A.portion:'')]]),A.date,'Eingetragen: '+A.food[0]);break;}
   case 'saveRecent':{
     const d0=val('rDate');
-    run('repeatRows',[A.recent.rows,d0,val('rTime'),pickedMeal(),A.factor||1]).then(d=>doneAdd(d,d0,'Eingetragen: '+(A.recent.recipe||A.recent.name)));break;}
+    doneAdd(commit('repeatRows',[A.recent.rows,d0,val('rTime'),pickedMeal(),A.factor||1]),d0,'Eingetragen: '+(A.recent.recipe||A.recent.name));break;}
   case 'saveManual':{
     if(!val('mWhat')||numv('mK')===''){toast('Bitte mindestens „Was“ und kcal angeben.',true);return;}
     const d0=val('mDate'),n=v=>v===''?0:v;
     const row=[d0,val('mTime'),pickedMeal(),val('mWhat'),val('mAmt')||'1 Portion (App)',Math.round(n(numv('mK'))),r1(n(numv('mP'))),r1(n(numv('mC'))),r1(n(numv('mF'))),'','','','','','',''];
-    run('addEntries',[[row]]).then(d=>doneAdd(d,d0,'Eingetragen: '+val('mWhat')));break;}
+    doneAdd(commit('addEntries',[[row]]),d0,'Eingetragen: '+row[3]);break;}
   case 'saveInbox':
     if(!val('aWhat')){toast('Bitte eintragen, was du gegessen hast.',true);return;}
-    run('addInbox',[{what:val('aWhat'),amount:val('aAmt'),meal:pickedMeal(),date:val('aDate'),time:val('aTime')}],'Im Eingang. Claude rechnet beim nächsten Mal nach.');break;
+    if((S.data.inbox||[]).length>=10){toast('Der Eingang ist voll.',true);return;}
+    commit('addInbox',[{what:val('aWhat'),amount:val('aAmt'),meal:pickedMeal(),date:val('aDate'),time:val('aTime')}]);done('Im Eingang. Claude rechnet beim nächsten Mal nach.');break;
   case 'inbox':openInbox(+el.dataset.i);break;
-  case 'saveInboxEdit':run('updateInbox',[S.inboxSel.row,{what:val('iWhat'),amount:val('iAmt'),meal:pickedMeal(),date:val('iDate'),time:val('iTime')}],'Gespeichert.');break;
+  case 'saveInboxEdit':commit('updateInbox',[S.inboxSel.row,{what:val('iWhat'),amount:val('iAmt'),meal:pickedMeal(),date:val('iDate'),time:val('iTime')}]);done('Gespeichert.');break;
   case 'delInbox':
     if(!S.delArm){S.delArm=true;el.textContent='Wirklich löschen?';el.style.background='var(--bad)';el.style.color='#fff';break;}
-    run('deleteInbox',[S.inboxSel.row],'Aus dem Eingang gelöscht.');break;
+    commit('deleteInbox',[S.inboxSel.row]);done('Aus dem Eingang gelöscht.');break;
   case 'complaint':S.add={seg:'beschwerde'};openSheet(complaintForm());break;
   case 'goview':closeSheet();go(el.dataset.view);break;
   case 'saveComplaint':
     if(!val('cWhat')){toast('Bitte die Beschwerde angeben.',true);return;}
-    run('addComplaint',[{what:val('cWhat'),strength:+val('cS'),date:val('cDate'),time:val('cTime'),note:val('cNote')}],'Beschwerde gespeichert.');break;
-  case 'saveGoals':run('saveGoals',[{kcalDay:numv('gK'),proteinDay:numv('gP'),kcalWeek:numv('gW'),carbs:numv('gC')||0,fat:numv('gF')||0}],'Ziele gespeichert.');break;
+    commit('addComplaint',[{what:val('cWhat'),strength:+val('cS'),date:val('cDate'),time:val('cTime'),note:val('cNote')}]);done('Beschwerde gespeichert.');break;
+  case 'saveGoals':{
+    const g={kcalDay:numv('gK'),proteinDay:numv('gP'),kcalWeek:numv('gW'),carbs:numv('gC')||0,fat:numv('gF')||0};
+    if(!(g.kcalDay>0&&g.proteinDay>0&&g.kcalWeek>0)){toast('Bitte kcal, Eiweiß und Woche als Zahl angeben.',true);return;}
+    commit('saveGoals',[g]);done('Ziele gespeichert.');break;}
   }
 });
 document.addEventListener('change',ev=>{
   const t=ev.target;
   if(t.id==='pickDay'&&t.value){S.day=t.value;render();}
+  if(t.dataset&&t.dataset.opt){
+    const s=JSON.parse(JSON.stringify(S.data.settings));s[t.dataset.opt]=t.type==='checkbox'?t.checked:Number(t.value);commit('saveSettings',[s]);return;}
   if(t.dataset&&t.dataset.mod){
     const s=JSON.parse(JSON.stringify(S.data.settings));s.modules[t.dataset.mod]=t.checked;S.data.settings=s;
     if(MODULES.some(m=>m.key===S.view)&&!mods()[S.view])S.view='heute';
-    render();if(LIVE)store.set(CACHE,{t:Date.now(),d:S.data});
-    call('saveSettings',s).catch(e=>toast('Einstellung nicht gespeichert: '+(e.message||e),true));
+    commit('saveSettings',[s]);
   }
 });
 document.addEventListener('input',ev=>{
   const t=ev.target;
+  if(t.dataset&&(t.dataset.cc||t.dataset.cf)){
+    const st=S.data.settings;st.custom=Object.assign({},cust(),{[t.dataset.cc||t.dataset.cf]:t.value});
+    applyTheme('individuell',st.custom);const sw=document.querySelector('[data-t=individuell] .sw3');if(sw)sw.innerHTML=[st.custom.bg,st.custom.card,st.custom.brand].map(x=>`<i style="background:${x}"></i>`).join('');saveLook();return;}
   if(t.id==='q'){S.search=t.value;S.limit=120;clearTimeout(t._h);t._h=setTimeout(()=>{render();const q=$('#q');q.focus();q.setSelectionRange(q.value.length,q.value.length);},250);}
   if(t.id==='fq'){S.add.q=t.value;clearTimeout(t._h);t._h=setTimeout(()=>{$('#fres').innerHTML=resultsHtml();},150);}
   if(t.id==='fg'){const g=parseFloat(t.value.replace(',','.'))||0;S.add.g=g;$('#fnut').innerHTML=nutHtml(S.add.food,g);S.add.portion='';document.querySelectorAll('.portions button').forEach(b=>b.classList.remove('on'));}
@@ -1068,11 +1223,24 @@ document.addEventListener('input',ev=>{
 });
 $('#ov').addEventListener('click',closeSheet);
 $('#fab').addEventListener('click',()=>openAdd(null));
-$('#cbtn').innerHTML=ICON.claude+'<span>Claude</span>';
+$('#cbtn').innerHTML=ICON.claude;
 $('#btnSettings').addEventListener('click',openSettings);
 $('#btnMore').addEventListener('click',openMore);
-$('#btnReload').addEventListener('click',()=>run('getData',[],'Aktualisiert',true));
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&S.data&&LIVE)call('getData').then(d=>apply(d)).catch(()=>{});});
+$('#btnReload').addEventListener('click',()=>{if(LIVE)resync(true);else toast('Vorschau: nichts zu aktualisieren.');});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible'||!S.data||!LIVE)return;pump();if(!Q.q.length&&Date.now()-(S.lastSync||0)>90000)resync();});
+
+/* Wischen zwischen den Reitern */
+(function(){
+  let s=null;const order=TABS.map(t=>t[0]);
+  document.addEventListener('touchstart',e=>{
+    if(S.sheetOpen||!S.data||S.data.settings.swipe===false||!e.target.closest('#view')||e.target.closest('input,select,textarea,.fchips')){s=null;return;}
+    s={x:e.touches[0].clientX,y:e.touches[0].clientY,t:Date.now()};},{passive:true});
+  document.addEventListener('touchend',e=>{
+    if(!s)return;const t=e.changedTouches[0],dx=t.clientX-s.x,dy=t.clientY-s.y;const ok=Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.6&&Date.now()-s.t<700;s=null;
+    if(!ok)return;let i=order.indexOf(S.view);if(i<0)return;i+=dx<0?1:-1;if(i<0||i>=order.length)return;
+    S.view=order[i];window.scrollTo(0,0);render();const v=$('#view');v.classList.remove('sl','sr');void v.offsetWidth;v.classList.add(dx<0?'sl':'sr');
+  },{passive:true});
+})();
 
 /* ================= Vorschau ohne Google (Beispiel- oder eingebettete Daten) ================= */
 const Demo=(()=>{
@@ -1136,8 +1304,10 @@ function connectScreen(){
 (function start(){
   if(!LIVE&&!DEMO){connectScreen();return;}
   const cached=LIVE?store.get(CACHE):null;
-  if(cached&&cached.d){const d=new Date(cached.t);S.stale=pad(d.getHours())+':'+pad(d.getMinutes());apply(cached.d,true);busy(true);}
-  call('getData').then(d=>{busy(false);apply(d);setTimeout(()=>loadFoods().catch(()=>{}),1200);})
+  if(cached&&cached.d){apply(cached.d,true);updateSyncBadge();
+    if(Q.q.length)pump();else resync();
+    setTimeout(()=>loadFoods().catch(()=>{}),1500);return;}
+  call('getData').then(d=>{busy(false);S.lastSync=Date.now();apply(d);if(Q.q.length)pump();setTimeout(()=>loadFoods().catch(()=>{}),1200);})
     .catch(e=>{busy(false);if(cached){S.stale=null;render();toast('Keine Verbindung, zeige gespeicherten Stand.',true);}
       else $('#view').innerHTML=`<div class="card"><b>Konnte das Tagebuch nicht laden.</b><p class="small muted">${esc(e.message||e)}</p></div>`;});
 })();

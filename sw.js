@@ -1,6 +1,6 @@
 // Hält die App-Oberfläche auf dem Handy bereit, damit sie sofort startet.
 // Neue Versionen werden im Hintergrund geladen und beim nächsten Start angezeigt.
-const CACHE = 'tagebuch-v1';
+const CACHE = 'tagebuch-v6';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
