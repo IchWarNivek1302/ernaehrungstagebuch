@@ -854,6 +854,26 @@ em.ropen{font-size:11px;background:var(--brand-soft);border-radius:6px;padding:1
 .rimp-img{display:block;width:100%;max-height:220px;object-fit:cover;border-radius:16px;margin:4px 0 12px}
 .rimp-st{margin:8px 0 0;padding-left:20px}.rimp-st li{margin:4px 0;line-height:1.45}
 .ing small.muted{font-size:.85em}
+/* v21: Rezepte Liste, Filter, Sortierung */
+.rbar{display:flex;align-items:center;gap:8px;margin:0 0 12px;flex-wrap:wrap}
+.rb{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.rb.on{background:var(--brand-soft);color:var(--brand);border-color:transparent}.rb b{background:var(--brand);color:#fff;border-radius:999px;font-size:11px;padding:1px 6px}
+.rsort{display:flex;align-items:center;gap:6px;flex:1;min-width:0;font-size:13px;color:var(--muted)}
+.rsort select{flex:1;min-width:0;max-width:220px;padding:7px 8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:14px}
+.rview{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex:0 0 auto}
+.rview button{background:var(--card);border:0;padding:6px 10px;font-size:16px;color:var(--muted);cursor:pointer}.rview button.on{background:var(--brand-soft);color:var(--brand)}
+.rfp{margin:0 0 14px;padding:14px}.rfh{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:10px 0 6px}.rfh:first-child{margin-top:0}
+.rfp .fchip.on{background:var(--brand);color:#fff}.rfp .fchip{--mc:transparent}
+.rfk{display:flex;align-items:center;gap:8px;margin:8px 0 4px;font-size:13px;color:var(--muted)}.rfk input{width:84px;min-width:0;padding:7px 9px}
+.rfp .sw{margin-top:8px}
+.fdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle;flex:0 0 9px}
+.fdot.ok{background:#7BBF8E}.fdot.no{background:#E08A80}
+.rlist{display:flex;flex-direction:column;gap:8px}
+.rrow{padding:8px 10px;margin:0}.rr{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;padding:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.rimg.mini{width:52px;height:52px;flex:0 0 52px;border-radius:12px;margin:0;aspect-ratio:auto;min-height:0}
+.rimg.mini.none{display:grid;place-items:center;background:var(--soft);color:var(--faint)}.rimg.mini.none svg{width:22px;height:22px}
+.rr-m{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.rr-m b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rr-m small{color:var(--muted)}
+@container (min-width:1000px){.rlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));align-items:start}}
 
 /* ================= Tablet und PC ================= */
 .side{display:none}
@@ -1116,8 +1136,8 @@ function tabOrder(s){const o=((s&&s.navOrder)||[]).filter(k=>ALL_TABS.some(t=>t[
 function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{};return tabOrder(s).filter(key=>tabOn(key,s)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='19';
-const MIN_SCRIPT=19;   /* so neu muss Code.gs mindestens sein */
+const APP_VERSION='21';
+const MIN_SCRIPT=20;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf0=new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
@@ -1168,6 +1188,18 @@ function hsl2hex(h,s,l){s/=100;l/=100;const k=n=>(n+h/30)%12,a=s*Math.min(l,1-l)
   return '#'+[f(0),f(8),f(4)].map(x=>Math.round(x*255).toString(16).padStart(2,'0')).join('').toUpperCase();}
 function cssHex(v){v=String(v||'').trim();if(/^#[0-9a-f]{6}$/i.test(v))return v.toUpperCase();if(/^#[0-9a-f]{3}$/i.test(v))return '#'+v.slice(1).split('').map(c=>c+c).join('').toUpperCase();
   const m=v.match(/rgba?\(([^)]+)\)/);if(m){const p=m[1].split(/[ ,]+/).map(Number);return '#'+p.slice(0,3).map(x=>Math.round(x).toString(16).padStart(2,'0')).join('').toUpperCase();}return '#888888';}
+
+/* Android: claude.ai-Links in der Claude-App öffnen statt im Browser (dort ist man oft nicht angemeldet).
+   Ist die App nicht installiert oder kennt sie die Seite nicht, öffnet Android die normale Webseite. */
+const IS_ANDROID=/Android/i.test(navigator.userAgent||'');
+function claudeIntent(u){return 'intent://'+u.replace(/^https:\/\//,'')+'#Intent;scheme=https;package=com.anthropic.claude;S.browser_fallback_url='+encodeURIComponent(u)+';end';}
+function openClaude(u){
+  /* Sicherheitsnetz: falls die App den vorbereiteten Text nicht übernimmt, liegt er in der Zwischenablage */
+  const q=(u.match(/[?&]q=([^&]*)/)||[])[1];if(q){try{navigator.clipboard&&navigator.clipboard.writeText(decodeURIComponent(q));}catch(e){}}
+  if(IS_ANDROID){location.href=claudeIntent(u);if(q&&typeof toast==='function')setTimeout(()=>toast('Text ist kopiert. Fehlt er in Claude: lange ins Feld tippen → Einfügen.'),300);return null;}return window.__open(u,'_blank','noopener');}
+window.__open=window.open.bind(window);
+window.open=function(u){if(IS_ANDROID&&/^https:\/\/claude\.ai\//.test(String(u||'')))return openClaude(String(u));return window.__open.apply(window,arguments);};
+document.addEventListener('click',ev=>{const a=ev.target.closest&&ev.target.closest('a[href^="https://claude.ai/"]');if(!a||!IS_ANDROID)return;ev.preventDefault();openClaude(a.href);},true);
 
 /* ================= Datenzugriff ================= */
 const store={get(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},del(k){try{localStorage.removeItem(k);}catch(e){}}};
@@ -2670,17 +2702,18 @@ function vRezepte(){
   h+=incomingHtml('rinc');
   if(!rs.length)return h+'<div class="card faint">Noch keine Rezepte. Lege eins an oder sag Claude „lege Rezept an“.</div>';
   const used=new Set(rs.map(r=>instrFor(r.name)).filter(Boolean)),loose=(S.data.instructions||[]).filter(x=>!used.has(x));
-  return h+`<div class="rgrid" id="rgrid">${recipeCards()}</div>`+(loose.length?`<h3 class="ph3" style="margin-top:22px">Anleitungen ohne passendes Rezept</h3><p class="small muted" style="margin-top:-4px">Heißt ein Rezept genauso wie die Anleitung (ohne Klammer), erscheint sie direkt beim Rezept.</p>
+  return h+`<div id="rbarBox">${recipeBar()}</div><div class="${rf().view==='list'?'rlist':'rgrid'}" id="rgrid">${recipeCards()}</div>`+(loose.length?`<h3 class="ph3" style="margin-top:22px">Anleitungen ohne passendes Rezept</h3><p class="small muted" style="margin-top:-4px">Heißt ein Rezept genauso wie die Anleitung (ohne Klammer), erscheint sie direkt beim Rezept.</p>
     <div class="rgrid">${loose.map((x,i)=>`<div class="card">${instrBlock(x,S.open['la'+i]).replace('data-pins="1"','data-la="'+i+'"').replace('<span>'+ICON.anleitungen+'Anleitung</span>','<span>'+ICON.anleitungen+esc(x.title)+'</span>')}
       <label class="f" style="margin:10px 0 0"><span>Zu Rezept zuordnen</span><select class="in-t" data-link="${esc(x.title)}"><option value="">Rezept wählen …</option>${rs.filter(r=>!instrFor(r.name)).map(r=>`<option>${esc(r.name)}</option>`).join('')}</select></label></div>`).join('')}</div>`:'');
 }
 function recipeCards(){
-  const q=norm(S.recQ||''),rs=(S.data.recipes||[]).map((r,i)=>[r,i]).filter(([r])=>!q||norm(r.name+' '+r.items.map(x=>x.name).join(' ')).includes(q));
-  if(!rs.length)return '<div class="card faint">Kein Rezept gefunden.</div>';
-  return rs.map(([r,i])=>{const o=S.open['r'+i],hasImg=(S.data.images||{})[r.name],ins=instrFor(r.name);
-    return `<div class="card rcard">${recipeImgHtml(r.name)||(imgWanted(r.name)?'<div class="rimg want"><span>Claude sucht beim nächsten Abgleich ein Bild</span></div>':'')}<button class="rc" data-act="toggle" data-key="r${i}"><div class="top2"><b>${esc(r.name)}</b><span class="num">${k(r.per.kcal)} kcal</span></div>
-    <div class="small muted num">${g1(r.portions).replace(',0','')} Portionen · pro Portion E ${g1(r.per.p)} g · KH ${g1(r.per.c)} g · F ${g1(r.per.f)} g</div>
-    <div class="rmeta">${r.items.length} Zutaten${ins?' · mit Anleitung':''}${r.items.some(x=>x.open)?' · <b class="ropen">Claude rechnet noch</b>':''}<span>${o?'▴':'▾'}</span></div></button>
+  const rs=recipeList();
+  if(!rs.length)return '<div class="card faint">Kein Rezept gefunden.'+(rfCount()?' <button class="linkbtn" data-act="rfReset">Filter zurücksetzen</button>':'')+'</div>';
+  if(rf().view==='list')return rs.map(([r,i])=>recipeRow(r,i)).join('');
+  return rs.map(([r,i])=>{const st=rStat(r);const o=S.open['r'+i],hasImg=(S.data.images||{})[r.name],ins=instrFor(r.name);
+    return `<div class="card rcard">${recipeImgHtml(r.name)||(imgWanted(r.name)?'<div class="rimg want"><span>Claude sucht beim nächsten Abgleich ein Bild</span></div>':'')}<button class="rc" data-act="toggle" data-key="r${i}"><div class="top2"><b>${esc(r.name)}</b><span class="num">${fitDot(r)}${k(r.per.kcal)} kcal</span></div>
+    <div class="small muted num">${g1(r.portions).replace(',0','')} ${r.portions===1?'Portion':'Portionen'} · pro Portion E ${g1(r.per.p)} g · KH ${g1(r.per.c)} g · F ${g1(r.per.f)} g</div>
+    <div class="rmeta">${r.items.length} Zutaten${ins?' · mit Anleitung':''}${st.n?' · '+st.n+'× gegessen':''}${rSince(st)?' · seit '+rSince(st):''}${r.items.some(x=>x.open)?' · <b class="ropen">Claude rechnet noch</b>':''}<span>${o?'▴':'▾'}</span></div></button>
     ${o?`<div class="ing" style="margin-top:10px">${r.items.map(it=>`<div><span>${esc(it.name)}${it.open?' <em class="ropen">offen</em>':''}</span><span>${esc(it.amount)}</span></div>`).join('')}</div><div class="small faint">Mengen für das ganze Rezept.</div>${ins?instrBlock(ins,S.open['ri'+i]).replace('data-pins="1"','data-ri="'+i+'"'):''}`:''}
     <div class="racts">${mods().wochenplan?`<button class="linkbtn" data-act="recPlan" data-n="${esc(r.name)}">Einplanen</button>`:''}<button class="linkbtn" data-act="recEdit" data-n="${esc(r.name)}">Bearbeiten</button><button class="linkbtn" data-act="recShare" data-n="${esc(r.name)}">Teilen</button></div></div>`;}).join('');
 }
@@ -3094,7 +3127,7 @@ function clIsDone(k){return clOk()||!!clGet()[k];}
 function clCount(){return CL_STEPS.filter(s=>clIsDone(s.k)).length;}
 function clPrompt(q){
   const n=S.data&&S.data.myName,hi=n?`Hallo, ich bin ${n}. `:'';
-  const skill=(id,nm)=>`${hi}Bitte lege mir einen neuen Skill namens „${id}“ an. Ruf dazu diese Datei ab: ${clBase()}skills/${id}/SKILL.md – und übernimm ihren Inhalt genau so, ohne etwas zu ändern oder zu kürzen (auch den Kopf mit name und description). Ich kenne mich damit nicht aus: Sag mir danach in einfachen, kurzen Worten, worauf ich tippen muss, damit der Skill „${nm}“ gespeichert ist.`;
+  const skill=(id,nm)=>`${hi}Bitte lege mir einen neuen Skill namens „${id}“ an. Ruf dazu diese Adresse ab: ${clBase()}skills/${id}.json – im Feld „inhalt“ steht der komplette Text der SKILL.md. Übernimm ihn genau so als SKILL.md, ohne etwas zu ändern oder zu kürzen (auch den Kopf mit name und description). Ich kenne mich damit nicht aus: Sag mir danach in einfachen, kurzen Worten, worauf ich tippen muss, damit der Skill „${nm}“ gespeichert ist.`;
   if(q==='sk1')return skill('ernaehrungstagebuch','Ernährungstagebuch');
   if(q==='sk2')return skill('rezeptideen','Rezeptideen');
   const d=new Date().toLocaleDateString('de-DE');
@@ -3215,6 +3248,95 @@ document.addEventListener('click',ev=>{
       .catch(e=>{el.disabled=false;el.textContent='Nochmal versuchen';toast(e.message||String(e),true);});
     return;}
   if(a==='rimpDrop'){const x=S.rimp;call('dropShare',x.id).then(()=>{S.data.incoming=(S.data.incoming||[]).filter(i=>i.id!==x.id);closeSheet();render();toast('Nicht übernommen.');}).catch(e=>toast(e.message,true));return;}
+});
+/* ================= Rezepte: Liste/Kacheln, Filter, Sortierung (v21) ================= */
+const FILTER_SVG='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>';
+const RF_DEF={view:'grid',sort:'name',kmin:'',kmax:'',src:'',fit:false,freq:false,open:false};
+function rf(){if(!S.rf){let o={};try{o=JSON.parse(localStorage.getItem('et-rf')||'{}')}catch(e){}S.rf=Object.assign({},RF_DEF,o,{open:false});}return S.rf;}
+function rfSave(){const o=Object.assign({},S.rf);delete o.open;try{localStorage.setItem('et-rf',JSON.stringify(o))}catch(e){}}
+const PROT_SRC=[['Ei',/\beier?\b|huhnerei|omelett|ruhrei|spiegelei/],['Geflügel',/hahnchen|huhn|pute|chicken|geflugel|ente\b/],['Fisch',/lachs|thunfisch|fisch|garnele|pangasius|kabeljau|seelachs|forelle|shrimp|scampi|makrele|hering/],
+  ['Rind & Schwein',/rind|hack|schwein|steak|speck|schinken|wurst|lamm|kalb|bockwurst|cevapcici|frikadelle/],
+  ['Milchprodukte',/quark|skyr|joghurt|kase|mozzarella|feta|parmesan|milch|whey|protein|hüttenkase|huttenkase|ricotta|kefir/],['Hülsenfrüchte & Tofu',/linse|bohne|kichererbse|tofu|tempeh|edamame|soja|erbse|seitan/]];
+function protSrc(r){
+  if(r._src!==undefined)return r._src;
+  /* Zutaten nach Eiweiß sortiert: die erste, die zu einer Quelle passt (Mehl, Reis usw. zählen nicht) */
+  const its=(r.items||[]).filter(x=>!x.open&&(+x.p||0)>=3).sort((a,b)=>(+b.p||0)-(+a.p||0));
+  let src='';for(const it of its){const t=norm(it.name);const m=PROT_SRC.find(([,re])=>re.test(t));if(m){src=m[0];break;}}
+  /* noch offene Zutaten (Claude rechnet) oder unklar: nach Namen schauen */
+  if(!src){const t=norm(r.name+' '+(r.items||[]).map(x=>x.name).join(' '));const m=PROT_SRC.find(([,re])=>re.test(t));src=m?m[0]:'Sonstiges';}
+  return r._src=src;
+}
+function rStat(r){
+  const st=(S.data.recipeStats||{})[r.name];if(st&&st.n!==undefined&&(st.n||st.created))return st;
+  /* Vorschau oder altes Script: aus dem geladenen Tagebuch zählen */
+  const ks=new Set();let first='',last='';for(const x of S.data.diary){if(x[10]!==r.name)continue;ks.add(x[1]+x[2]+x[3]);if(!first||x[1]<first)first=x[1];if(x[1]>last)last=x[1];}
+  return Object.assign({n:ks.size,first,last},st||{});
+}
+function kcalLeft(){const g=S.data.goals||{};return (g.kcalDay||0)-day(today()).kcal;}
+function fitDot(r){const left=kcalLeft(),ok=r.per.kcal<=left;return `<i class="fdot ${ok?'ok':'no'}" title="${ok?'Passt heute noch':'Wäre heute zu viel'} (noch ${k(Math.max(0,left))} kcal frei)"></i>`;}
+function rSince(st){const d=st.created||st.first;return d?shortDate(d)+(d.slice(0,4)!==today().slice(0,4)?' '+d.slice(0,4):''):'';}
+function recipeList(){
+  const F=rf(),q=norm(S.recQ||''),left=kcalLeft();
+  let rs=(S.data.recipes||[]).map((r,i)=>[r,i]).filter(([r])=>!q||norm(r.name+' '+r.items.map(x=>x.name).join(' ')).includes(q));
+  const lo=parseFloat(F.kmin),hi=parseFloat(F.kmax);
+  rs=rs.filter(([r])=>(isNaN(lo)||r.per.kcal>=lo)&&(isNaN(hi)||r.per.kcal<=hi)&&(!F.src||protSrc(r)===F.src)&&(!F.fit||r.per.kcal<=left)&&(!F.freq||rStat(r).n>=3));
+  const by={
+    name:(a,b)=>a.name.localeCompare(b.name,'de'),
+    neu:(a,b)=>(rSinceKey(b)).localeCompare(rSinceKey(a)),
+    oft:(a,b)=>rStat(b).n-rStat(a).n,
+    zuletzt:(a,b)=>(rStat(b).last||'').localeCompare(rStat(a).last||''),
+    kauf:(a,b)=>a.per.kcal-b.per.kcal, kab:(a,b)=>b.per.kcal-a.per.kcal,
+    eiw:(a,b)=>b.per.p-a.per.p, dichte:(a,b)=>(b.per.p/(b.per.kcal||1))-(a.per.p/(a.per.kcal||1))
+  }[F.sort]||((a,b)=>0);
+  return rs.sort((x,y)=>by(x[0],y[0])||x[0].name.localeCompare(y[0].name,'de'));
+}
+const rSinceKey=r=>{const st=rStat(r);return st.created||st.first||'';};
+const RSORTS=[['name','Name A–Z'],['neu','Neueste zuerst'],['oft','Am häufigsten gegessen'],['zuletzt','Zuletzt gegessen'],['kauf','Kalorien aufsteigend'],['kab','Kalorien absteigend'],['eiw','Meiste Eiweiß'],['dichte','Eiweiß pro kcal']];
+function rfCount(){const F=rf();return (F.kmin!==''||F.kmax!==''?1:0)+(F.src?1:0)+(F.fit?1:0)+(F.freq?1:0);}
+function recipeBar(){
+  const F=rf(),n=rfCount(),srcs=[...new Set((S.data.recipes||[]).map(protSrc))].sort((a,b)=>a==='Sonstiges'?1:b==='Sonstiges'?-1:a.localeCompare(b,'de'));
+  const kc=[['','400','bis 400'],['400','600','400–600'],['600','800','600–800'],['800','','über 800']];
+  return `<div class="rbar"><button class="rb ${F.open||n?'on':''}" data-act="rfOpen">${FILTER_SVG}Filter${n?` <b>${n}</b>`:''}</button>
+    <label class="rsort"><span>Sortieren</span><select id="rfSort">${RSORTS.map(([v,l])=>`<option value="${v}" ${F.sort===v?'selected':''}>${l}</option>`).join('')}</select></label>
+    <div class="rview"><button class="${F.view==='grid'?'on':''}" data-act="rfView" data-v="grid" aria-label="Kacheln">▦</button><button class="${F.view==='list'?'on':''}" data-act="rfView" data-v="list" aria-label="Liste">☰</button></div></div>
+  ${F.open?`<div class="rfp card">
+    <div class="rfh">Kalorien pro Portion</div>
+    <div class="fchips">${kc.map(([a,b,l])=>`<button class="fchip ${F.kmin===a&&F.kmax===b?'on':''}" data-act="rfK" data-a="${a}" data-b="${b}"><span>${l}</span></button>`).join('')}</div>
+    <div class="rfk"><input class="in-t num" id="rfMin" inputmode="numeric" placeholder="von" value="${esc(F.kmin)}"><span>bis</span><input class="in-t num" id="rfMax" inputmode="numeric" placeholder="bis" value="${esc(F.kmax)}"><span>kcal</span></div>
+    <div class="rfh">Eiweißquelle</div>
+    <div class="fchips">${srcs.map(s=>`<button class="fchip ${F.src===s?'on':''}" data-act="rfSrc" data-s="${esc(s)}"><span>${esc(s)}</span></button>`).join('')}</div>
+    <label class="sw"><div><b><i class="fdot ok"></i> Passt heute noch</b><span>Nur Rezepte, deren Portion in die restlichen ${k(Math.max(0,kcalLeft()))} kcal passt</span></div><span class="tg"><input type="checkbox" data-rf="fit" ${F.fit?'checked':''}><i></i></span></label>
+    <label class="sw"><div><b>Oft gegessen</b><span>Mindestens 3-mal im Tagebuch</span></div><span class="tg"><input type="checkbox" data-rf="freq" ${F.freq?'checked':''}><i></i></span></label>
+    ${n?'<button class="linkbtn" data-act="rfReset">Alle Filter zurücksetzen</button>':''}</div>`:''}`;
+}
+function recipeRow(r,i){
+  const st=rStat(r),o=S.open['r'+i],ins=instrFor(r.name),id=(S.data.images||{})[r.name];
+  return `<div class="card rrow ${o?'open':''}"><button class="rr" data-act="toggle" data-key="r${i}">
+    ${id?recipeImgHtml(r.name,'mini'):`<div class="rimg mini none">${ICON.rezepte}</div>`}
+    <div class="rr-m"><b>${esc(r.name)}</b><small class="num">${k(r.per.kcal)} kcal · ${g1(r.per.p)} g E${st.n?' · '+st.n+'× gegessen':''}</small></div>
+    ${fitDot(r)}</button>
+    ${o?recipeDetail(r,i,ins):''}</div>`;
+}
+function recipeDetail(r,i,ins){
+  const st=rStat(r);
+  return `<div class="small muted" style="margin-top:8px">${g1(r.portions).replace(',0','')} ${r.portions===1?'Portion':'Portionen'} · pro Portion E ${g1(r.per.p)} g · KH ${g1(r.per.c)} g · F ${g1(r.per.f)} g${rSince(st)?' · seit '+rSince(st):''}</div>
+    <div class="ing" style="margin-top:10px">${r.items.map(it=>`<div><span>${esc(it.name)}${it.open?' <em class="ropen">offen</em>':''}</span><span>${esc(it.amount)}</span></div>`).join('')}</div><div class="small faint">Mengen für das ganze Rezept.</div>${ins?instrBlock(ins,S.open['ri'+i]).replace('data-pins="1"','data-ri="'+i+'"'):''}
+    <div class="racts">${mods().wochenplan?`<button class="linkbtn" data-act="recPlan" data-n="${esc(r.name)}">Einplanen</button>`:''}<button class="linkbtn" data-act="recEdit" data-n="${esc(r.name)}">Bearbeiten</button><button class="linkbtn" data-act="recShare" data-n="${esc(r.name)}">Teilen</button></div>`;
+}
+function refreshRecipes(){const g=$('#rgrid');if(g){g.className=rf().view==='list'?'rlist':'rgrid';g.innerHTML=recipeCards();loadImages();}const b=$('#rbarBox');if(b)b.innerHTML=recipeBar();}
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act,F=rf();
+  if(a==='rfOpen'){F.open=!F.open;refreshRecipes();return;}
+  if(a==='rfView'){F.view=el.dataset.v;rfSave();refreshRecipes();return;}
+  if(a==='rfK'){const same=F.kmin===el.dataset.a&&F.kmax===el.dataset.b;F.kmin=same?'':el.dataset.a;F.kmax=same?'':el.dataset.b;rfSave();refreshRecipes();return;}
+  if(a==='rfSrc'){F.src=F.src===el.dataset.s?'':el.dataset.s;rfSave();refreshRecipes();return;}
+  if(a==='rfReset'){Object.assign(F,{kmin:'',kmax:'',src:'',fit:false,freq:false});rfSave();refreshRecipes();return;}
+});
+document.addEventListener('change',ev=>{
+  const t=ev.target,F=S.rf;if(!F)return;
+  if(t.id==='rfSort'){F.sort=t.value;rfSave();refreshRecipes();return;}
+  if(t.dataset&&t.dataset.rf){F[t.dataset.rf]=t.checked;rfSave();const g=$('#rgrid');if(g){g.innerHTML=recipeCards();loadImages();}const btn=document.querySelector('[data-act=rfOpen]');if(btn)btn.innerHTML=FILTER_SVG+'Filter'+(rfCount()?' <b>'+rfCount()+'</b>':'');return;}
+  if(t.id==='rfMin'||t.id==='rfMax'){F[t.id==='rfMin'?'kmin':'kmax']=t.value.replace(/[^\d]/g,'');rfSave();refreshRecipes();}
 });
 
 /* ================= Sheets (Overlays) ================= */
