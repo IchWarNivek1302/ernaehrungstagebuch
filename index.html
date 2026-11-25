@@ -807,6 +807,26 @@ em.ropen{font-size:11px;background:var(--brand-soft);border-radius:6px;padding:1
 .cqlist .inb{display:block;width:100%;text-align:left;font-size:13px;padding:7px 0;border-top:1px solid color-mix(in srgb,var(--brand) 18%,transparent)}
 .cqlist .inb span{color:var(--muted)}
 .cqlist .small{padding-top:6px}
+/* Kopieren von */
+.copyrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin:12px 0 2px;padding:10px 12px;border-radius:14px;background:var(--soft)}
+.copyrow>svg:first-child{width:20px;height:20px;color:var(--brand);flex:none}
+.copyrow>svg:last-child{width:16px;height:16px;color:var(--faint);flex:none}
+.copyrow span{flex:1;min-width:0}
+.copyrow b{display:block;font-size:14px;font-weight:650}
+.copyrow small{display:block;font-size:12.5px;color:var(--muted)}
+.cdays{grid-template-columns:repeat(8,1fr);gap:4px}
+.cdays button b{font-size:12.5px}.cdays button small{font-size:9.5px}
+.cmeal{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.cmeal button{border:1.5px solid var(--line);border-radius:12px;padding:9px 8px;font-weight:600;font-size:14px;display:flex;align-items:center;gap:7px;justify-content:center}
+.cmeal button i{width:9px;height:9px;border-radius:50%;background:var(--mc)}
+.cmeal button small{color:var(--muted);font-weight:500;font-size:11.5px}
+.cmeal button.on{border-color:var(--mc);background:color-mix(in srgb,var(--mc) 14%,transparent)}
+.copylist{border-top:1px solid var(--line);margin-bottom:6px}
+.copylist .shop input:checked+i{background:var(--brand);border-color:var(--brand);color:var(--on-brand)}
+.copylist .tag{margin-right:6px}
+.selbar{flex-wrap:nowrap;max-width:calc(100vw - 16px)}
+.selbar button{white-space:nowrap}
+@media (max-width:400px){.selbar{gap:4px;padding-left:6px;padding-right:6px}.selbar button{padding:9px 8px;font-size:12.5px}}
 
 /* ================= Tablet und PC ================= */
 .side{display:none}
@@ -970,6 +990,8 @@ button:focus:not(:focus-visible){outline:none}
   .chips{flex-wrap:wrap}.chips .chip{flex:1 1 40%}
   .shead{flex-wrap:wrap;row-gap:8px}.shead h2{flex-basis:100%}
 }
+/* Handys (auch iPhone): Eingabefelder mit 16 px, sonst zoomt der Browser beim Antippen heran */
+@media (pointer:coarse){input.in-t,select.in-t,textarea.in-t,.search input{font-size:16px}}
 </style>
 </head>
 <body>
@@ -1054,7 +1076,8 @@ function tabOrder(s){const o=((s&&s.navOrder)||[]).filter(k=>ALL_TABS.some(t=>t[
 function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{};return tabOrder(s).filter(key=>tabOn(key,s)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='13';
+const APP_VERSION='15';
+const MIN_SCRIPT=15;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf0=new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
@@ -1411,6 +1434,7 @@ const L={
   saveGoals(g){S.data.goals={kcalDay:g.kcalDay,proteinDay:g.proteinDay,kcalWeek:g.kcalWeek};S.data.settings.goals2={carbs:g.carbs||0,fat:g.fat||0,weight:g.weight||0};return {};},
   saveSettings(s){S.data.settings=s;return {};},
   savePlan(p){S.data.plan=p;return {};},
+  linkInstruction(title,name){const x=(S.data.instructions||[]).find(i=>i.title===title);if(x){const m=String(title).match(/\(([^)]*)\)\s*$/);x.title=m?String(name).replace(/\s*\([^)]*\)\s*$/,'')+' ('+m[1]+')':name;}return {};},
   wantImage(name,on){if(!LIVE)demoOrder('Auftrag: Bild suchen für Rezept „'+name+'“',on);const w=S.data.imgWanted=Object.assign({},S.data.imgWanted);if(on)w[name]=true;else delete w[name];return {};},
   saveRecipe(rec,old,ins){
     const rs=S.data.recipes=(S.data.recipes||[]).slice(),i=old?rs.findIndex(r=>r.name===old):-1;
@@ -2215,6 +2239,62 @@ async function photoShare(){
   }
 }
 
+/* ================= Kopieren von einer anderen Mahlzeit =================
+   Im Plus-Menü: "Kopieren von" (Standard: gestern Abendessen bzw. die letzte Mahlzeit mit Einträgen davor).
+   In der Auswahl (lange drücken / Rechtsklick): "Kopieren" auf einen anderen Tag / eine andere Mahlzeit. */
+function copyDefault(toDate){
+  let d=addDays(toDate,-1),m='Abendessen';
+  if(day(d).meals[m])return {d,m};
+  for(let i=0;i<14;i++){const dd=addDays(toDate,-i);for(const mm of MEALS.slice().reverse()){if(i===0&&MEALS.indexOf(mm)>=MEALS.indexOf(S.add.meal))continue;if(day(dd).meals[mm])return {d:dd,m:mm};}}
+  return {d,m};
+}
+const dayLabel=d=>relDay(d)||(DS[wd(d)]+', '+shortDate(d));
+function copyRowHtml(){
+  const A=S.add;if(!A.copy)A.copy=copyDefault(A.date);
+  const src=day(A.copy.d).meals[A.copy.m];
+  return `<button class="copyrow" data-act="addstep" data-step="copy">${ICON.copy}<span><b>Kopieren von</b><small>${dayLabel(A.copy.d)} · ${MEAL_SHORT[A.copy.m]}${src?' · '+src.items.length+' '+(src.items.length===1?'Eintrag':'Einträge')+', '+k(src.kcal)+' kcal':' · leer'}</small></span>${ICON.right}</button>`;
+}
+function copyStep(){
+  const A=S.add,c=A.copy||(A.copy=copyDefault(A.date)),t=today();
+  const days=[...Array(8)].map((_,i)=>addDays(t,-i)).reverse();
+  const md=day(c.d).meals[c.m],groups=md?groupItems(md.items):[];
+  if(!A.copySel||A.copySel.key!==c.d+c.m)A.copySel={key:c.d+c.m,on:groups.map((_,i)=>i)};
+  const on=new Set(A.copySel.on);
+  const kc=groups.filter((_,i)=>on.has(i)).reduce((a,g)=>a+(g.single?g.single.kcal:g.kcal),0);
+  S.copyGroups=groups;
+  return `<button class="back" data-act="addback">${ICON.back}Zurück</button><h2>Kopieren von</h2>
+    <div class="pdays cdays">${days.map(d=>`<button class="${d===c.d?'on':''}" data-act="copyDay" data-d="${d}"><b>${relDay(d)==='Heute'?'Heute':DS[wd(d)]}</b><small>${shortDate(d)}</small></button>`).join('')}</div>
+    <div class="cmeal">${MEALS.map(m=>{const has=day(c.d).meals[m];return `<button type="button" class="${m===c.m?'on':''}" style="--mc:${MEAL_COLOR[m]}" data-act="copyMeal" data-meal="${m}"><i></i>${MEAL_SHORT[m]}${has?` <small class="num">${k(has.kcal)}</small>`:''}</button>`;}).join('')}</div>
+    ${groups.length?`<div class="copylist">${groups.map((g,i)=>{const nm=g.single?g.single.name:g.recipe,sub=g.single?g.single.amount:g.amount+' · '+g.rows.length+' Zutaten',kk=g.single?g.single.kcal:g.kcal;
+      return `<label class="shop "><input type="checkbox" data-copyi="${i}" ${on.has(i)?'checked':''}><i>${ICON.check}</i><span><b>${g.single?'':'<span class="tag">Rezept</span>'}${esc(nm)}</b><small>${esc(sub)}</small></span><em class="num">${k(kk)} kcal</em></label>`;}).join('')}</div>`
+      :`<div class="empty">${dayLabel(c.d)} beim ${MEAL_SHORT[c.m]} ist nichts eingetragen.</div>`}
+    <h3 class="ph3">Nach</h3>${mealPick(A.meal)}${whenFields(A.date,A.time,'c')}
+    <button class="btn" data-act="copyGo" ${on.size&&groups.length?'':'disabled'}>${on.size?(on.size===groups.length?'Alles':'Auswahl')+' kopieren · '+k(kc)+' kcal':'Nichts ausgewählt'}</button>`;
+}
+function copyGo(){
+  const A=S.add,on=new Set(A.copySel.on),rows=S.copyGroups.filter((_,i)=>on.has(i)).flatMap(g=>(g.single?[g.single]:g.rows).map(e=>e.row));
+  if(!rows.length)return;
+  const d0=val('cDate')||A.date,t0=val('cTime')||A.time,m=pickedMeal();
+  doneAdd(commit('repeatRows',[rows,d0,t0,m,1]),d0,rows.length+(rows.length===1?' Eintrag':' Einträge')+' kopiert nach '+MEAL_SHORT[m]+(d0!==today()?' am '+shortDate(d0):''));
+}
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act]');if(!el||!S.add)return;const A=S.add;
+  switch(el.dataset.act){
+    case 'copyDay':A.copy={d:el.dataset.d,m:A.copy.m};A.meal=pickedMeal();A.date=val('cDate')||A.date;A.time=val('cTime')||A.time;drawAdd();break;
+    case 'copyMeal':A.copy={d:A.copy.d,m:el.dataset.meal};A.meal=pickedMeal();A.date=val('cDate')||A.date;A.time=val('cTime')||A.time;drawAdd();break;
+    case 'copyGo':copyGo();break;
+    case 'selCopy':openSheet(`<h2>Auswahl kopieren</h2><p class="sub">Die Einträge bleiben, wo sie sind, und kommen zusätzlich hierhin.</p>${mealPick(mealByTime(nowHM()))}${whenFields(today(),nowHM(),'sc')}<button class="btn" data-act="selCopyGo">Kopieren</button>`);break;
+    case 'selCopyGo':{const rows=[...S.selected.values()].flatMap(x=>(x.single?[x.single]:x.rows).map(e=>e.row)),d0=val('scDate'),t0=val('scTime'),m=pickedMeal();
+      commit('repeatRows',[rows,d0,t0,m,1]);endSel();closeSheet();vibe();toast(rows.length+(rows.length===1?' Eintrag':' Einträge')+' kopiert nach '+MEAL_SHORT[m]+(d0!==today()?' am '+shortDate(d0):''));break;}
+  }
+});
+/* copyMeal nutzt eigene Knöpfe, damit die Ziel-Mahlzeit (mealpick unten) nicht mitspringt */
+document.addEventListener('change',ev=>{
+  const t=ev.target;if(t.dataset.copyi===undefined||!S.add||!S.add.copySel)return;
+  const i=+t.dataset.copyi,s=new Set(S.add.copySel.on);if(t.checked)s.add(i);else s.delete(i);S.add.copySel.on=[...s];
+  const keep=$('#sheet').scrollTop;S.add.meal=pickedMeal();S.add.date=val('cDate')||S.add.date;S.add.time=val('cTime')||S.add.time;drawAdd();$('#sheet').scrollTop=keep;
+});
+
 /* ================= Teilen (WhatsApp & Co.) =================
    Handy/Windows: Teilen-Menü des Systems. Sonst: Text kopieren bzw. Bild speichern. */
 function dataUrlToFile(url,name){const [h,b]=url.split(',');const mime=(h.match(/:(.*?);/)||[])[1]||'image/jpeg';const bin=atob(b);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new File([a],name,{type:mime});}
@@ -2339,9 +2419,11 @@ const recipeBy=n=>(S.data.recipes||[]).find(r=>r.name===n);
 const tplBy=n=>(S.data.templates||[]).find(t=>t.name===n);
 const pid=()=>'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const fineMouse=()=>matchMedia('(hover:hover) and (pointer:fine)').matches;
+/* Name ohne Klammer am Ende, z. B. "Pangasius (HelloFresh, 4 Portionen)" -> "pangasius" */
+const baseName=s=>norm(String(s||'').replace(/\s*\([^)]*\)\s*$/,'')).trim();
 function instrFor(n){
-  const a=S.data.instructions||[],t=norm(n),base=x=>norm(String(x.title).replace(/\s*\([^)]*\)\s*$/,'')).trim();if(!t)return null;
-  return a.find(x=>base(x)===t)||a.find(x=>norm(x.title)===t)||null;
+  const a=S.data.instructions||[],t=norm(n),tb=baseName(n);if(!t)return null;
+  return a.find(x=>norm(x.title)===t)||a.find(x=>baseName(x.title)===tb)||null;
 }
 function planVals(it){
   const n=+it.portions||1;
@@ -2521,9 +2603,10 @@ function vRezepte(){
   const rs=S.data.recipes||[];
   let h=`<div class="rtools"><div class="search">${ICON.search}<input id="recQ" placeholder="Rezept oder Zutat suchen" value="${esc(S.recQ||'')}" autocomplete="off"></div><button class="btn rnew" data-act="recNew">${ICON.plus}<span class="l1">Neues Rezept</span><span class="l2">Neu</span></button></div>`;
   if(!rs.length)return h+'<div class="card faint">Noch keine Rezepte. Lege eins an oder sag Claude „lege Rezept an“.</div>';
-  const names=rs.map(r=>norm(r.name)),loose=(S.data.instructions||[]).filter(x=>!names.includes(norm(String(x.title).replace(/\s*\([^)]*\)\s*$/,'')).trim()));
+  const used=new Set(rs.map(r=>instrFor(r.name)).filter(Boolean)),loose=(S.data.instructions||[]).filter(x=>!used.has(x));
   return h+`<div class="rgrid" id="rgrid">${recipeCards()}</div>`+(loose.length?`<h3 class="ph3" style="margin-top:22px">Anleitungen ohne passendes Rezept</h3><p class="small muted" style="margin-top:-4px">Heißt ein Rezept genauso wie die Anleitung (ohne Klammer), erscheint sie direkt beim Rezept.</p>
-    <div class="rgrid">${loose.map((x,i)=>`<div class="card">${instrBlock(x,S.open['la'+i]).replace('data-pins="1"','data-la="'+i+'"').replace('<span>'+ICON.anleitungen+'Anleitung</span>','<span>'+ICON.anleitungen+esc(x.title)+'</span>')}</div>`).join('')}</div>`:'');
+    <div class="rgrid">${loose.map((x,i)=>`<div class="card">${instrBlock(x,S.open['la'+i]).replace('data-pins="1"','data-la="'+i+'"').replace('<span>'+ICON.anleitungen+'Anleitung</span>','<span>'+ICON.anleitungen+esc(x.title)+'</span>')}
+      <label class="f" style="margin:10px 0 0"><span>Zu Rezept zuordnen</span><select class="in-t" data-link="${esc(x.title)}"><option value="">Rezept wählen …</option>${rs.filter(r=>!instrFor(r.name)).map(r=>`<option>${esc(r.name)}</option>`).join('')}</select></label></div>`).join('')}</div>`:'');
 }
 function recipeCards(){
   const q=norm(S.recQ||''),rs=(S.data.recipes||[]).map((r,i)=>[r,i]).filter(([r])=>!q||norm(r.name+' '+r.items.map(x=>x.name).join(' ')).includes(q));
@@ -2705,6 +2788,7 @@ document.addEventListener('input',ev=>{
 });
 document.addEventListener('change',ev=>{
   const t=ev.target;
+  if(t.dataset&&t.dataset.link!==undefined&&t.value){commit('linkInstruction',[t.dataset.link,t.value]);toast('Anleitung gehört jetzt zu „'+t.value+'“.');return;}
   if(t.id==='pTarget'){S.ptarget=t.value;render();return;}
   if(t.id==='reFile'&&t.files&&t.files[0]){const f=t.files[0];shrinkImage(f,720,0.8).then(u=>{S.redit.file=f;S.redit.img=u;S.redit.want=false;$('#reImg').innerHTML=reImgHtml();}).catch(e=>toast(e.message,true));return;}
   if(t.id==='reWant'){S.redit.want=t.checked;return;}
@@ -2774,8 +2858,17 @@ document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');
   if(el.dataset.act==='inboxToggle'){S.inboxOpen=!S.inboxOpen;render();}
   if(el.dataset.act==='askAbgleich'){try{navigator.clipboard&&navigator.clipboard.writeText('Abgleich');}catch(e){}setTimeout(closeSheet,300);}
 });
+/* Script-Version prüfen und der App-Adresse Bescheid geben (für den QR-Code beim Einrichten) */
+const scriptOld=()=>LIVE&&S.data&&(+S.data.scriptVersion||0)<MIN_SCRIPT;
+function checkScript(){
+  if(!LIVE||!S.data||S.scriptChecked)return;S.scriptChecked=true;
+  if(scriptOld()){let shown=null;try{shown=localStorage.getItem('et-oldscript');}catch(e){}
+    if(shown!==today()){try{localStorage.setItem('et-oldscript',today());}catch(e){}setTimeout(()=>toast('Das Script im Sheet ist älter als die App. Bitte Code.gs ersetzen (siehe Einstellungen).'),1500);}return;}
+  const me=location.origin+location.pathname.replace(/index\.html$/,'');
+  if(location.protocol==='https:'&&S.data.appUrl!==me)api(CONN.url,CONN.key,'setAppUrl',[me]).catch(()=>{});
+}
 function renderSide(){
-  migrateV12();renderClaudeBtn();
+  migrateV12();renderClaudeBtn();checkScript();
   const el=$('#side');if(!el||!S.data)return;
   const pages=MODULES.filter(x=>x.page&&mods()[x.key]);
   const link=(key,lbl,act)=>`<button class="sl ${S.view===key?'on':''}" ${act?`data-act="goview" data-view="${key}"`:`data-tab="${key}"`}>${ICON[key]}<span>${lbl}</span></button>`;
@@ -2906,6 +2999,7 @@ function drawAdd(){
     openSheet(segHtml()+`<h2>Was hast du gegessen?</h2>
       <div class="search" style="box-shadow:none;background:var(--soft);margin:8px 0 0">${ICON.search}<input id="fq" type="search" placeholder="z. B. Magerquark, Banane, Ehrmann" value="${esc(A.q)}" autocomplete="off"><button class="scanbtn" data-act="addstep" data-step="photo" aria-label="Foto an Claude">${ICON.camera}</button><button class="scanbtn" data-act="scan" aria-label="Barcode scannen">${ICON.barcode}</button></div>
       <div id="fres">${resultsHtml()}</div>`);
+  } else if(A.step==='copy'){openSheet(copyStep());
   } else if(A.step==='photo'){openSheet(photoHtml());
   } else if(A.step==='recipe'){openSheet(recipeStep());
   } else if(A.step==='tpl'){openSheet(tplStep());
@@ -2958,6 +3052,7 @@ function resultsHtml(){
   const rec=recentList().filter(x=>!q||norm((x.recipe||x.name)+' '+x.amount).includes(norm(q))).slice(0,q?8:(S.data.settings.recentN||20));
   S.add.recList=rec;
   let h='';
+  if(!q)h+=copyRowHtml();
   h+=tplChips(q)+recipeChips(q);
   if(!q&&mods().haeufig){const fq=frequent();if(fq.length)h+=`<div class="res-h">Häufig</div><div class="fchips">${fq.map((x,i)=>`<button class="fchip" data-act="pickFreq" data-i="${i}" style="--mc:${MEAL_COLOR[x.meal]||'var(--m4)'}"><i></i><span>${esc(x.recipe||x.name)}</span><small class="num">${k(x.kcal)}</small></button>`).join('')}</div>`;}
   if(rec.length)h+=`<div class="res-h">${q?'Schon gegessen':'Zuletzt gegessen'}</div><div class="res">${rec.map((x,i)=>`<button class="item" data-act="pickRecent" data-i="${i}"><div class="it-main"><div class="it-name">${x.recipe?'<span class="tag">Rezept</span>'+esc(x.recipe):esc(x.name)}</div><div class="it-sub">${esc(x.amount)} · ${relDay(x.last)||shortDate(x.last)}</div></div><div class="it-val"><b class="num">${k(x.kcal)}</b><small class="num">${g1(x.p)} g E</small></div></button>`).join('')}</div>`;
@@ -3055,7 +3150,8 @@ function openSettings(){
   ${sec('rem','Erinnerung',remSub(),remHtml())}
   ${sec('ger','PC, Tablet und weitere Geräte','App auch am Computer nutzen',deviceHtml())}
   ${LIVE?sec('con','Verbindung','Mit deinem Google Sheet verbunden',`<button class="btn ghost" data-act="disconnect">Verbindung trennen</button>`):''}
-  <p class="hint">${LIVE?'Daten kommen live aus deinem Google Sheet.':'Vorschau: Änderungen werden nicht gespeichert.'}<br>App-Version ${APP_VERSION}</p>`);
+  <p class="hint">${LIVE?'Daten kommen live aus deinem Google Sheet.':'Vorschau: Änderungen werden nicht gespeichert.'}<br>App-Version ${APP_VERSION}${LIVE?' · Script-Version '+(S.data.scriptVersion||'alt'):''}</p>
+  ${scriptOld()?`<div class="note" style="margin-top:10px"><b>Script veraltet.</b> Im Sheet: Erweiterungen → Apps Script → Code durch die neue Code.gs ersetzen → speichern → Bereitstellen → Bereitstellungen verwalten → Stift → Neue Version.</div>`:''}`);
 }
 const curTheme=()=>{const t=S.data.settings.theme||'auto';return THEMES.some(x=>x[0]===t)?t:'auto';};
 const looks=()=>S.data.settings.looks||{};
@@ -3141,7 +3237,7 @@ function toggleSel(x,el){
   if(el)el.classList.toggle('sel',S.selected.has(key));
   if(!S.selected.size){endSel();return;}
   let bar=$('#selbar');if(!bar){bar=document.createElement('div');bar.id='selbar';bar.className='selbar';document.body.appendChild(bar);}
-  bar.innerHTML=`<button data-act="selCancel" aria-label="Auswahl beenden">×</button><b>${S.selected.size}</b><button data-act="selTpl">Vorlage</button><button data-act="selMove">Verschieben</button><button class="danger" data-act="selDel">Löschen</button>`;
+  bar.innerHTML=`<button data-act="selCancel" aria-label="Auswahl beenden">×</button><b>${S.selected.size}</b><button data-act="selTpl">Vorlage</button><button data-act="selCopy">Kopieren</button><button data-act="selMove">Verschieben</button><button class="danger" data-act="selDel">Löschen</button>`;
   document.body.classList.add('selecting');
 }
 function endSel(){S.selMode=false;S.selected=null;const b=$('#selbar');if(b)b.remove();document.body.classList.remove('selecting');document.querySelectorAll('.item.sel').forEach(e=>e.classList.remove('sel'));}
