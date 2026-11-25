@@ -14,6 +14,8 @@
 try{(function(){var m=location.hash.match(/^#verbinden=(.+)$/);if(!m)return;var c=JSON.parse(decodeURIComponent(escape(atob(m[1]))));
   if(c&&c.key&&/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(c.url)){localStorage.setItem('et-conn',JSON.stringify({url:c.url,key:String(c.key)}));localStorage.setItem('et-cl-open','1');}
   history.replaceState(null,'',location.pathname+location.search);})();}catch(e){}
+/* Geteiltes Rezept (#rezept=ID) merken, die App öffnet es nach dem Laden */
+try{(function(){var m=location.hash.match(/^#rezept=([A-Za-z0-9]{6,32})$/);if(!m)return;localStorage.setItem('et-share-open',m[1]);history.replaceState(null,'',location.pathname+location.search);})();}catch(e){}
 window.ET_FONTS={"System": "-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Arial,sans-serif", "Manrope": "'Manrope',sans-serif", "Nunito": "'Nunito',sans-serif", "Fredoka": "'Fredoka',sans-serif", "Outfit": "'Outfit',sans-serif", "Space Grotesk": "'Space Grotesk',sans-serif", "Playfair Display": "'Playfair Display',serif", "Cormorant Garamond": "'Cormorant Garamond',serif"};
 /* Design anwenden: fertiges Design (data-theme) plus eigene Anpassungen als Variablen */
 window.etApplyTheme=function(t,o){
@@ -843,6 +845,15 @@ em.ropen{font-size:11px;background:var(--brand-soft);border-radius:6px;padding:1
 .pqr{display:grid;place-items:center;min-height:260px;background:#fff;border-radius:16px;margin:4px 0 14px}
 .pqr img,.pqr canvas{display:block}
 .pqr .sp{width:30px;height:30px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--brand);animation:spin .9s linear infinite}
+/* v19: Rezepte schicken */
+.rsend{margin:6px 0 4px}.rsend-c{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}.rsend-c .pbtn{display:inline-flex;align-items:center;gap:6px}.rsend-c .pbtn svg{width:16px;height:16px}
+.rsend-c .pbtn.sent{background:var(--brand);color:#fff}
+.rinc{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.rinc-b{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--brand-soft);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.rinc-b svg{width:18px;height:18px;flex:0 0 18px;color:var(--brand)}.rinc-b span{flex:1;min-width:0}.rinc-b em{font-style:normal;font-weight:600;color:var(--brand);font-size:13px}
+.rimp-img{display:block;width:100%;max-height:220px;object-fit:cover;border-radius:16px;margin:4px 0 12px}
+.rimp-st{margin:8px 0 0;padding-left:20px}.rimp-st li{margin:4px 0;line-height:1.45}
+.ing small.muted{font-size:.85em}
 
 /* ================= Tablet und PC ================= */
 .side{display:none}
@@ -1105,8 +1116,8 @@ function tabOrder(s){const o=((s&&s.navOrder)||[]).filter(k=>ALL_TABS.some(t=>t[
 function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{};return tabOrder(s).filter(key=>tabOn(key,s)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='18';
-const MIN_SCRIPT=18;   /* so neu muss Code.gs mindestens sein */
+const APP_VERSION='19';
+const MIN_SCRIPT=19;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf0=new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
@@ -1358,6 +1369,7 @@ function vHeute(){
     </div>${moreVals(d)}</div>`;
   h=h.replace('<div class="card"><div class="hero">','<div class="hz"><div class="hz-a"><div class="card"><div class="hero">');
   h+=clBanner();
+  if(S.day===t)h+=incomingHtml('rinc');
   h+=planToday();
   const unsure=unsureList();
   if(unsure.length&&S.day===t)h+=`<button class="unsure" data-act="nachpflegen">${ICON.spark}<span>${unsure.length} unsichere ${unsure.length===1?'Wert':'Werte'} · nachpflegen</span>${ICON.right}</button>`;
@@ -2349,7 +2361,7 @@ document.addEventListener('change',ev=>{
 
 /* ================= Teilen (WhatsApp & Co.) =================
    Handy/Windows: Teilen-Menü des Systems. Sonst: Text kopieren bzw. Bild speichern. */
-function dataUrlToFile(url,name){const [h,b]=url.split(',');const mime=(h.match(/:(.*?);/)||[])[1]||'image/jpeg';const bin=atob(b);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new File([a],name,{type:mime});}
+function dataUrlToFile(url,name){const i=url.indexOf(','),h=url.slice(0,i),b=url.slice(i+1);const mime=(h.match(/:([^;,]*)/)||[])[1]||'image/jpeg';const bin=/;base64/.test(h)?atob(b):unescape(encodeURIComponent(decodeURIComponent(b)));const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new File([a],name,{type:mime});}
 function saveFile(file){try{const u=URL.createObjectURL(file),a=document.createElement('a');a.href=u;a.download=file.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return true;}catch(e){return false;}}
 function copyText(t){return navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject();}
 async function shareOut(o){
@@ -2418,11 +2430,12 @@ function openShareRecipe(name){
   const r=recipeBy(name);if(!r)return;S.share={name};
   const id=(S.data.images||{})[name],ph=id?imgCache(id):null;
   openSheet(`<h2>Rezept teilen</h2><p class="sub">${esc(name)} · mit Zutaten${instrFor(name)?' und Anleitung':''}${ph?' und Foto':''}</p>
-    <div class="sharepv"><img id="sharePv" alt="Vorschau der Rezeptkarte"><span class="sp"></span></div>
+    ${rshareTop(name)}<div class="sharepv"><img id="sharePv" alt="Vorschau der Rezeptkarte"><span class="sp"></span></div>
     <button class="btn" data-act="shareCard">Als Rezeptkarte teilen (ein Bild)</button>
     <button class="btn ghost" style="margin-top:10px" data-act="shareText">${ph?'Als Foto mit Text teilen':'Als Text teilen'}</button>
     <button class="linkbtn" data-act="shareCopy">Nur Text kopieren</button>
-    <p class="hint">Öffnet das Teilen-Menü deines Geräts, dort WhatsApp wählen.</p>`);
+    <p class="hint">Öffnet das Teilen-Menü deines Geräts, dort WhatsApp wählen.${canRShare()?' <span id="rsLinkHint">Link zum Übernehmen wird vorbereitet …</span>':''}</p>`);
+  rsharePrepare(name);
   drawCard(recipeCardData(r)).then(b=>{S.share.blob=b;const im=$('#sharePv');if(im){im.src=URL.createObjectURL(b);im.parentNode.classList.add('ok');}});
 }
 
@@ -2449,9 +2462,9 @@ document.addEventListener('click',ev=>{
   const el=ev.target.closest('[data-act]');if(!el)return;
   switch(el.dataset.act){
   case 'recShare':openShareRecipe(el.dataset.n);break;
-  case 'shareCard':{const sh=S.share;if(!sh||!sh.blob){toast('Karte wird noch erstellt …');break;}shareOut({title:sh.name,files:[new File([sh.blob],fileName(sh.name)+'.jpg',{type:'image/jpeg'})]});break;}
-  case 'shareText':{const r=recipeBy(S.share.name),id=(S.data.images||{})[r.name],ph=id?imgCache(id):null;shareOut({title:r.name,text:recipeShareText(r),files:ph?[dataUrlToFile(ph,fileName(r.name)+'.jpg')]:[]});break;}
-  case 'shareCopy':copyText(recipeShareText(recipeBy(S.share.name))).then(()=>toast('Text kopiert.'),()=>toast('Kopieren nicht möglich.',true));break;
+  case 'shareCard':{const sh=S.share;if(!sh||!sh.blob){toast('Karte wird noch erstellt …');break;}shareOut({title:sh.name,text:sh.link?sh.name+rshareLinkText():undefined,files:[new File([sh.blob],fileName(sh.name)+'.jpg',{type:'image/jpeg'})]});break;}
+  case 'shareText':{const r=recipeBy(S.share.name),id=(S.data.images||{})[r.name],ph=id?imgCache(id):null;shareOut({title:r.name,text:recipeShareText(r)+rshareLinkText(),files:ph?[dataUrlToFile(ph,fileName(r.name)+'.jpg')]:[]});break;}
+  case 'shareCopy':copyText(recipeShareText(recipeBy(S.share.name))+rshareLinkText()).then(()=>toast('Text kopiert.'),()=>toast('Kopieren nicht möglich.',true));break;
   case 'shopShare':shareOut({title:'Einkaufsliste',text:shopShareText()});break;
   case 'shopImg':{
     const got=store.get(shopKey(S.pweek))||{},list=shopItems(S.pweek).filter(x=>!got[x.key]);
@@ -2654,6 +2667,7 @@ function openShop(){
 function vRezepte(){
   const rs=S.data.recipes||[];
   let h=`<div class="rtools"><div class="search">${ICON.search}<input id="recQ" placeholder="Rezept oder Zutat suchen" value="${esc(S.recQ||'')}" autocomplete="off"></div><button class="btn rnew" data-act="recNew">${ICON.plus}<span class="l1">Neues Rezept</span><span class="l2">Neu</span></button></div>`;
+  h+=incomingHtml('rinc');
   if(!rs.length)return h+'<div class="card faint">Noch keine Rezepte. Lege eins an oder sag Claude „lege Rezept an“.</div>';
   const used=new Set(rs.map(r=>instrFor(r.name)).filter(Boolean)),loose=(S.data.instructions||[]).filter(x=>!used.has(x));
   return h+`<div class="rgrid" id="rgrid">${recipeCards()}</div>`+(loose.length?`<h3 class="ph3" style="margin-top:22px">Anleitungen ohne passendes Rezept</h3><p class="small muted" style="margin-top:-4px">Heißt ein Rezept genauso wie die Anleitung (ohne Klammer), erscheint sie direkt beim Rezept.</p>
@@ -2920,7 +2934,7 @@ function checkScript(){
   if(location.protocol==='https:'&&S.data.appUrl!==me)api(CONN.url,CONN.key,'setAppUrl',[me]).catch(()=>{});
 }
 function renderSide(){
-  migrateV12();renderClaudeBtn();checkScript();clAutoOpen();
+  migrateV12();renderClaudeBtn();checkScript();clAutoOpen();rshareAutoOpen();
   const el=$('#side');if(!el||!S.data)return;
   const pages=MODULES.filter(x=>x.page&&mods()[x.key]);
   const link=(key,lbl,act)=>`<button class="sl ${S.view===key?'on':''}" ${act?`data-act="goview" data-view="${key}"`:`data-tab="${key}"`}>${ICON[key]}<span>${lbl}</span></button>`;
@@ -3130,6 +3144,78 @@ document.addEventListener('click',ev=>{
 });
 /* zurück in der App: neu laden, damit der Test-Haken erscheint */
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&LIVE&&S.data&&!clOk()&&clGet().sk1&&typeof resync==='function')setTimeout(()=>{try{resync().then(()=>{refreshCl();if(clOk())toast('Claude ist eingerichtet ✓');})}catch(e){}},600);});
+/* ================= Rezepte an andere schicken (v18, Script ab 19) =================
+   Teilen-Fenster: oben „Direkt schicken“ an Personen, die an deinem Script hängen,
+   darunter WhatsApp & Co. mit Übernahme-Link (#rezept=ID). Ohne KI: das Script kopiert Tabelle → Tabelle. */
+const canRShare=()=>S.data&&(DEMO||(LIVE&&(+S.data.scriptVersion||0)>=19));
+const rshareBase=()=>location.origin+location.pathname.replace(/[^/]*$/,'');
+function rshareLinkText(){const l=S.share&&S.share.link;return l?'\n\n👉 In dein Ernährungstagebuch übernehmen (ein Tipp):\n'+l:'';}
+function rshareTop(name){
+  if(!canRShare())return '';
+  const cs=S.data.contacts||[];
+  return cs.length?`<div class="rsend"><div class="res-h" style="margin-top:0">Direkt schicken</div>
+    <div class="rsend-c">${cs.map(c=>`<button class="pbtn" data-act="rsendTo" data-id="${esc(c.id)}" data-nm="${esc(c.name)}">${ICON.share||''}${esc(c.name)}</button>`).join('')}</div>
+    <p class="hint" style="margin:6px 0 0">Landet direkt in der App: „Neu von ${esc(S.data.myName||'dir')}“. Ohne WhatsApp, ohne Claude.</p></div>
+    <div class="res-h">Per WhatsApp &amp; Co.</div>`:'';
+}
+/* Link gleich beim Öffnen vorbereiten, damit das Teilen-Menü danach ohne Wartezeit aufgeht */
+function rsharePrepare(name){
+  if(!canRShare())return;
+  S.share.linkWait=true;
+  call('shareRecipe',name,null).then(r=>{if(S.share&&S.share.name===name){S.share.link=rshareBase()+'#rezept='+r.id;S.share.linkWait=false;const h=$('#rsLinkHint');if(h)h.textContent='Mit Link: Wer mit deiner App verbunden ist, übernimmt das Rezept mit einem Tipp.';}})
+    .catch(()=>{if(S.share)S.share.linkWait=false;const h=$('#rsLinkHint');if(h)h.textContent='Link ging gerade nicht, es wird ohne Link geteilt.';});
+}
+function rshareImgSrc(x){return x&&x.img?'data:'+x.img.mime+';base64,'+x.img.b64:null;}
+function openShareImport(id){
+  S.rimp={id};
+  if(!LIVE&&!DEMO){openSheet(`<h2>Rezept übernehmen</h2><p class="sub">Diese App ist noch nicht verbunden. Öffne den Link in der App, die mit deinem Tagebuch verbunden ist.</p>`);return;}
+  openSheet(`<h2>Geteiltes Rezept</h2><div class="empty"><span class="sp"></span> Wird geladen …</div>`);
+  call('getShare',id).then(x=>{S.rimp=x;drawShareImport();}).catch(e=>openSheet(`<h2>Geteiltes Rezept</h2><p class="sub">${esc(e.message||e)}</p>`));
+}
+function drawShareImport(){
+  const x=S.rimp,r=x.rec,P=r.portions||1,src=rshareImgSrc(x),ins=x.ins;
+  openSheet(`${src?`<img class="rimp-img" src="${src}" alt="">`:''}
+    <h2>${esc(r.name)}</h2><p class="sub">${x.mine?'Dein eigenes Rezept':'Von '+esc(x.from)} · ${fmtN(P)} ${P===1?'Portion':'Portionen'}</p>
+    <div class="nut"><div><small>kcal</small><b class="num">${k(r.per.kcal)}</b></div><div><small>Eiweiß</small><b class="num">${g1(r.per.p)}</b></div><div><small>KH</small><b class="num">${g1(r.per.c)}</b></div><div><small>Fett</small><b class="num">${g1(r.per.f)}</b></div></div>
+    <p class="hint" style="margin-top:4px">pro Portion</p>
+    <h3 class="ph3">Zutaten</h3><div class="ing">${r.items.map(i=>`<div><span>${esc(i.name)}${i.amount?' <small class="muted">'+esc(i.amount)+'</small>':''}</span><span class="num">${i.open?'offen':k(i.kcal)+' kcal'}</span></div>`).join('')}</div>
+    ${ins&&ins.steps.length?`<details class="clb"><summary>Zubereitung (${ins.steps.length} Schritte)</summary><ol class="rimp-st">${ins.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></details>`:''}
+    ${x.mine?'<p class="hint">Das ist dein eigenes Rezept, hier gibt es nichts zu übernehmen.</p>'
+      :x.done==='übernommen'?'<p class="hint">Schon übernommen.</p>'
+      :x.exists?`<p class="note">Ein Rezept „${esc(r.name)}“ hast du schon.</p><div class="pacts"><button class="btn" data-act="rimpTake" data-m="replace">Ersetzen</button><button class="btn ghost" data-act="rimpTake" data-m="copy">Als Kopie behalten</button></div>`
+      :`<button class="btn" data-act="rimpTake" data-m="copy">In meine Rezepte übernehmen</button>`}
+    ${x.direct&&!x.mine&&!x.done?`<button class="linkbtn" data-act="rimpDrop">Nicht übernehmen</button>`:''}`);
+}
+/* Hinweis auf „Heute“ und oben bei den Rezepten */
+function incomingHtml(cls){
+  const inc=S.data&&S.data.incoming||[];if(!inc.length)return '';
+  return `<div class="${cls||'rinc'}">${inc.map(i=>`<button class="rinc-b" data-act="rimpOpen" data-id="${esc(i.id)}">${ICON.rezepte}<span><b>Neu von ${esc(i.from)}:</b> ${esc(i.name)}</span><em>Ansehen</em></button>`).join('')}</div>`;
+}
+function rshareAutoOpen(){
+  if(!S.data||S.rsChecked)return;S.rsChecked=true;
+  let id=null;try{id=localStorage.getItem('et-share-open');localStorage.removeItem('et-share-open');}catch(e){}
+  if(id&&/^[a-z0-9]{6,32}$/i.test(id))setTimeout(()=>openShareImport(id),700);
+}
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='rsendTo'){
+    const name=S.share&&S.share.name;if(!name)return;
+    if(el.classList.contains('sent'))return;
+    el.disabled=true;const nm=el.dataset.nm;
+    call('shareRecipe',name,[el.dataset.id]).then(()=>{el.disabled=false;el.classList.add('sent');el.textContent='✓ '+nm;vibe();toast('An '+nm+' geschickt.');})
+      .catch(e=>{el.disabled=false;toast(e.message||String(e),true);});
+    return;}
+  if(a==='rimpOpen'){openShareImport(el.dataset.id);return;}
+  if(a==='rimpTake'){
+    const x=S.rimp;el.disabled=true;el.textContent='Wird übernommen …';
+    call('takeShare',x.id,el.dataset.m).then(r=>{closeSheet();vibe();toast('„'+r.name+'“ ist jetzt in deinen Rezepten.');
+      if(S.data.incoming)S.data.incoming=S.data.incoming.filter(i=>i.id!==x.id);
+      const go=()=>{if(tabOn('rezepte',S.data.settings)){S.view='rezepte';render();}};
+      if(LIVE&&typeof resync==='function')resync().then(go);else go();})
+      .catch(e=>{el.disabled=false;el.textContent='Nochmal versuchen';toast(e.message||String(e),true);});
+    return;}
+  if(a==='rimpDrop'){const x=S.rimp;call('dropShare',x.id).then(()=>{S.data.incoming=(S.data.incoming||[]).filter(i=>i.id!==x.id);closeSheet();render();toast('Nicht übernommen.');}).catch(e=>toast(e.message,true));return;}
+});
 
 /* ================= Sheets (Overlays) ================= */
 function openSheet(html,o){
@@ -3791,7 +3877,7 @@ const Demo=(()=>{
     [[0,'Abendessen','Protein-Pancakes'],[1,'Mittagessen','Hähnchen-Reis-Bowl'],[2,'Abendessen','Linsen-Curry'],[3,'Mittagessen','Lachs mit Ofenkartoffeln'],[4,'Abendessen','Vollkornnudeln Bolognese'],[5,'Frühstück','Gemüse-Omelett']].forEach(([i,m,n])=>{const d=addDays(mon,i-7);(P[d]=P[d]||[]).push({id:'v'+i,meal:m,type:'recipe',name:n,portions:1,done:true});});
     data.recipes.push({name:'Lachs-Erbsen-Pfanne',portions:2,per:{kcal:263,p:5.5,c:58.5,f:0.5},items:[I('Basmatireis','150 g',525,11,117,1),Object.assign(I('TK Lachs','1 Pack',0,0,0,0),{open:true}),Object.assign(I('Erbsen tk','3 EL',0,0,0,0),{open:true})]});
     data.inbox=[{row:5,date:t,meal:'',time:'',what:'Auftrag: Rezept vervollständigen „Lachs-Erbsen-Pfanne“ (Zutaten mit „offen“ in Spalte B: Produkt wählen, Gramm und Werte eintragen, „offen“ löschen)',amount:''},{row:6,date:t,meal:'',time:'',what:'Auftrag: Bild suchen für Rezept „Gemüse-Omelett“ (echtes Foto aus dem Web, direkte Bildadresse in Tab Bilder, Spalte D)',amount:''}];
-    data.plan=P;data.isOwner=true;data.persons=[{id:'p1',name:'Mama',email:'mama@gmail.com',claude:'',sheetUrl:'https://docs.google.com/spreadsheets/d/VORSCHAU/edit'}];data.myName='';data.claudeOk='';data.imgWanted={'Gemüse-Omelett':true};
+    data.plan=P;data.isOwner=true;data.persons=[{id:'p1',name:'Mama',email:'mama@gmail.com',claude:'',sheetUrl:'https://docs.google.com/spreadsheets/d/VORSCHAU/edit'}];data.myName='Kevin';data.claudeOk='';data.contacts=[{id:'p1',name:'Mama'}];data.incoming=[{id:'demo1',from:'Mama',name:'Omas Linsensuppe',kcal:410,portions:4}];data.imgWanted={'Gemüse-Omelett':true};
     data.settings.modules.wochenplan=true;data.settings.modules.rezepte=true;
     for(let i=40;i>=0;i-=2)data.weights.push({row:i+2,date:addDays(t,-i),time:'07:10',kg:Math.round((84.6-i*0.06+Math.sin(i)*0.35)*10)/10,note:''});
     foods=[['Lachsfilet TK','Golden Seafood',190,20,0,0,12,0,'Packung',250,'Open Food Facts',0.2,'nein',0,0],['Erbsen TK','',81,5.4,11,4,0.4,5,'EL',15,'BLS',0,'nein',0,0],['Rote Linsen','',339,24,49,2,1.5,11,'','', 'BLS',0,'nein',0,0],['Hähnchenbrust roh','',110,23,0,0,1.5,0,'','', 'BLS',0.2,'nein',0,0],['Basmatireis roh','',349,7.1,77,0.2,0.8,1.4,'','', 'BLS',0,'nein',0,0],['Brokkoli roh','',34,2.8,2.7,1.7,0.4,3,'','', 'BLS',0,'nein',0,0],['Lachsfilet roh','',203,20,0,0,13.6,0,'','', 'BLS',0.1,'nein',0,0],['Kartoffeln roh','',71,2,15,0.8,0.1,2,'','', 'BLS',0,'nein',0,0],['Skyr','',63,11,4,4,0.2,0,'','', 'BLS',0.1,'nein',4,0],['Heidelbeeren','',57,0.6,11,10,0.6,4.9,'','', 'BLS',0,'nein',0,0],['Magerquark','',67,12,4,4,0.3,0,'','', 'BLS',0.1,'nein',4,0],['Banane roh','',95,1.2,20,17,0.2,2,'Stück',120,'BLS',0,'nein',0,0],['Haferflocken','',370,13,59,1,7,10,'','', 'BLS',0,'nein',0,0],['Hühnerei roh','',137,13,1.5,0.5,9,0,'Stück',54,'BLS',null,'',null,null]];
@@ -3813,6 +3899,14 @@ const Demo=(()=>{
     personSchluessel:(id,neu)=>{const p=(data.persons||[]).find(x=>x.id===id);if(!p)throw new Error('Diese Person gibt es nicht mehr.');return {id,name:p.name,key:'vorschau-'+id+(neu?'-neu':'')};},
     personEntfernen:id=>{data.persons=(data.persons||[]).filter(x=>x.id!==id);return {persons:data.persons};},
     getFoods:()=>({count:data.foodsCount,foods}),
+    shareRecipe:(name,an)=>an&&an.length?{sent:an.length}:{id:'vorschau'+name.length},
+    getShare:id=>{if(id==='demo1')return {id,from:'Mama',mine:false,direct:true,done:'',exists:false,img:null,ins:{ingredients:[],steps:['Zwiebel und Möhren anschwitzen.','Linsen und Brühe dazu, 20 Minuten köcheln.','Mit Essig und Salz abschmecken.'],notes:[]},
+      rec:{name:'Omas Linsensuppe',portions:4,per:{kcal:410,p:24,c:58,f:7},items:[{name:'Rote Linsen',amount:'250 g',kcal:848,p:60,c:122,f:4},{name:'Möhren',amount:'3 Stück',kcal:90,p:2,c:18,f:0},{name:'Kartoffeln',amount:'400 g',kcal:284,p:8,c:60,f:0},{name:'Gemüsebrühe',amount:'1,2 l',kcal:24,p:1,c:4,f:0},{name:'Olivenöl',amount:'1 EL',kcal:90,p:0,c:0,f:10}]}};
+      const r=data.recipes[0];return {id,from:'Kevin',mine:true,direct:false,done:'',exists:true,img:null,ins:null,rec:r};},
+    takeShare:(id,m)=>{const x=data.incoming.find(i=>i.id===id);data.incoming=data.incoming.filter(i=>i.id!==id);
+      if(x&&!data.recipes.some(r=>r.name===x.name))data.recipes.push({name:x.name,portions:4,per:{kcal:410,p:24,c:58,f:7},items:[{name:'Rote Linsen',amount:'250 g',kcal:848,p:60,c:122,f:4},{name:'Möhren',amount:'3 Stück',kcal:90,p:2,c:18,f:0}]});
+      return {name:x?x.name:'Rezept'};},
+    dropShare:id=>{data.incoming=data.incoming.filter(i=>i.id!==id);return {ok:true};},
     saveSettings:s=>{data.settings=s;return s;},
     saveGoals:g=>{data.goals={kcalDay:g.kcalDay,proteinDay:g.proteinDay,kcalWeek:g.kcalWeek};data.settings.goals2={carbs:g.carbs||0,fat:g.fat||0};return out();},
     addInbox:e=>{if(data.inbox.length>=10)throw new Error('Der Eingang ist voll.');data.inbox.push(Object.assign({row:5+data.inbox.length},e));return out();},
