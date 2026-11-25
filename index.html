@@ -32,7 +32,14 @@ window.etApplyTheme=function(t,o){
   if(o.shadow==='hart'){s['--shadow']='3px 3px 0 '+ink;s['--hard']='1';}else if(o.shadow==='keiner')s['--shadow']='none';else if(o.shadow==='weich')s['--shadow']='0 1px 2px rgba(0,0,0,.05),0 6px 20px rgba(0,0,0,.07)';
   for(var k in s)r.style.setProperty(k,s[k]);
 };
-window.etZoom=function(z){document.documentElement.style.zoom=z&&z!=1?z:'';};
+/* Schriftgröße: am Handy/Tablet über eine schmalere Layout-Breite (dann passt das Layout sauber, nichts ragt heraus),
+   am PC über Zoom */
+window.etZoom=function(z){z=+z||1;window._etZ=z;var r=document.documentElement,m=document.querySelector('meta[name=viewport]');
+  var touch=window.matchMedia&&matchMedia('(pointer:coarse)').matches;
+  if(touch&&m){r.style.zoom='';var a=screen.width||innerWidth,b=screen.height||innerHeight,land=window.matchMedia&&matchMedia('(orientation: landscape)').matches,sw=land?Math.max(a,b):Math.min(a,b);
+    m.setAttribute('content',z===1?'width=device-width, initial-scale=1, viewport-fit=cover':'width='+Math.round(sw/z)+', viewport-fit=cover');}
+  else r.style.zoom=z!==1?z:'';};
+window.addEventListener('orientationchange',function(){setTimeout(function(){window.etZoom(window._etZ||1);},350);});
 try{window.etApplyTheme(localStorage.getItem('et-theme')||'auto',JSON.parse(localStorage.getItem('et-over')||'null'));window.etZoom(+localStorage.getItem('et-zoom')||1);}catch(e){document.documentElement.dataset.theme='auto';}</script>
 <style>
 :root{
@@ -786,6 +793,20 @@ em.ropen{font-size:11px;background:var(--brand-soft);border-radius:6px;padding:1
 @media (max-width:520px){.rnew span{display:none}.rnew{padding:0 14px}.rnew svg{width:22px;height:22px}}
 .rerow>*{min-width:0}.rerow .in-t{width:100%}
 .shead{min-width:0;max-width:100%}@media (max-width:520px){.shead h2{font-size:18px}.mini{padding:8px 11px}}
+/* Rezepte: Suche und „Neu“ nebeneinander */
+.rnew .l2{display:none}
+@media (max-width:520px){.rnew span{display:inline}.rnew .l1{display:none}.rnew .l2{display:inline}.rnew{padding:0 14px;gap:4px}.rnew svg{width:18px;height:18px}}
+/* Heute: schmale Leiste „wartet auf Claude“ */
+.cqbar{display:flex;flex-wrap:wrap;align-items:stretch;background:var(--brand-soft);border-radius:14px;margin:0 0 12px;overflow:hidden}
+.cq-main{flex:1;display:flex;align-items:center;gap:9px;padding:9px 12px;text-align:left;font-size:13.5px;color:var(--ink)}
+.cq-main svg{width:18px;height:18px;color:var(--brand);flex:none}
+.cq-main span{flex:1}
+.cq-main em{font-style:normal;font-weight:700;color:var(--brand);font-size:13px;white-space:nowrap}
+.cq-more{width:40px;color:var(--brand);font-size:13px;border-left:1px solid color-mix(in srgb,var(--brand) 18%,transparent)}
+.cqlist{flex-basis:100%;padding:0 12px 10px}
+.cqlist .inb{display:block;width:100%;text-align:left;font-size:13px;padding:7px 0;border-top:1px solid color-mix(in srgb,var(--brand) 18%,transparent)}
+.cqlist .inb span{color:var(--muted)}
+.cqlist .small{padding-top:6px}
 
 /* ================= Tablet und PC ================= */
 .side{display:none}
@@ -939,6 +960,16 @@ button:focus:not(:focus-visible){outline:none}
 .iconbtn.cq i{position:absolute;top:3px;right:2px;min-width:17px;height:17px;border-radius:9px;background:var(--brand);color:var(--on-brand);font:700 10.5px/17px var(--font);font-style:normal;text-align:center;padding:0 4px}
 .sbadge{background:var(--brand);color:var(--on-brand);border-radius:9px;font-size:11px;padding:1px 7px}
 .linkbtn.inl{display:inline;margin:0;font-size:12.5px}
+/* Große Schrift / schmale Handys: nichts darf über den Rand ragen */
+.search input{min-width:0;width:100%}
+@media (max-width:360px){.top{gap:2px;padding-left:12px;padding-right:8px}.top .iconbtn{width:35px}.top h1{font-size:20px}.top h1.long{font-size:17px}}
+.hrow .t{gap:8px;flex-wrap:wrap}
+.hrow .t b{white-space:nowrap;margin-left:auto}
+@media (max-width:360px){
+  .hero{flex-direction:column;align-items:stretch;gap:14px}.hero .ring{margin:0 auto}
+  .chips{flex-wrap:wrap}.chips .chip{flex:1 1 40%}
+  .shead{flex-wrap:wrap;row-gap:8px}.shead h2{flex-basis:100%}
+}
 </style>
 </head>
 <body>
@@ -1023,6 +1054,7 @@ function tabOrder(s){const o=((s&&s.navOrder)||[]).filter(k=>ALL_TABS.some(t=>t[
 function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{};return tabOrder(s).filter(key=>tabOn(key,s)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
+const APP_VERSION='13';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf0=new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
@@ -1270,7 +1302,8 @@ function vHeute(){
   const unsure=unsureList();
   if(unsure.length&&S.day===t)h+=`<button class="unsure" data-act="nachpflegen">${ICON.spark}<span>${unsure.length} unsichere ${unsure.length===1?'Wert':'Werte'} · nachpflegen</span>${ICON.right}</button>`;
   const inbox=S.data.inbox||[];
-  if(inbox.length)h+=`<div class="banner">${ICON.info}<div style="flex:1"><b>${inbox.length} ${inbox.length===1?'Eintrag wartet':'Einträge warten'} auf Claude</b><div class="small muted">Antippen zum Ändern oder Löschen. <button class="linkbtn inl" data-act="claudeQueue">Jetzt an Claude geben</button></div>${inbox.map((i,n)=>`<button class="inb" data-act="inbox" data-i="${n}">${esc(i.what)}${i.amount?` <span>· ${esc(i.amount)}</span>`:''}</button>`).join('')}</div></div>`;
+  if(inbox.length)h+=`<div class="cqbar ${S.inboxOpen?'open':''}"><button class="cq-main" data-act="claudeGo">${ICON.claude}<span><b>${inbox.length}</b> ${inbox.length===1?'wartet':'warten'} auf Claude</span><em>Jetzt erledigen</em></button><button class="cq-more" data-act="inboxToggle" aria-label="${S.inboxOpen?'Liste zuklappen':'Liste ansehen'}">${S.inboxOpen?'▴':'▾'}</button>
+    ${S.inboxOpen?`<div class="cqlist">${inbox.map((i,n)=>`<button class="inb" data-act="inbox" data-i="${n}">${esc(cqText(i))}${i.amount?` <span>· ${esc(i.amount)}</span>`:''}</button>`).join('')}<div class="small muted">Antippen zum Ändern oder Löschen.</div></div>`:''}</div>`;
   h+='</div><div class="hz-b">';
   MEALS.forEach(m=>{
     const md=d.meals[m];
@@ -2486,7 +2519,7 @@ function openShop(){
 /* --- Rezepte: Liste, Bearbeiten, Neu --- */
 function vRezepte(){
   const rs=S.data.recipes||[];
-  let h=`<div class="rtools"><div class="search">${ICON.search}<input id="recQ" placeholder="Rezept oder Zutat suchen" value="${esc(S.recQ||'')}" autocomplete="off"></div><button class="btn rnew" data-act="recNew">${ICON.plus}<span>Neues Rezept</span></button></div>`;
+  let h=`<div class="rtools"><div class="search">${ICON.search}<input id="recQ" placeholder="Rezept oder Zutat suchen" value="${esc(S.recQ||'')}" autocomplete="off"></div><button class="btn rnew" data-act="recNew">${ICON.plus}<span class="l1">Neues Rezept</span><span class="l2">Neu</span></button></div>`;
   if(!rs.length)return h+'<div class="card faint">Noch keine Rezepte. Lege eins an oder sag Claude „lege Rezept an“.</div>';
   const names=rs.map(r=>norm(r.name)),loose=(S.data.instructions||[]).filter(x=>!names.includes(norm(String(x.title).replace(/\s*\([^)]*\)\s*$/,'')).trim()));
   return h+`<div class="rgrid" id="rgrid">${recipeCards()}</div>`+(loose.length?`<h3 class="ph3" style="margin-top:22px">Anleitungen ohne passendes Rezept</h3><p class="small muted" style="margin-top:-4px">Heißt ein Rezept genauso wie die Anleitung (ohne Klammer), erscheint sie direkt beim Rezept.</p>
@@ -2713,18 +2746,32 @@ function migrateV12(){
 /* Oben rechts: was auf Claude wartet (nur sichtbar, wenn etwas wartet) */
 function claudeQueue(){return (S.data&&S.data.inbox)||[];}
 function renderClaudeBtn(){
-  const b=$('#btnClaude');if(!b)return;const n=claudeQueue().length;b.hidden=!n;
-  b.innerHTML=ICON.claude2+(n?`<i>${n}</i>`:'');b.title=n+(n===1?' Auftrag wartet':' Aufträge warten')+' auf Claude';
+  const b=$('#btnClaude');if(!b)return;const n=claudeQueue().length;b.hidden=!n;b.dataset.act='claudeGo';
+  b.innerHTML=ICON.claude+(n?`<i>${n}</i>`:'');b.title=n+(n===1?' Auftrag wartet':' Aufträge warten')+' auf Claude: antippen öffnet Claude';
+}
+/* Lesbarer Text je Eintrag im Eingang */
+function cqText(i){return /^Auftrag/.test(i.what)?i.what.replace(/^Auftrag: /,'').replace(/\s*\((echtes Foto|Zutaten mit|alle vorläufigen)[^)]*\)\s*$/,'').replace(/ – alle vorläufigen.*$/,''):'Eintragen: '+i.what;}
+/* Claude direkt öffnen, mit dem, was zu tun ist */
+function claudePrompt(){
+  const q=claudeQueue();
+  return 'Abgleich – bitte im Ernährungstagebuch erledigen:\n'+q.map(i=>'- '+cqText(i)+(i.amount&&!/^Auftrag/.test(i.what)?' ('+i.amount+')':'')).join('\n');
+}
+function claudeGo(){
+  const t=claudePrompt();try{navigator.clipboard&&navigator.clipboard.writeText(t);}catch(e){}
+  window.open('https://claude.ai/new?q='+encodeURIComponent(t),'_blank','noopener');
+  toast('Claude geöffnet. Fehlt der Text dort: einfügen, er ist kopiert. Danach hier aktualisieren.');
 }
 function openClaudeQueue(){
   const q=claudeQueue();
   openSheet(`<h2>Wartet auf Claude</h2><p class="sub">Das erledigt Claude beim nächsten Gespräch sowieso. Wenn du es gleich willst: Claude jetzt öffnen.</p>
-    <div class="ing">${q.map(i=>`<div><span>${/^Auftrag/.test(i.what)?esc(i.what.replace(/^Auftrag: /,'').replace(/\s*\((echtes Foto|Zutaten mit)[^)]*\)\s*$/,'')):'Eintragen: '+esc(i.what)+(i.amount?' · '+esc(i.amount):'')}</span></div>`).join('')}</div>
-    <a class="btn" style="text-align:center;text-decoration:none;display:block" href="https://claude.ai/new?q=Abgleich" target="_blank" rel="noopener" data-act="askAbgleich">Claude jetzt öffnen</a>
-    <p class="hint">Öffnet Claude mit dem Stichwort „Abgleich“ (steht es nicht im Eingabefeld: einfügen, es ist kopiert). Rezepte nachrechnen und Bilder suchen dauert ein paar Minuten. Danach hier oben auf Aktualisieren tippen.</p>`);
+    <div class="ing">${q.map(i=>`<div><span>${esc(cqText(i))}${i.amount&&!/^Auftrag/.test(i.what)?' · '+esc(i.amount):''}</span></div>`).join('')}</div>
+    <button class="btn" data-act="claudeGo">Claude jetzt öffnen</button>
+    <p class="hint">Öffnet Claude mit genau dieser Liste (steht sie nicht im Eingabefeld: einfügen, sie ist kopiert). Rezepte nachrechnen und Bilder suchen dauert ein paar Minuten. Danach hier oben auf Aktualisieren tippen.</p>`);
 }
 document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');if(!el)return;
   if(el.dataset.act==='claudeQueue')openClaudeQueue();
+  if(el.dataset.act==='claudeGo'){closeSheet();claudeGo();}
+  if(el.dataset.act==='inboxToggle'){S.inboxOpen=!S.inboxOpen;render();}
   if(el.dataset.act==='askAbgleich'){try{navigator.clipboard&&navigator.clipboard.writeText('Abgleich');}catch(e){}setTimeout(closeSheet,300);}
 });
 function renderSide(){
@@ -2738,7 +2785,7 @@ function renderSide(){
     <nav class="side-nav">${navTabs().map(([key,lbl],i)=>link(key,{anleitungen:'Anleitungen',wochenplan:'Wochenplan'}[key]||lbl).replace('</span>',`</span><kbd>${i<9?i+1:''}</kbd>`)).join('')}</nav>
     ${pages.length?`<div class="side-h">Mehr</div><nav class="side-nav">${pages.map(x=>link(x.key,x.title,true)).join('')}</nav>`:''}
     <nav class="side-nav side-low"><button class="sl" data-act="openExport">${ICON.report}<span>Bericht und Export</span></button>
-      ${claudeQueue().length?`<button class="sl" data-act="claudeQueue">${ICON.claude2}<span>Wartet auf Claude</span><b class="sbadge">${claudeQueue().length}</b></button>`:''}
+      ${claudeQueue().length?`<button class="sl" data-act="claudeGo">${ICON.claude}<span>Wartet auf Claude</span><b class="sbadge">${claudeQueue().length}</b></button>`:''}
       <a class="sl" href="https://claude.ai/new" target="_blank" rel="noopener">${ICON.claude}<span>Mit Claude eintragen</span></a>
       <button class="sl" data-act="sideSettings">${ICON.settings}<span>Einstellungen</span></button></nav>
     <div class="side-keys"><kbd>←</kbd><kbd>→</kbd> blättern · <kbd>T</kbd> heute · <kbd>Esc</kbd> schließen</div></div>`;
@@ -3008,7 +3055,7 @@ function openSettings(){
   ${sec('rem','Erinnerung',remSub(),remHtml())}
   ${sec('ger','PC, Tablet und weitere Geräte','App auch am Computer nutzen',deviceHtml())}
   ${LIVE?sec('con','Verbindung','Mit deinem Google Sheet verbunden',`<button class="btn ghost" data-act="disconnect">Verbindung trennen</button>`):''}
-  <p class="hint">${LIVE?'Daten kommen live aus deinem Google Sheet.':'Vorschau: Änderungen werden nicht gespeichert.'}</p>`);
+  <p class="hint">${LIVE?'Daten kommen live aus deinem Google Sheet.':'Vorschau: Änderungen werden nicht gespeichert.'}<br>App-Version ${APP_VERSION}</p>`);
 }
 const curTheme=()=>{const t=S.data.settings.theme||'auto';return THEMES.some(x=>x[0]===t)?t:'auto';};
 const looks=()=>S.data.settings.looks||{};

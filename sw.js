@@ -1,6 +1,6 @@
 // Hält die App-Oberfläche auf dem Handy bereit, damit sie sofort startet.
 // Bei jeder neuen Version ändert sich VERSION; die App zeigt dann "Neue Version da".
-const VERSION = 'tagebuch-v12';
+const VERSION = 'tagebuch-v13';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES.map(f => new Request(f, { cache: 'reload' })))));
