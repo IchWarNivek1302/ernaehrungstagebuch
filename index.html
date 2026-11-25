@@ -759,6 +759,33 @@ textarea.in-t{resize:vertical;line-height:1.45}
 @media (max-width:520px){.reimg{flex-direction:column;align-items:stretch}.reimg-pv{width:100%;height:150px}}
 .sharepv .sp{width:30px;height:30px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--brand);animation:spin .9s linear infinite}
 @media (max-width:520px){.reimg-pv.empty{height:96px}}
+/* Fester Kopf in Fenstern (z. B. Rezept bearbeiten) */
+.sheet.hashead .grabzone{flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:12px}
+.sheet.hashead .grab{flex-basis:40px}
+.shead{flex-basis:100%;display:flex;align-items:center;gap:10px;padding-right:44px;min-height:40px}
+.shead h2{flex:1;min-width:0;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shead-a{display:flex;gap:8px;flex:none}
+.sheet.hashead .xbtn{top:auto;bottom:12px}
+.mini{padding:8px 14px;border-radius:11px;font-weight:700;font-size:14px}
+.mini.brand{background:var(--brand);color:var(--on-brand)}
+.mini.softbad{background:var(--bad-soft);color:var(--bad)}
+@media (hover:hover){.mini:hover{filter:brightness(1.05)}}
+/* Grobe Zutaten */
+.reRough{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin-top:8px;padding:10px 12px;border-radius:12px;background:var(--brand-soft);color:var(--ink)}
+.reRough svg{width:20px;height:20px;color:var(--brand);flex:none}
+.reRough b{display:block;font-weight:650;font-size:14px;color:var(--brand)}
+.reRough small{display:block;font-size:12px;color:var(--muted)}
+.rerow.open [data-rf=kcal],.rerow.open [data-rf=p],.rerow.open [data-rf=c],.rerow.open [data-rf=f]{background:var(--brand-soft);border-style:dashed}
+.rerow.open [data-rf=kcal]::placeholder,.rerow.open [data-rf=p]::placeholder,.rerow.open [data-rf=c]::placeholder,.rerow.open [data-rf=f]::placeholder{color:var(--brand);font-weight:600;font-size:11.5px}
+.reopen{display:flex;gap:8px;align-items:flex-start;margin:8px 0 0}
+.reopen svg{width:16px;height:16px;color:var(--brand);flex:none;margin-top:1px}
+.ropen{font-style:normal;font-weight:650;color:var(--brand)}
+em.ropen{font-size:11px;background:var(--brand-soft);border-radius:6px;padding:1px 6px;margin-left:4px}
+.rtools .search{min-width:0}
+.rnew{white-space:nowrap;flex:none}
+@media (max-width:520px){.rnew span{display:none}.rnew{padding:0 14px}.rnew svg{width:22px;height:22px}}
+.rerow>*{min-width:0}.rerow .in-t{width:100%}
+.shead{min-width:0;max-width:100%}@media (max-width:520px){.shead h2{font-size:18px}.mini{padding:8px 11px}}
 
 /* ================= Tablet und PC ================= */
 .side{display:none}
@@ -908,6 +935,10 @@ button:focus:not(:focus-visible){outline:none}
   .pcopy{top:8px;right:8px;transform:none;width:28px;height:28px}
   .pwrap:has(.pcopy) .pitem{padding-right:8px}
 }
+.iconbtn.cq{position:relative;color:var(--brand)}
+.iconbtn.cq i{position:absolute;top:3px;right:2px;min-width:17px;height:17px;border-radius:9px;background:var(--brand);color:var(--on-brand);font:700 10.5px/17px var(--font);font-style:normal;text-align:center;padding:0 4px}
+.sbadge{background:var(--brand);color:var(--on-brand);border-radius:9px;font-size:11px;padding:1px 7px}
+.linkbtn.inl{display:inline;margin:0;font-size:12.5px}
 </style>
 </head>
 <body>
@@ -915,6 +946,7 @@ button:focus:not(:focus-visible){outline:none}
 <div class="app">
   <header class="top">
     <h1 id="title">Heute</h1>
+    <button class="iconbtn cq" id="btnClaude" aria-label="Aufträge für Claude" hidden data-act="claudeQueue"></button>
     <button class="iconbtn" id="btnReload" aria-label="Aktualisieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
     <button class="iconbtn" id="btnMore" aria-label="Mehr" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg></button>
     <button class="iconbtn" id="btnSettings" aria-label="Einstellungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
@@ -943,7 +975,6 @@ const MODULES=[
   {key:'wochenplan',title:'Wochenplan',desc:'Eigener Reiter unten: Rezepte für die Woche planen, mit Einkaufsliste',nav:true},
   {key:'gewicht',title:'Gewicht',desc:'Eigener Reiter unten: Gewicht eintragen, Verlauf als Kurve',nav:true},
   {key:'rezepte',title:'Rezepte',desc:'Eigener Reiter unten mit Werten pro Portion',nav:true},
-  {key:'anleitungen',title:'Anleitungen',desc:'Eigener Reiter unten: Zubereitung zu den Rezepten',nav:true},
   {key:'beschwerden',title:'Beschwerden',desc:'Beschwerden eintragen und im Tag anzeigen',page:true},
   {key:'auswertung',title:'Auswertung der Beschwerden',desc:'Was vor Beschwerden gegessen wurde',page:true},
   {key:'anweisungen',title:'Anweisungen',desc:'Alter Hinweis-Tab aus dem Sheet',page:true}
@@ -963,6 +994,7 @@ const ICON={
   left:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
   right:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>',
   back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  claude2:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>',
   claude:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12.5a7.5 7.5 0 0 1-11 6.6L4 20l1-4.2A7.5 7.5 0 1 1 20 12.5z"/><path d="M12 9v6M9 12h6"/></svg>',
   gewicht:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M8 9.5a5.5 5.5 0 0 1 8 0l-2.2 2.2a2.5 2.5 0 0 0-3.6 0z"/></svg>',
   barcode:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M8 8v8M11 8v8M14 8v8M17 8v8"/></svg>',
@@ -979,12 +1011,14 @@ const ICON={
   search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>'
 };
 const TABS=[['heute','Heute'],['woche','Woche'],['monat','Monat'],['verlauf','Verlauf'],['tagebuch','Tagebuch']];
-const NAV_EXTRA=[['wochenplan','Plan'],['gewicht','Gewicht'],['rezepte','Rezepte'],['anleitungen','Anleitung']];
+/* Standard: Heute, Woche, Monat, Verlauf, Wochenplan, Rezepte */
+const TAB_DEFAULT_ON=['heute','woche','monat','verlauf','wochenplan','rezepte'];
+const NAV_EXTRA=[['wochenplan','Plan'],['rezepte','Rezepte'],['gewicht','Gewicht']];
 /* Reiter: alle ein-/ausblendbar (außer Heute), Reihenfolge frei wählbar */
 const ALL_TABS=TABS.concat(NAV_EXTRA);
 const CORE_TABS=['heute','woche','monat','verlauf','tagebuch'];
 const TAB_DESC={heute:'Startseite mit Ring und Mahlzeiten',woche:'Wochenüberblick mit Rückblick',monat:'Kalender mit Tageswerten',verlauf:'Kurven über Wochen und Monate',tagebuch:'Alle Einträge zum Durchsuchen'};
-function tabOn(key,s){const m=(s&&s.modules)||{};return key==='heute'||(CORE_TABS.includes(key)?m[key]!==false:!!m[key]);}
+function tabOn(key,s){const m=(s&&s.modules)||{};if(key==='heute')return true;return m[key]===undefined?TAB_DEFAULT_ON.includes(key):!!m[key];}
 function tabOrder(s){const o=((s&&s.navOrder)||[]).filter(k=>ALL_TABS.some(t=>t[0]===k));ALL_TABS.forEach(t=>{if(!o.includes(t[0]))o.push(t[0]);});return o;}
 function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{};return tabOrder(s).filter(key=>tabOn(key,s)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
@@ -1127,17 +1161,32 @@ function loadFoods(){
 }
 const norm=s=>String(s||'').toLowerCase().replace(/ß/g,'ss').normalize('NFD').replace(/[̀-ͯ]/g,'');
 function prepFoods(list){return list.map(f=>({f,k:norm(f[0]+' '+f[1])}));}
+/* Menge aus Freitext lösen: "TK Lachs 1 Pack" -> {amount:'1 Pack', text:'TK Lachs'} */
+const QTY_UNITS='g|kg|ml|l|el|tl|pack|packung|packungen|pck|pkg|stück|stk|dose|dosen|becher|bund|prise|prisen|scheibe|scheiben|portion|portionen|beutel|glas|gläser|tasse|tassen|hand|handvoll|riegel|zehe|zehen|msp';
+const QTY_RE=new RegExp('(?:^|\\s)((?:ca\\.?\\s*)?(?:\\d+(?:[.,]\\d+)?|½|¼|¾|eine?n?|halbe?s?)\\s*(?:'+QTY_UNITS+')?\\.?)(?=\\s|$)(?!\\s*%)','i');
+function splitQty(q){
+  q=String(q||'').trim();const m=q.match(QTY_RE);
+  if(!m||!/\d|½|¼|¾|eine?n?|halbe?s?/i.test(m[1]))return {amount:'',text:q};
+  let a=m[1].trim().replace(/^eine?n?\b/i,'1').replace(/^halbe?s?\b/i,'0,5').replace('½','0,5').replace('¼','0,25').replace('¾','0,75');
+  a=a.replace(/\b(pck|pkg)\.?$/i,'Pack').replace(/\bstk\.?$/i,'Stück').replace(/\b(el|tl)$/i,x=>x.toUpperCase()).replace(/\bpack(ung)?$/i,x=>x[0].toUpperCase()+x.slice(1).toLowerCase());
+  const text=(q.slice(0,m.index)+' '+q.slice(m.index+m[0].length)).replace(/\s+/g,' ').trim();
+  return {amount:/^[\d.,]+$/.test(a)?a+' g':a,text};
+}
+const stem=w=>w.length>4?w.replace(/(en|n|e|s)$/,''):w;
 function searchFoods(q){
-  const t=norm(q).split(/[\s,]+/).filter(Boolean);if(!t.length||!S.foods)return [];
-  const out=[];
+  const t=norm(splitQty(q).text).split(/[\s,]+/).filter(w=>w&&!/^(tk|von|mit|und|oder|der|die|das|frisch)$/.test(w)).map(stem);
+  if(!t.length||!S.foods)return [];
+  const out=[],part=[];
   for(const x of S.foods){
-    if(!t.every(w=>x.k.includes(w)))continue;
+    const hit=t.filter(w=>x.k.includes(w)).length;if(!hit)continue;
     const n=norm(x.f[0]);let sc=n.length/12+(x.f[1]?1.5:0);
     if(n.startsWith(t[0]))sc-=6;else if(n.includes(' '+t[0])||n.includes(','+t[0]))sc-=2;
     if(/roh\b/.test(n))sc-=.5;if(x.f[9])sc-=.5;if(x.f[11]!==null)sc-=.5;
-    out.push([sc,x.f]);
+    if(hit===t.length)out.push([sc,x.f]);else if(t.filter(w=>w.length>=3&&x.k.includes(w)).length)part.push([sc+(t.length-hit)*4,x.f]);
   }
-  return out.sort((a,b)=>a[0]-b[0]).slice(0,40).map(x=>x[1]);
+  out.sort((a,b)=>a[0]-b[0]);
+  if(out.length<6)out.push(...part.sort((a,b)=>a[0]-b[0]).slice(0,12-out.length));
+  return out.slice(0,40).map(x=>x[1]);
 }
 const r1=v=>Math.round(v*10)/10;
 function foodRow(fd,g,meal,date,time,portion){
@@ -1221,7 +1270,7 @@ function vHeute(){
   const unsure=unsureList();
   if(unsure.length&&S.day===t)h+=`<button class="unsure" data-act="nachpflegen">${ICON.spark}<span>${unsure.length} unsichere ${unsure.length===1?'Wert':'Werte'} · nachpflegen</span>${ICON.right}</button>`;
   const inbox=S.data.inbox||[];
-  if(inbox.length)h+=`<div class="banner">${ICON.info}<div style="flex:1"><b>${inbox.length} ${inbox.length===1?'Eintrag wartet':'Einträge warten'} auf Claude</b><div class="small muted">Antippen zum Ändern oder Löschen.</div>${inbox.map((i,n)=>`<button class="inb" data-act="inbox" data-i="${n}">${esc(i.what)}${i.amount?` <span>· ${esc(i.amount)}</span>`:''}</button>`).join('')}</div></div>`;
+  if(inbox.length)h+=`<div class="banner">${ICON.info}<div style="flex:1"><b>${inbox.length} ${inbox.length===1?'Eintrag wartet':'Einträge warten'} auf Claude</b><div class="small muted">Antippen zum Ändern oder Löschen. <button class="linkbtn inl" data-act="claudeQueue">Jetzt an Claude geben</button></div>${inbox.map((i,n)=>`<button class="inb" data-act="inbox" data-i="${n}">${esc(i.what)}${i.amount?` <span>· ${esc(i.amount)}</span>`:''}</button>`).join('')}</div></div>`;
   h+='</div><div class="hz-b">';
   MEALS.forEach(m=>{
     const md=d.meals[m];
@@ -1329,17 +1378,20 @@ const L={
   saveGoals(g){S.data.goals={kcalDay:g.kcalDay,proteinDay:g.proteinDay,kcalWeek:g.kcalWeek};S.data.settings.goals2={carbs:g.carbs||0,fat:g.fat||0,weight:g.weight||0};return {};},
   saveSettings(s){S.data.settings=s;return {};},
   savePlan(p){S.data.plan=p;return {};},
-  wantImage(name,on){const w=S.data.imgWanted=Object.assign({},S.data.imgWanted);if(on)w[name]=true;else delete w[name];return {};},
+  wantImage(name,on){if(!LIVE)demoOrder('Auftrag: Bild suchen für Rezept „'+name+'“',on);const w=S.data.imgWanted=Object.assign({},S.data.imgWanted);if(on)w[name]=true;else delete w[name];return {};},
   saveRecipe(rec,old,ins){
     const rs=S.data.recipes=(S.data.recipes||[]).slice(),i=old?rs.findIndex(r=>r.name===old):-1;
     if(i>=0)rs[i]=rec;else rs.push(rec);
     const oi=instrFor(old||rec.name),list=S.data.instructions=(S.data.instructions||[]).filter(x=>x!==oi);if(ins)list.push(ins);
     if(old&&old!==rec.name){const im=S.data.images||{};if(im[old]){im[rec.name]=im[old];delete im[old];}const w=S.data.imgWanted||{};if(w[old]){w[rec.name]=true;delete w[old];}
       Object.values(S.data.plan||{}).forEach(l=>l.forEach(it=>{if(it.type==='recipe'&&it.name===old)it.name=rec.name;}));}
+    if(!LIVE)demoOrder('Auftrag: Rezept vervollständigen „'+rec.name+'“',rec.items.some(x=>x.open));
     return {};},
   deleteRecipe(name){const oi=instrFor(name);S.data.recipes=(S.data.recipes||[]).filter(r=>r.name!==name);S.data.instructions=(S.data.instructions||[]).filter(x=>x!==oi);return {};}
 };
 
+/* Vorschau: Aufträge für Claude im Eingang nachbilden */
+function demoOrder(what,on){const ib=S.data.inbox=(S.data.inbox||[]).filter(i=>i.what!==what);if(on)ib.push({row:'d'+ib.length+Date.now(),date:today(),meal:'',time:'',what,amount:''});}
 /* Änderung übernehmen: sofort anzeigen, im Hintergrund speichern */
 function commit(fn,args){
   const out=L[fn](...JSON.parse(JSON.stringify(args)));
@@ -2436,7 +2488,9 @@ function vRezepte(){
   const rs=S.data.recipes||[];
   let h=`<div class="rtools"><div class="search">${ICON.search}<input id="recQ" placeholder="Rezept oder Zutat suchen" value="${esc(S.recQ||'')}" autocomplete="off"></div><button class="btn rnew" data-act="recNew">${ICON.plus}<span>Neues Rezept</span></button></div>`;
   if(!rs.length)return h+'<div class="card faint">Noch keine Rezepte. Lege eins an oder sag Claude „lege Rezept an“.</div>';
-  return h+`<div class="rgrid" id="rgrid">${recipeCards()}</div>`;
+  const names=rs.map(r=>norm(r.name)),loose=(S.data.instructions||[]).filter(x=>!names.includes(norm(String(x.title).replace(/\s*\([^)]*\)\s*$/,'')).trim()));
+  return h+`<div class="rgrid" id="rgrid">${recipeCards()}</div>`+(loose.length?`<h3 class="ph3" style="margin-top:22px">Anleitungen ohne passendes Rezept</h3><p class="small muted" style="margin-top:-4px">Heißt ein Rezept genauso wie die Anleitung (ohne Klammer), erscheint sie direkt beim Rezept.</p>
+    <div class="rgrid">${loose.map((x,i)=>`<div class="card">${instrBlock(x,S.open['la'+i]).replace('data-pins="1"','data-la="'+i+'"').replace('<span>'+ICON.anleitungen+'Anleitung</span>','<span>'+ICON.anleitungen+esc(x.title)+'</span>')}</div>`).join('')}</div>`:'');
 }
 function recipeCards(){
   const q=norm(S.recQ||''),rs=(S.data.recipes||[]).map((r,i)=>[r,i]).filter(([r])=>!q||norm(r.name+' '+r.items.map(x=>x.name).join(' ')).includes(q));
@@ -2444,8 +2498,8 @@ function recipeCards(){
   return rs.map(([r,i])=>{const o=S.open['r'+i],hasImg=(S.data.images||{})[r.name],ins=instrFor(r.name);
     return `<div class="card rcard">${recipeImgHtml(r.name)||(imgWanted(r.name)?'<div class="rimg want"><span>Claude sucht beim nächsten Abgleich ein Bild</span></div>':'')}<button class="rc" data-act="toggle" data-key="r${i}"><div class="top2"><b>${esc(r.name)}</b><span class="num">${k(r.per.kcal)} kcal</span></div>
     <div class="small muted num">${g1(r.portions).replace(',0','')} Portionen · pro Portion E ${g1(r.per.p)} g · KH ${g1(r.per.c)} g · F ${g1(r.per.f)} g</div>
-    <div class="rmeta">${r.items.length} Zutaten${ins?' · mit Anleitung':''}<span>${o?'▴':'▾'}</span></div></button>
-    ${o?`<div class="ing" style="margin-top:10px">${r.items.map(it=>`<div><span>${esc(it.name)}</span><span>${esc(it.amount)}</span></div>`).join('')}</div><div class="small faint">Mengen für das ganze Rezept.</div>${ins?instrBlock(ins,S.open['ri'+i]).replace('data-pins="1"','data-ri="'+i+'"'):''}`:''}
+    <div class="rmeta">${r.items.length} Zutaten${ins?' · mit Anleitung':''}${r.items.some(x=>x.open)?' · <b class="ropen">Claude rechnet noch</b>':''}<span>${o?'▴':'▾'}</span></div></button>
+    ${o?`<div class="ing" style="margin-top:10px">${r.items.map(it=>`<div><span>${esc(it.name)}${it.open?' <em class="ropen">offen</em>':''}</span><span>${esc(it.amount)}</span></div>`).join('')}</div><div class="small faint">Mengen für das ganze Rezept.</div>${ins?instrBlock(ins,S.open['ri'+i]).replace('data-pins="1"','data-ri="'+i+'"'):''}`:''}
     <div class="racts">${mods().wochenplan?`<button class="linkbtn" data-act="recPlan" data-n="${esc(r.name)}">Einplanen</button>`:''}<button class="linkbtn" data-act="recEdit" data-n="${esc(r.name)}">Bearbeiten</button><button class="linkbtn" data-act="recShare" data-n="${esc(r.name)}">Teilen</button></div></div>`;}).join('');
 }
 function openRecipeEdit(name){
@@ -2469,51 +2523,69 @@ function reRows(){
   const R=S.redit;
   if(!R.items.length)return '<div class="empty">Noch keine Zutaten.</div>';
   const n=v=>v===''||v===null||v===undefined?'':String(v).replace('.',',');
-  return `<div class="rerow rehead"><span>Zutat</span><span>Menge</span><span>kcal</span><span>E</span><span>KH</span><span>F</span><span></span></div>`+R.items.map((x,i)=>`<div class="rerow">
+  const nOpen=R.items.filter(x=>x.open).length;
+  return `<div class="rerow rehead"><span>Zutat</span><span>Menge</span><span>kcal</span><span>E</span><span>KH</span><span>F</span><span></span></div>`+R.items.map((x,i)=>`<div class="rerow ${x.open?'open':''}">
     <input class="in-t" data-ri="${i}" data-rf="name" value="${esc(x.name)}" placeholder="Zutat" aria-label="Zutat">
     <input class="in-t" data-ri="${i}" data-rf="amount" value="${esc(x.amount)}" placeholder="z. B. 200 g" aria-label="Menge">
-    <input class="in-t num" inputmode="decimal" data-ri="${i}" data-rf="kcal" value="${n(x.kcal)}" placeholder="kcal" aria-label="kcal">
-    <input class="in-t num" inputmode="decimal" data-ri="${i}" data-rf="p" value="${n(x.p)}" placeholder="E" aria-label="Eiweiß">
-    <input class="in-t num" inputmode="decimal" data-ri="${i}" data-rf="c" value="${n(x.c)}" placeholder="KH" aria-label="Kohlenhydrate">
-    <input class="in-t num" inputmode="decimal" data-ri="${i}" data-rf="f" value="${n(x.f)}" placeholder="F" aria-label="Fett">
-    <button class="rex" data-act="reDel" data-i="${i}" aria-label="Zutat entfernen">×</button></div>`).join('');
+    <input class="in-t num" inputmode="decimal" data-ri="${i}" data-rf="kcal" value="${x.open?'':n(x.kcal)}" placeholder="${x.open?'Claude':'kcal'}" aria-label="kcal">
+    <input class="in-t num" inputmode="decimal" data-ri="${i}" data-rf="p" value="${x.open?'':n(x.p)}" placeholder="${x.open?'Claude':'E'}" aria-label="Eiweiß">
+    <input class="in-t num" inputmode="decimal" data-ri="${i}" data-rf="c" value="${x.open?'':n(x.c)}" placeholder="${x.open?'Claude':'KH'}" aria-label="Kohlenhydrate">
+    <input class="in-t num" inputmode="decimal" data-ri="${i}" data-rf="f" value="${x.open?'':n(x.f)}" placeholder="${x.open?'Claude':'F'}" aria-label="Fett">
+    <button class="rex" data-act="reDel" data-i="${i}" aria-label="Zutat entfernen">×</button></div>`).join('')
+    +(nOpen?`<div class="note reopen">${ICON.spark}<span>${nOpen===1?'Eine Zutat rechnet':nOpen+' Zutaten rechnet'} Claude beim nächsten Abgleich aus (Produkt, Gramm und Werte). Das dauert etwas. Bis dahin fehlen ${nOpen===1?'ihre':'ihre'} Werte in der Summe.</span></div>`:'');
 }
 function drawRecipeEdit(){
   const R=S.redit;
-  openSheet(`<h2>${R.old?'Rezept bearbeiten':'Neues Rezept'}</h2><p class="sub">Werte gelten für das ganze Rezept. Die App rechnet daraus die Portion.</p>
+  openSheet(`<p class="sub" style="margin-top:2px">Mengen und Werte gelten für das ganze Rezept. Die App rechnet daraus die Portion.</p>
     <div class="row2 re-top"><label class="f"><span>Name</span><input class="in-t" id="reName" value="${esc(R.name)}" placeholder="z. B. Linsen-Curry"></label>
     <label class="f"><span>Portionen</span><input class="in-t num" inputmode="decimal" id="rePort" value="${fmtN(R.portions)}"></label></div>
     <h3 class="ph3">Bild</h3><div id="reImg">${reImgHtml()}</div>
     <h3 class="ph3">Zutaten</h3><div id="reRows">${reRows()}</div>
-    <div class="re-add"><div class="search" style="box-shadow:none;background:var(--bg);border:1px solid var(--line);margin:10px 0 0">${ICON.search}<input id="reFoodQ" placeholder="Zutat aus deinen Lebensmitteln suchen" value="${esc(R.fq)}" autocomplete="off"></div>
-      <div id="reFoodRes"></div><button class="linkbtn" data-act="reBlank">+ Zutat von Hand eintragen</button></div>
+    <div class="re-add"><div class="search" style="box-shadow:none;background:var(--bg);border:1px solid var(--line);margin:10px 0 0">${ICON.search}<input id="reFoodQ" placeholder="Zutat suchen oder einfach hinschreiben, z. B. TK Lachs 1 Pack" value="${esc(R.fq)}" autocomplete="off" enterkeyhint="done"></div>
+      <div id="reFoodRes"></div><button class="linkbtn" data-act="reBlank">+ Zutat mit eigenen Werten eintragen</button></div>
     <h3 class="ph3">Pro Portion</h3><div class="nut" id="reSum">${reSumHtml()}</div>
     <h3 class="ph3">Anleitung <small>optional</small></h3>
     <label class="f"><span>Schritte, einer pro Zeile</span><textarea class="in-t" id="reSteps" rows="5" placeholder="Zwiebeln würfeln und anschwitzen&#10;Linsen und Kokosmilch dazu …">${esc(R.steps)}</textarea></label>
     <label class="f"><span>Hinweis</span><textarea class="in-t" id="reNotes" rows="2" placeholder="z. B. hält 3 Tage im Kühlschrank">${esc(R.notes)}</textarea></label>
     <button class="btn" data-act="reSave">Rezept speichern</button>
-    ${R.old?`<button class="btn softbad" style="margin-top:10px" data-act="reRemove">Rezept löschen</button>`:''}`,{wide:true});
+    ${R.old?`<button class="btn softbad" style="margin-top:10px" data-act="reRemove">Rezept löschen</button>`:''}`,{wide:true,head:`<h2>${R.old?'Rezept bearbeiten':'Neues Rezept'}</h2><span class="shead-a">${R.old?`<button class="mini softbad" data-act="reRemove">Löschen</button>`:''}<button class="mini brand" data-act="reSave">Speichern</button></span>`});
 }
 function reFoodRes(){
-  const R=S.redit;if(!R.fq.trim())return '';
-  if(!S.foods)return '<div class="empty">Lebensmittel werden geladen …</div>';
-  const res=searchFoods(R.fq).slice(0,8);R.fres=res;
-  if(!res.length)return '<div class="empty">Nichts gefunden. Trag die Zutat von Hand ein.</div>';
-  return '<div class="refood">'+res.map((f,i)=>`<button data-act="reFood" data-i="${i}"><span>${esc(f[0])}${f[1]?' <small>'+esc(f[1])+'</small>':''}</span><small class="num">${k(f[2])} kcal / 100 g</small></button>`).join('')+'</div>';
+  const R=S.redit,q=R.fq.trim();if(!q)return '';
+  const rough=`<button class="reRough" data-act="reRough">${ICON.spark}<span><b>„${esc(q)}“ so übernehmen</b><small>Claude sucht das passende Produkt und rechnet die Werte aus · Enter</small></span></button>`;
+  if(!S.foods)return rough+'<div class="empty">Lebensmittel werden geladen …</div>';
+  const res=searchFoods(q).slice(0,8);R.fres=res;
+  return rough+(res.length?'<div class="refood">'+res.map((f,i)=>`<button data-act="reFood" data-i="${i}"><span>${esc(f[0])}${f[1]?' <small>'+esc(f[1])+'</small>':''}</span><small class="num">${k(f[2])} kcal / 100 g${f[8]&&f[9]?' · '+esc(f[8])+' '+k(f[9])+' g':''}</small></button>`).join('')+'</div>':'');
+}
+/* Menge -> Gramm: "150 g", "0,5 kg", "1 Pack", "2 Stück" (wenn das Lebensmittel ein Portions-/Packungsgewicht hat) */
+function amountGrams(txt,base){
+  const t=String(txt||'').trim(),num=s=>parseFloat(String(s).replace(',','.'));
+  let m=t.match(/(\d+(?:[.,]\d+)?)\s*(kg|l)\b/i);if(m)return num(m[1])*1000;
+  m=t.match(/(\d+(?:[.,]\d+)?)\s*(g|ml)\b/i);if(m)return num(m[1]);
+  m=t.match(/^(?:ca\.\s*)?(\d+(?:[.,]\d+)?)\s*([a-zäöüß]+)?/i);if(!m||!base||!base.unit)return null;
+  const u=norm(m[2]||''),un=norm(base.uname||'');
+  if(!u||/^(stuck|stk|pack|packung|packungen|portion|portionen|dose|becher|riegel|scheibe|scheiben|beutel|glas)$/.test(u)||(un&&(un.startsWith(u)||u.startsWith(un.slice(0,4)))))return num(m[1])*base.unit;
+  return null;
 }
 function reCalc(x){
-  if(!x.base)return;const m=String(x.amount).match(/(\d+(?:[.,]\d+)?)\s*(g|ml)\b/i);
-  const g=m?parseFloat(m[1].replace(',','.')):(x.base.unit&&/^(\d+(?:[.,]\d+)?)\s*(stück|stk)/i.test(x.amount)?parseFloat(x.amount.replace(',','.'))*x.base.unit:null);
-  if(g===null||isNaN(g))return;const b=x.base;
+  if(!x.base)return;const g=amountGrams(x.amount,x.base);
+  if(g===null||isNaN(g)){x.open=true;['kcal','p','c','f'].forEach(f=>x[f]='');return;}
+  const b=x.base;x.open=false;
   x.kcal=Math.round(b.k*g/100);x.p=r1(b.p*g/100);x.c=r1(b.c*g/100);x.f=r1(b.f*g/100);
 }
+function reRough(){
+  const R=S.redit,q=R.fq.trim();if(!q)return;const s=splitQty(q);
+  R.items.push({name:s.text||q,amount:s.amount,kcal:'',p:'',c:'',f:'',open:true});R.fq='';
+  $('#reFoodQ').value='';$('#reFoodRes').innerHTML='';$('#reRows').innerHTML=reRows();$('#reSum').innerHTML=reSumHtml();$('#reFoodQ').focus();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='reFoodQ'){e.preventDefault();reRough();}});
 function reSave(){
   const R=S.redit,name=$('#reName').value.trim(),P=+String($('#rePort').value).replace(',','.');
   if(!name){toast('Bitte einen Namen eingeben.',true);return;}
   if(!(P>0)){toast('Portionen bitte als Zahl.',true);return;}
   if((S.data.recipes||[]).some(r=>r.name.toLowerCase()===name.toLowerCase()&&r.name!==R.old)){toast('Ein Rezept mit diesem Namen gibt es schon.',true);return;}
   const num=v=>{const n=+String(v).replace(',','.');return isNaN(n)?0:n;};
-  const items=R.items.filter(x=>String(x.name).trim()).map(x=>({name:String(x.name).trim(),amount:String(x.amount||'').trim(),kcal:Math.round(num(x.kcal)),p:r1(num(x.p)),c:r1(num(x.c)),f:r1(num(x.f))}));
+  const items=R.items.filter(x=>String(x.name).trim()).map(x=>x.open?{name:String(x.name).trim(),amount:String(x.amount||'').trim(),kcal:0,p:0,c:0,f:0,open:true}:{name:String(x.name).trim(),amount:String(x.amount||'').trim(),kcal:Math.round(num(x.kcal)),p:r1(num(x.p)),c:r1(num(x.c)),f:r1(num(x.f))});
   if(!items.length){toast('Bitte mindestens eine Zutat eintragen.',true);return;}
   const s=f=>items.reduce((a,x)=>a+x[f],0);
   const rec={name,portions:P,per:{kcal:Math.round(s('kcal')/P),p:r1(s('p')/P),c:r1(s('c')/P),f:r1(s('f')/P)},items};
@@ -2526,7 +2598,7 @@ function reSave(){
   else if(!R.img&&R.want!==imgWanted(name))commit('wantImage',[name,!!R.want]);
   closeSheet();vibe();
   if(R.planTo){S.padd=Object.assign({},S.padd||{},{d:R.planTo.d,m:R.planTo.m});planAddItem({type:'recipe',name},R.planTo.m);return;}
-  if(!R.file)toast(R.old?'Rezept gespeichert.':'Rezept angelegt: '+name);
+  if(!R.file)toast(items.some(x=>x.open)?'Gespeichert. Claude vervollständigt das Rezept beim nächsten Abgleich.':R.old?'Rezept gespeichert.':'Rezept angelegt: '+name);
 }
 
 /* --- Heute: was für heute geplant ist --- */
@@ -2573,10 +2645,12 @@ document.addEventListener('click',ev=>{
   case 'recPlan':{const t=today();openPlanAdd(S.pweek&&S.pweek>monday(t)?S.pweek:t,mealByTime(nowHM())==='Frühstück'?'Frühstück':'Abendessen');S.padd.q=el.dataset.n;drawPlanAdd();break;}
   case 'reDel':S.redit.items.splice(+el.dataset.i,1);$('#reRows').innerHTML=reRows();$('#reSum').innerHTML=reSumHtml();break;
   case 'reBlank':S.redit.items.push({name:'',amount:'',kcal:'',p:'',c:'',f:''});$('#reRows').innerHTML=reRows();{const ins=$('#reRows').querySelectorAll('input[data-rf=name]');if(ins.length)ins[ins.length-1].focus();}break;
-  case 'reFood':{const f=S.redit.fres[+el.dataset.i];if(!f)break;const x={name:f[0]+(f[1]?' ('+f[1]+')':''),amount:'100 g',base:{k:f[2],p:f[3],c:f[4],f:f[6],unit:f[9]||null}};reCalc(x);S.redit.items.push(x);S.redit.fq='';
+  case 'reFood':{const f=S.redit.fres[+el.dataset.i];if(!f)break;const qa=splitQty(S.redit.fq).amount;
+    const x={name:f[0]+(f[1]?' ('+f[1]+')':''),amount:qa||(f[8]&&f[9]?'1 '+f[8]:'100 g'),base:{k:f[2],p:f[3],c:f[4],f:f[6],unit:f[9]||null,uname:f[8]||''}};reCalc(x);S.redit.items.push(x);S.redit.fq='';
     $('#reFoodQ').value='';$('#reFoodRes').innerHTML='';$('#reRows').innerHTML=reRows();$('#reSum').innerHTML=reSumHtml();
     const am=$('#reRows').querySelectorAll('input[data-rf=amount]');if(am.length){const i=am[am.length-1];i.focus();i.select();}break;}
   case 'reSave':reSave();break;
+  case 'reRough':reRough();break;
   case 'reRemove':{const R=S.redit,r=recipeBy(R.old),ins=instrFor(R.old);if(!r)break;commit('deleteRecipe',[R.old]);closeSheet();
     toast('Rezept gelöscht.',false,{label:'Rückgängig',fn:()=>commit('saveRecipe',[r,null,ins])});break;}
   }
@@ -2592,8 +2666,8 @@ document.addEventListener('input',ev=>{
   if(t.id==='reSteps')S.redit.steps=t.value;
   if(t.id==='reNotes')S.redit.notes=t.value;
   if(t.dataset.ri!==undefined&&t.dataset.rf){const x=S.redit.items[+t.dataset.ri];if(!x)return;x[t.dataset.rf]=t.value;
-    if(t.dataset.rf==='amount'&&x.base){reCalc(x);const row=t.closest('.rerow');['kcal','p','c','f'].forEach(f=>{const i=row.querySelector('[data-rf='+f+']');if(i)i.value=String(x[f]).replace('.',',');});}
-    if(/^(kcal|p|c|f)$/.test(t.dataset.rf))delete x.base;
+    if(t.dataset.rf==='amount'&&x.base){reCalc(x);const row=t.closest('.rerow');row.classList.toggle('open',!!x.open);['kcal','p','c','f'].forEach(f=>{const i=row.querySelector('[data-rf='+f+']');if(i){i.value=x.open?'':String(x[f]).replace('.',',');i.placeholder=x.open?'Claude':({kcal:'kcal',p:'E',c:'KH',f:'F'})[f];}});}
+    if(/^(kcal|p|c|f)$/.test(t.dataset.rf)){delete x.base;if(x.open&&t.value.trim()){x.open=false;t.closest('.rerow').classList.remove('open');}}
     $('#reSum').innerHTML=reSumHtml();}
 });
 document.addEventListener('change',ev=>{
@@ -2605,7 +2679,7 @@ document.addEventListener('change',ev=>{
   const got=store.get(shopKey(S.pweek))||{};if(t.checked)got[t.dataset.shop]=1;else delete got[t.dataset.shop];store.set(shopKey(S.pweek),got);
   const l=t.closest('.shop');if(l)l.classList.toggle('got',t.checked);
 });
-document.addEventListener('toggle',ev=>{const d=ev.target;if(!d.dataset)return;if(d.dataset.pins)S.open.pins=d.open;if(d.dataset.ri!==undefined)S.open['ri'+d.dataset.ri]=d.open;},true);
+document.addEventListener('toggle',ev=>{const d=ev.target;if(!d.dataset)return;if(d.dataset.pins)S.open.pins=d.open;if(d.dataset.la!==undefined)S.open['la'+d.dataset.la]=d.open;if(d.dataset.ri!==undefined)S.open['ri'+d.dataset.ri]=d.open;},true);
 
 /* Verschieben, auch per Ziehen mit der Maus */
 function movePlan(d,id,to,meal){
@@ -2629,7 +2703,32 @@ function movePlan(d,id,to,meal){
    Seitenleiste ab 1000 px Breite, Tastatur, Installieren, Verbindungslink für weitere Geräte */
 document.addEventListener('touchstart',()=>{window.lastTouch=Date.now();},{passive:true,capture:true});
 
+/* Einmalig mit v12: Reiter wie gewünscht voreinstellen (später frei änderbar) */
+function migrateV12(){
+  const s0=S.data&&S.data.settings;if(!s0||s0.v12nav||S.migrated)return;S.migrated=true;
+  const s=JSON.parse(JSON.stringify(s0));s.modules=s.modules||{};
+  Object.assign(s.modules,{woche:true,monat:true,verlauf:true,tagebuch:false,wochenplan:true,rezepte:true});s.v12nav=true;
+  setTimeout(()=>commit('saveSettings',[s]),0);
+}
+/* Oben rechts: was auf Claude wartet (nur sichtbar, wenn etwas wartet) */
+function claudeQueue(){return (S.data&&S.data.inbox)||[];}
+function renderClaudeBtn(){
+  const b=$('#btnClaude');if(!b)return;const n=claudeQueue().length;b.hidden=!n;
+  b.innerHTML=ICON.claude2+(n?`<i>${n}</i>`:'');b.title=n+(n===1?' Auftrag wartet':' Aufträge warten')+' auf Claude';
+}
+function openClaudeQueue(){
+  const q=claudeQueue();
+  openSheet(`<h2>Wartet auf Claude</h2><p class="sub">Das erledigt Claude beim nächsten Gespräch sowieso. Wenn du es gleich willst: Claude jetzt öffnen.</p>
+    <div class="ing">${q.map(i=>`<div><span>${/^Auftrag/.test(i.what)?esc(i.what.replace(/^Auftrag: /,'').replace(/\s*\((echtes Foto|Zutaten mit)[^)]*\)\s*$/,'')):'Eintragen: '+esc(i.what)+(i.amount?' · '+esc(i.amount):'')}</span></div>`).join('')}</div>
+    <a class="btn" style="text-align:center;text-decoration:none;display:block" href="https://claude.ai/new?q=Abgleich" target="_blank" rel="noopener" data-act="askAbgleich">Claude jetzt öffnen</a>
+    <p class="hint">Öffnet Claude mit dem Stichwort „Abgleich“ (steht es nicht im Eingabefeld: einfügen, es ist kopiert). Rezepte nachrechnen und Bilder suchen dauert ein paar Minuten. Danach hier oben auf Aktualisieren tippen.</p>`);
+}
+document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');if(!el)return;
+  if(el.dataset.act==='claudeQueue')openClaudeQueue();
+  if(el.dataset.act==='askAbgleich'){try{navigator.clipboard&&navigator.clipboard.writeText('Abgleich');}catch(e){}setTimeout(closeSheet,300);}
+});
 function renderSide(){
+  migrateV12();renderClaudeBtn();
   const el=$('#side');if(!el||!S.data)return;
   const pages=MODULES.filter(x=>x.page&&mods()[x.key]);
   const link=(key,lbl,act)=>`<button class="sl ${S.view===key?'on':''}" ${act?`data-act="goview" data-view="${key}"`:`data-tab="${key}"`}>${ICON[key]}<span>${lbl}</span></button>`;
@@ -2639,6 +2738,7 @@ function renderSide(){
     <nav class="side-nav">${navTabs().map(([key,lbl],i)=>link(key,{anleitungen:'Anleitungen',wochenplan:'Wochenplan'}[key]||lbl).replace('</span>',`</span><kbd>${i<9?i+1:''}</kbd>`)).join('')}</nav>
     ${pages.length?`<div class="side-h">Mehr</div><nav class="side-nav">${pages.map(x=>link(x.key,x.title,true)).join('')}</nav>`:''}
     <nav class="side-nav side-low"><button class="sl" data-act="openExport">${ICON.report}<span>Bericht und Export</span></button>
+      ${claudeQueue().length?`<button class="sl" data-act="claudeQueue">${ICON.claude2}<span>Wartet auf Claude</span><b class="sbadge">${claudeQueue().length}</b></button>`:''}
       <a class="sl" href="https://claude.ai/new" target="_blank" rel="noopener">${ICON.claude}<span>Mit Claude eintragen</span></a>
       <button class="sl" data-act="sideSettings">${ICON.settings}<span>Einstellungen</span></button></nav>
     <div class="side-keys"><kbd>←</kbd><kbd>→</kbd> blättern · <kbd>T</kbd> heute · <kbd>Esc</kbd> schließen</div></div>`;
@@ -2691,7 +2791,7 @@ document.addEventListener('keydown',e=>{
 /* Einstellungen: Reiter ein-/ausblenden und sortieren */
 function tabsHtml(){
   const s=S.data.settings,o=tabOrder(s),desc=k=>{const d=TAB_DESC[k]||(MODULES.find(x=>x.key===k)||{}).desc||'';const t=d.replace(/^Eigener Reiter unten:?\s*/,'');return t.charAt(0).toUpperCase()+t.slice(1);};
-  const title=k=>({wochenplan:'Wochenplan',anleitungen:'Anleitungen'})[k]||ALL_TABS.find(t=>t[0]===k)[1];
+  const title=k=>({wochenplan:'Wochenplan'})[k]||ALL_TABS.find(t=>t[0]===k)[1];
   return `<p class="sub" style="margin-top:0">Ausgeblendete Bereiche verschwinden aus der Leiste. Deine Daten bleiben erhalten.</p>`+o.map((key,i)=>`<div class="sw tabrow ${tabOn(key,s)?'':'off'}">
     <span class="tabico">${ICON[key]}</span><div><b>${title(key)}</b><span>${desc(key)}</span></div>
     <span class="ord"><button data-act="navMove" data-k="${key}" data-d="-1" ${i===0?'disabled':''} aria-label="${title(key)} nach oben">▲</button><button data-act="navMove" data-k="${key}" data-d="1" ${i===o.length-1?'disabled':''} aria-label="${title(key)} nach unten">▼</button></span>
@@ -2708,7 +2808,8 @@ document.addEventListener('change',ev=>{if(ev.target.dataset&&ev.target.dataset.
 /* ================= Sheets (Overlays) ================= */
 function openSheet(html,o){
   $('#toast').className='toast';
-  const sh=$('#sheet');sh.classList.toggle('wide',!!(o&&o.wide));sh.innerHTML='<div class="grabzone"><div class="grab"></div><button class="xbtn" data-act="close" aria-label="Schließen">×</button></div>'+html;
+  const sh=$('#sheet');sh.classList.toggle('wide',!!(o&&o.wide));sh.classList.toggle('hashead',!!(o&&o.head));
+  sh.innerHTML='<div class="grabzone"><div class="grab"></div>'+(o&&o.head?'<div class="shead">'+o.head+'</div>':'')+'<button class="xbtn" data-act="close" aria-label="Schließen">×</button></div>'+html;
   sh.style.transform='';sh.scrollTop=0;$('#ov').classList.add('on');sh.classList.add('on');
   if(!S.sheetOpen){S.sheetOpen=true;if(!S.histPushed){histPush();S.histPushed=true;}}
 }
@@ -3315,7 +3416,7 @@ const Demo=(()=>{
     for(let i=45;i>=0;i--){const d=addDays(t,-i);MEALS.forEach(m=>{if(i===0&&m!=='Frühstück')return;if(m==='Snacks / Sonstiges'&&rnd()<.35)return;
       const list=F[m],n=m==='Snacks / Sonstiges'?1:2+Math.floor(rnd()*2),used=new Set();
       for(let j=0;j<n;j++){let f;do{f=list[Math.floor(rnd()*list.length)];}while(used.has(f[0]));used.add(f[0]);diary.push([row++,d,times[m],m,f[0],f[1],f[2],f[3],f[4],f[5],'',r1(f[4]*.2),r1(f[4]*.08),0.3,'nein',0,0]);}});}
-    data={goals:{kcalDay:2000,proteinDay:120,kcalWeek:14000},diary,complaints:[],inbox:[],images:{},templates:[],recipes:[{name:'Linsen-Curry',portions:4,per:{kcal:455,p:16.4,c:70,f:10.4},items:[{name:'Rote Linsen',amount:'250 g',kcal:640,p:44,c:96,f:4},{name:'Kokosmilch light',amount:'400 ml',kcal:380,p:4,c:12,f:36},{name:'Basmatireis',amount:'240 g',kcal:720,p:15,c:156,f:1.6}]}],instructions:[],notes:[],foodsCount:12,weights:[],
+    data={goals:{kcalDay:2000,proteinDay:120,kcalWeek:14000},diary,complaints:[],inbox:[],images:{},templates:[],recipes:[{name:'Linsen-Curry',portions:4,per:{kcal:455,p:16.4,c:70,f:10.4},items:[{name:'Rote Linsen',amount:'250 g',kcal:640,p:44,c:96,f:4},{name:'Kokosmilch light',amount:'400 ml',kcal:380,p:4,c:12,f:36},{name:'Basmatireis',amount:'240 g',kcal:720,p:15,c:156,f:1.6}]}],instructions:[],notes:[],foodsCount:14,weights:[],
       settings:{modules:{haeufig:true,gewicht:true,rezepte:false,anleitungen:false,beschwerden:false,auswertung:false,anweisungen:false}}};
     /* Beispiel-Rezepte mit Anleitung, Bild und eine geplante Woche */
     const R=(name,portions,items)=>{const s=f=>items.reduce((a,x)=>a+x[f],0);return {name,portions,per:{kcal:Math.round(s('kcal')/portions),p:r1(s('p')/portions),c:r1(s('c')/portions),f:r1(s('f')/portions)},items};};
@@ -3352,10 +3453,12 @@ const Demo=(()=>{
     put(5,'Mittagessen','Linsen-Curry','recipe',1);put(5,'Abendessen','Essen bei Oma','text');
     put(6,'Mittagessen','Vollkornnudeln Bolognese','recipe',1);
     [[0,'Abendessen','Protein-Pancakes'],[1,'Mittagessen','Hähnchen-Reis-Bowl'],[2,'Abendessen','Linsen-Curry'],[3,'Mittagessen','Lachs mit Ofenkartoffeln'],[4,'Abendessen','Vollkornnudeln Bolognese'],[5,'Frühstück','Gemüse-Omelett']].forEach(([i,m,n])=>{const d=addDays(mon,i-7);(P[d]=P[d]||[]).push({id:'v'+i,meal:m,type:'recipe',name:n,portions:1,done:true});});
+    data.recipes.push({name:'Lachs-Erbsen-Pfanne',portions:2,per:{kcal:263,p:5.5,c:58.5,f:0.5},items:[I('Basmatireis','150 g',525,11,117,1),Object.assign(I('TK Lachs','1 Pack',0,0,0,0),{open:true}),Object.assign(I('Erbsen tk','3 EL',0,0,0,0),{open:true})]});
+    data.inbox=[{row:5,date:t,meal:'',time:'',what:'Auftrag: Rezept vervollständigen „Lachs-Erbsen-Pfanne“ (Zutaten mit „offen“ in Spalte B: Produkt wählen, Gramm und Werte eintragen, „offen“ löschen)',amount:''},{row:6,date:t,meal:'',time:'',what:'Auftrag: Bild suchen für Rezept „Gemüse-Omelett“ (echtes Foto aus dem Web, direkte Bildadresse in Tab Bilder, Spalte D)',amount:''}];
     data.plan=P;data.imgWanted={'Gemüse-Omelett':true};
     data.settings.modules.wochenplan=true;data.settings.modules.rezepte=true;
     for(let i=40;i>=0;i-=2)data.weights.push({row:i+2,date:addDays(t,-i),time:'07:10',kg:Math.round((84.6-i*0.06+Math.sin(i)*0.35)*10)/10,note:''});
-    foods=[['Rote Linsen','',339,24,49,2,1.5,11,'','', 'BLS',0,'nein',0,0],['Hähnchenbrust roh','',110,23,0,0,1.5,0,'','', 'BLS',0.2,'nein',0,0],['Basmatireis roh','',349,7.1,77,0.2,0.8,1.4,'','', 'BLS',0,'nein',0,0],['Brokkoli roh','',34,2.8,2.7,1.7,0.4,3,'','', 'BLS',0,'nein',0,0],['Lachsfilet roh','',203,20,0,0,13.6,0,'','', 'BLS',0.1,'nein',0,0],['Kartoffeln roh','',71,2,15,0.8,0.1,2,'','', 'BLS',0,'nein',0,0],['Skyr','',63,11,4,4,0.2,0,'','', 'BLS',0.1,'nein',4,0],['Heidelbeeren','',57,0.6,11,10,0.6,4.9,'','', 'BLS',0,'nein',0,0],['Magerquark','',67,12,4,4,0.3,0,'','', 'BLS',0.1,'nein',4,0],['Banane roh','',95,1.2,20,17,0.2,2,'Stück',120,'BLS',0,'nein',0,0],['Haferflocken','',370,13,59,1,7,10,'','', 'BLS',0,'nein',0,0],['Hühnerei roh','',137,13,1.5,0.5,9,0,'Stück',54,'BLS',null,'',null,null]];
+    foods=[['Lachsfilet TK','Golden Seafood',190,20,0,0,12,0,'Packung',250,'Open Food Facts',0.2,'nein',0,0],['Erbsen TK','',81,5.4,11,4,0.4,5,'EL',15,'BLS',0,'nein',0,0],['Rote Linsen','',339,24,49,2,1.5,11,'','', 'BLS',0,'nein',0,0],['Hähnchenbrust roh','',110,23,0,0,1.5,0,'','', 'BLS',0.2,'nein',0,0],['Basmatireis roh','',349,7.1,77,0.2,0.8,1.4,'','', 'BLS',0,'nein',0,0],['Brokkoli roh','',34,2.8,2.7,1.7,0.4,3,'','', 'BLS',0,'nein',0,0],['Lachsfilet roh','',203,20,0,0,13.6,0,'','', 'BLS',0.1,'nein',0,0],['Kartoffeln roh','',71,2,15,0.8,0.1,2,'','', 'BLS',0,'nein',0,0],['Skyr','',63,11,4,4,0.2,0,'','', 'BLS',0.1,'nein',4,0],['Heidelbeeren','',57,0.6,11,10,0.6,4.9,'','', 'BLS',0,'nein',0,0],['Magerquark','',67,12,4,4,0.3,0,'','', 'BLS',0.1,'nein',4,0],['Banane roh','',95,1.2,20,17,0.2,2,'Stück',120,'BLS',0,'nein',0,0],['Haferflocken','',370,13,59,1,7,10,'','', 'BLS',0,'nein',0,0],['Hühnerei roh','',137,13,1.5,0.5,9,0,'Stück',54,'BLS',null,'',null,null]];
   }
   const NUM=[6,7,8,9,11,12,13,15,16];
   const sc=(v,i,f)=>v===''||v===null?v:(i===6?Math.round(v*f):r1(v*f));
