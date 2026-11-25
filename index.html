@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <script>/* Verbindungslink von einem anderen Gerät (#verbinden=…) übernehmen, nur für script.google.com */
 try{(function(){var m=location.hash.match(/^#verbinden=(.+)$/);if(!m)return;var c=JSON.parse(decodeURIComponent(escape(atob(m[1]))));
-  if(c&&c.key&&/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(c.url))localStorage.setItem('et-conn',JSON.stringify({url:c.url,key:String(c.key)}));
+  if(c&&c.key&&/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(c.url)){localStorage.setItem('et-conn',JSON.stringify({url:c.url,key:String(c.key)}));localStorage.setItem('et-cl-open','1');}
   history.replaceState(null,'',location.pathname+location.search);})();}catch(e){}
 window.ET_FONTS={"System": "-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Arial,sans-serif", "Manrope": "'Manrope',sans-serif", "Nunito": "'Nunito',sans-serif", "Fredoka": "'Fredoka',sans-serif", "Outfit": "'Outfit',sans-serif", "Space Grotesk": "'Space Grotesk',sans-serif", "Playfair Display": "'Playfair Display',serif", "Cormorant Garamond": "'Cormorant Garamond',serif"};
 /* Design anwenden: fertiges Design (data-theme) plus eigene Anpassungen als Variablen */
@@ -827,6 +827,16 @@ em.ropen{font-size:11px;background:var(--brand-soft);border-radius:6px;padding:1
 .selbar{flex-wrap:nowrap;max-width:calc(100vw - 16px)}
 .selbar button{white-space:nowrap}
 @media (max-width:400px){.selbar{gap:4px;padding-left:6px;padding-right:6px}.selbar button{padding:9px 8px;font-size:12.5px}}
+/* Personen */
+.plist{border-top:1px solid var(--line);margin-bottom:12px}
+.prs{padding:10px 0;border-bottom:1px solid var(--line)}
+.prs-n b{display:block;font-size:15px}.prs-n small{color:var(--muted);font-size:12.5px}
+.prs-a{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:8px}
+.prs-a .linkbtn{margin:0;text-decoration:none}
+.pnew{background:var(--soft);border-radius:14px;padding:12px}
+.pqr{display:grid;place-items:center;min-height:260px;background:#fff;border-radius:16px;margin:4px 0 14px}
+.pqr img,.pqr canvas{display:block}
+.pqr .sp{width:30px;height:30px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--brand);animation:spin .9s linear infinite}
 
 /* ================= Tablet und PC ================= */
 .side{display:none}
@@ -992,6 +1002,19 @@ button:focus:not(:focus-visible){outline:none}
 }
 /* Handys (auch iPhone): Eingabefelder mit 16 px, sonst zoomt der Browser beim Antippen heran */
 @media (pointer:coarse){input.in-t,select.in-t,textarea.in-t,.search input{font-size:16px}}
+/* v17 Claude einrichten */
+.clbar{height:6px;border-radius:6px;background:var(--line);overflow:hidden}.clbar i{display:block;height:100%;background:var(--brand);border-radius:6px;transition:width .3s}
+ol.cl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+ol.cl li{display:flex;gap:12px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+ol.cl li.done{opacity:.7}ol.cl li.done .cl-b b{text-decoration:line-through;text-decoration-color:rgba(0,0,0,.25)}
+.cl-ck{flex:0 0 32px;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--brand);background:transparent;color:var(--brand);font-weight:700;font-size:14px;cursor:pointer;padding:0}
+li.done .cl-ck{background:var(--brand);color:#fff}.cl-ck:disabled{cursor:default}
+.cl-b{flex:1;min-width:0}.cl-b p{margin:4px 0 8px;font-size:.92em;line-height:1.45;color:var(--muted)}.cl-b .pbtn{display:inline-block;text-decoration:none}
+details.clb{margin-top:12px}details.clb summary{cursor:pointer;font-size:.9em;color:var(--muted)}details.clb a{color:var(--brand)}
+.clban{display:flex;align-items:center;gap:4px;margin:10px 0;border-radius:14px;background:var(--brand-soft);border:1px solid var(--line)}
+.clban-m{flex:1;min-width:0;display:flex;align-items:center;gap:8px;background:none;border:0;padding:10px 12px;color:inherit;font:inherit;text-align:left;cursor:pointer}.clban-m svg{width:18px;height:18px;flex:0 0 18px}
+.clban-x{background:none;border:0;padding:8px 12px;font-size:18px;color:var(--muted);cursor:pointer}
+.prs-n small.cl-on{color:var(--ok)}.prs-n small.cl-off{color:var(--muted);opacity:.8}
 </style>
 </head>
 <body>
@@ -1076,8 +1099,8 @@ function tabOrder(s){const o=((s&&s.navOrder)||[]).filter(k=>ALL_TABS.some(t=>t[
 function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{};return tabOrder(s).filter(key=>tabOn(key,s)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='15';
-const MIN_SCRIPT=15;   /* so neu muss Code.gs mindestens sein */
+const APP_VERSION='17';
+const MIN_SCRIPT=18;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf0=new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
@@ -1321,6 +1344,7 @@ function vHeute(){
       ${macroChip('Kohlenhydrate',d.c,g2().carbs,'c')}${macroChip('Fett',d.f,g2().fat,'f')}
     </div>${moreVals(d)}</div>`;
   h=h.replace('<div class="card"><div class="hero">','<div class="hz"><div class="hz-a"><div class="card"><div class="hero">');
+  h+=clBanner();
   h+=planToday();
   const unsure=unsureList();
   if(unsure.length&&S.day===t)h+=`<button class="unsure" data-act="nachpflegen">${ICON.spark}<span>${unsure.length} unsichere ${unsure.length===1?'Wert':'Werte'} · nachpflegen</span>${ICON.right}</button>`;
@@ -2868,7 +2892,7 @@ function checkScript(){
   if(location.protocol==='https:'&&S.data.appUrl!==me)api(CONN.url,CONN.key,'setAppUrl',[me]).catch(()=>{});
 }
 function renderSide(){
-  migrateV12();renderClaudeBtn();checkScript();
+  migrateV12();renderClaudeBtn();checkScript();clAutoOpen();
   const el=$('#side');if(!el||!S.data)return;
   const pages=MODULES.filter(x=>x.page&&mods()[x.key]);
   const link=(key,lbl,act)=>`<button class="sl ${S.view===key?'on':''}" ${act?`data-act="goview" data-view="${key}"`:`data-tab="${key}"`}>${ICON[key]}<span>${lbl}</span></button>`;
@@ -2944,6 +2968,140 @@ document.addEventListener('click',ev=>{
   const box=document.querySelector('[data-sec=tabs] .sec-b');if(box)box.innerHTML=tabsHtml();
 });
 document.addEventListener('change',ev=>{if(ev.target.dataset&&ev.target.dataset.mod&&ev.target.closest('[data-sec=tabs]'))setTimeout(()=>{const box=document.querySelector('[data-sec=tabs] .sec-b');if(box)box.innerHTML=tabsHtml();},0);});
+
+/* ================= Personen (nur Besitzer): anlegen, verbinden, Schlüssel, entfernen ================= */
+const canPersons=()=>S.data&&S.data.isOwner&&(!LIVE||(+S.data.scriptVersion||0)>=17);
+function personsHtml(){
+  const ps=S.data.persons||[],arm=S.persArm||{};
+  return `<p class="sub" style="margin-top:0">Für Familie oder Freunde: Jede Person bekommt ihre eigene Tabelle (in deinem Drive, Ordner „Ernährungstagebuch Personen“, für sie freigegeben) und verbindet ihr Handy per QR-Code oder Link. Updates bekommt sie automatisch mit. Du hast technisch Zugriff auf ihre Daten.</p>
+  ${ps.length?`<div class="plist">${ps.map(p=>`<div class="prs"><div class="prs-n"><b>${esc(p.name)}</b><small>${esc(p.email||'eigene Tabelle')}</small><small class="${p.claude?'cl-on':'cl-off'}">${p.claude?'Claude eingerichtet ✓':'Claude noch nicht eingerichtet'}</small></div>
+    <div class="prs-a"><button class="pbtn" data-act="persConnect" data-id="${p.id}">Verbinden</button>
+      <a class="linkbtn" href="${esc(p.sheetUrl)}" target="_blank" rel="noopener">Tabelle</a>
+      <button class="linkbtn" data-act="persRenew" data-id="${p.id}">${arm['r'+p.id]?'Wirklich? Altes Handy wird getrennt':'Neuer Schlüssel'}</button>
+      <button class="linkbtn" style="color:var(--bad)" data-act="persDel" data-id="${p.id}">${arm['d'+p.id]?'Wirklich entfernen?':'Entfernen'}</button></div></div>`).join('')}</div>`:''}
+  <div class="pnew"><div class="row2"><label class="f"><span>Name</span><input class="in-t" id="pnName" placeholder="z. B. Mama" autocomplete="off"></label>
+    <label class="f"><span>Gmail-Adresse</span><input class="in-t" id="pnMail" type="email" placeholder="name@gmail.com" autocomplete="off"></label></div>
+    <button class="btn" data-act="persAdd" id="pnBtn">Person anlegen</button>
+    <p class="hint">Legt ihre Tabelle aus deiner Vorlage an, gibt sie frei (Google schickt ihr eine Mail) und zeigt dann QR-Code und Link.</p></div>`;
+}
+function personLink(key){
+  const base=location.origin+location.pathname.replace(/index\.html$/,'');
+  const url=CONN&&CONN.url?CONN.url:'https://script.google.com/macros/s/VORSCHAU/exec';
+  return base.replace(/#.*$/,'')+'#verbinden='+btoa(unescape(encodeURIComponent(JSON.stringify({url,key}))));
+}
+function loadQR(){return window.QRCode?Promise.resolve():new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';s.onload=()=>res();s.onerror=()=>rej(new Error('QR-Code konnte nicht geladen werden. Den Link kannst du trotzdem schicken.'));document.head.appendChild(s);});}
+function openPersonConnect(name,key){
+  const link=personLink(key);S.persLink={name,link};
+  openSheet(`<h2>Handy von ${esc(name)} verbinden</h2>
+    <p class="sub">Entweder ${esc(name)} scannt den Code mit der Handy-Kamera, oder du schickst ihr den Link. Er muss auf ihrem Handy in Chrome aufgehen. Danach: Chrome-Menü → App installieren.</p>
+    <div class="pqr" id="pqr"><span class="sp"></span></div>
+    <div class="pacts"><button class="btn" data-act="persShare">Link schicken</button><button class="btn ghost" data-act="persCopy">Link kopieren</button></div>
+    <p class="hint">Der Code und der Link enthalten ihren geheimen Schlüssel. Nur an ${esc(name)} schicken.</p>`);
+  loadQR().then(()=>{const el=$('#pqr');if(!el)return;el.innerHTML='';new QRCode(el,{text:link,width:240,height:240,colorDark:'#1E2320',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});})
+    .catch(e=>{const el=$('#pqr');if(el)el.innerHTML='<p class="small muted" style="padding:20px">'+esc(e.message)+'</p>';});
+}
+function refreshPersonsBox(){const b=document.querySelector('[data-sec=pers] .sec-b');if(b)b.innerHTML=personsHtml();}
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(!/^pers/.test(a))return;
+  if(a==='persAdd'){
+    const name=val('pnName'),mail=val('pnMail');
+    if(!name){toast('Bitte einen Namen eingeben.',true);return;}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)){toast('Bitte die Gmail-Adresse eingeben.',true);return;}
+    el.disabled=true;el.textContent='Lege Tabelle an … (dauert ein paar Sekunden)';
+    call('personNeu',name,mail).then(r=>{S.data.persons=r.persons;vibe();openPersonConnect(r.name,r.key);})
+      .catch(e=>{el.disabled=false;el.textContent='Person anlegen';toast(e.message||String(e),true);});
+    return;}
+  if(a==='persConnect'){call('personSchluessel',el.dataset.id,false).then(r=>openPersonConnect(r.name,r.key)).catch(e=>toast(e.message,true));return;}
+  if(a==='persRenew'||a==='persDel'){
+    const k=(a==='persRenew'?'r':'d')+el.dataset.id;S.persArm=S.persArm||{};
+    if(!S.persArm[k]){S.persArm={[k]:true};refreshPersonsBox();setTimeout(()=>{if(S.persArm&&S.persArm[k]){S.persArm={};refreshPersonsBox();}},5000);return;}
+    S.persArm={};
+    if(a==='persRenew')call('personSchluessel',el.dataset.id,true).then(r=>{toast('Neuer Schlüssel. Das alte Handy ist getrennt.');openPersonConnect(r.name,r.key);}).catch(e=>toast(e.message,true));
+    else call('personEntfernen',el.dataset.id).then(r=>{S.data.persons=r.persons;refreshPersonsBox();toast('Entfernt. Ihre Tabelle bleibt erhalten.');}).catch(e=>toast(e.message,true));
+    return;}
+  if(a==='persShare'){const p=S.persLink;shareOut({title:'Ernährungstagebuch',text:'Hallo '+p.name+', hier ist dein Ernährungstagebuch. Bitte auf dem Handy in Chrome öffnen, dann im Chrome-Menü „App installieren“. Danach zeigt dir die App Schritt für Schritt, wie du Claude dazu einrichtest:\n'+p.link});return;}
+  if(a==='persCopy'){copyText(S.persLink.link).then(()=>toast('Link kopiert.'),()=>toast('Kopieren nicht möglich.',true));return;}
+});
+/* ================= Claude einrichten: Checkliste mit Direktlinks (v17) ================= */
+const CL_STEPS=[
+  {k:'app',t:'Claude-App und Konto',
+   d:'Installiere die App <b>Claude</b> aus dem Play Store. Öffne sie und tippe auf <b>Mit Google fortfahren</b>. Das kostenlose Konto reicht.',
+   b:'Play Store öffnen',href:'https://play.google.com/store/apps/details?id=com.anthropic.claude'},
+  {k:'files',t:'„Dateien erstellen“ prüfen',
+   d:'Meist ist er schon an. Auf der Seite, die sich öffnet, prüfen: Der Schalter <b>Dateien erstellen und bearbeiten</b> muss an sein (heißt manchmal <i>Code-Ausführung und Dateierstellung</i>). Dann hierher zurückkommen.',
+   b:'Einstellung öffnen',href:'https://claude.ai/settings/capabilities'},
+  {k:'conn',t:'Google verbinden',
+   d:'Bei <b>Google Drive</b> auf <b>Verbinden</b> tippen, dein Google-Konto wählen und <b>Zulassen</b> tippen. Danach genauso bei <b>Google Sheets</b>. Stehen sie nicht in der Liste: auf <b>Durchsuchen</b> tippen und „Google“ suchen.',
+   b:'Verbindungen öffnen',href:'https://claude.ai/customize/connectors'},
+  {k:'sk1',t:'Skill „Ernährungstagebuch“',
+   d:'Claude legt den Skill selbst an und sagt dir, wo du tippen musst. Am Ende tippst du auf <b>Speichern</b> (englisch: <i>Save skill</i>).',
+   b:'In Claude anlegen',q:'sk1'},
+  {k:'sk2',t:'Skill „Rezeptideen“',
+   d:'Genauso wie eben: Claude legt ihn an, du tippst auf <b>Speichern</b>.',
+   b:'In Claude anlegen',q:'sk2'},
+  {k:'test',t:'Test',
+   d:'Claude liest deine Tabelle und schreibt einen Haken hinein. Fragt Claude nach Erlaubnis, tippe <b>Immer erlauben</b> (<i>Always allow</i>). Dann fragt es nie wieder. Dieser Schritt hakt sich von selbst ab.',
+   b:'Test starten',q:'test'}
+];
+const clGet=()=>{try{return JSON.parse(localStorage.getItem('et-cl')||'{}')}catch(e){return {}}};
+const clPut=d=>{try{localStorage.setItem('et-cl',JSON.stringify(d))}catch(e){}};
+const clOk=()=>!!(S.data&&S.data.claudeOk);
+const clBase=()=>location.origin+location.pathname.replace(/[^/]*$/,'');
+function clIsDone(k){return clOk()||!!clGet()[k];}
+function clCount(){return CL_STEPS.filter(s=>clIsDone(s.k)).length;}
+function clPrompt(q){
+  const n=S.data&&S.data.myName,hi=n?`Hallo, ich bin ${n}. `:'';
+  const skill=(id,nm)=>`${hi}Bitte lege mir einen neuen Skill namens „${id}“ an. Ruf dazu diese Datei ab: ${clBase()}skills/${id}/SKILL.md – und übernimm ihren Inhalt genau so, ohne etwas zu ändern oder zu kürzen (auch den Kopf mit name und description). Ich kenne mich damit nicht aus: Sag mir danach in einfachen, kurzen Worten, worauf ich tippen muss, damit der Skill „${nm}“ gespeichert ist.`;
+  if(q==='sk1')return skill('ernaehrungstagebuch','Ernährungstagebuch');
+  if(q==='sk2')return skill('rezeptideen','Rezeptideen');
+  const d=new Date().toLocaleDateString('de-DE');
+  return `${hi}Ich richte gerade mein Ernährungstagebuch ein. Erklär mir bitte zuerst in einem Satz: Gleich kann eine Frage nach Erlaubnis kommen, dann soll ich „Immer erlauben“ (Always allow) tippen, damit du nicht jedes Mal fragst. Dann mach den Test: Such in Google Drive meine Tabelle, deren Name mit „Ernährungstagebuch“ beginnt (auch unter „Geteilt mit mir“; Dateien mit „Backup“ oder „Vorlage“ im Namen ignorieren). Lies den Tab Status und sag mir kurz, wie viel ich heute schon gegessen habe. Schreib danach in derselben Tabelle in den Tab Anweisungen in Zelle C1 genau: Claude verbunden am ${d}. Sag mir zum Schluss, dass alles geklappt hat und ich zurück in die App gehen kann.`;
+}
+function clHtml(){
+  const ok=clOk(),c=clCount(),base=clBase();
+  return `<p class="sub" style="margin-top:0">${ok?'<b>Fertig. Claude ist eingerichtet.</b> Ab jetzt einfach in Claude schreiben oder sprechen, z. B. „Trag ein: ein Brötchen mit Käse“.':'Damit Claude für dich eintragen, nachrechnen und Rezepte vorschlagen kann. Dauert etwa 10 Minuten. Jeder Knopf öffnet direkt die richtige Stelle, du musst nur noch tippen und zustimmen.'}</p>
+  <div class="clbar"><i style="width:${Math.round(c/CL_STEPS.length*100)}%"></i></div><div class="small muted" style="margin:4px 0 10px">${c} von ${CL_STEPS.length} erledigt</div>
+  <ol class="cl">${CL_STEPS.map((s,i)=>{const dn=clIsDone(s.k);return `<li class="${dn?'done':''}">
+    <button class="cl-ck" data-act="clTick" data-k="${s.k}" ${s.k==='test'||ok?'disabled':''} aria-label="${dn?'Nicht erledigt':'Erledigt'}">${dn?'✓':i+1}</button>
+    <div class="cl-b"><b>${s.t}</b><p>${s.d}</p>
+      ${s.href?`<a class="pbtn" href="${s.href}" target="_blank" rel="noopener" data-act="clGo" data-k="${s.k}">${s.b}</a>`:`<button class="pbtn" data-act="clGo" data-k="${s.k}" data-q="${s.q}">${s.b}</button>`}</div></li>`}).join('')}</ol>
+  <details class="clb"><summary>Klappt ein Skill nicht?</summary><p class="small">Dann am PC <b>claude.ai/customize/skills</b> öffnen, auf <b>+</b> bzw. <b>Skill hochladen</b> tippen und diese Datei wählen (nicht entpacken):<br>
+    <a href="${base}skills/ernaehrungstagebuch.zip" download>ernaehrungstagebuch.zip</a> · <a href="${base}skills/rezeptideen.zip" download>rezeptideen.zip</a></p></details>`;
+}
+function openClaudeSetup(){
+  try{localStorage.removeItem('et-cl-open')}catch(e){}
+  openSheet(`<h2>Claude einrichten</h2><div id="clBox">${clHtml()}</div>`);
+}
+function refreshCl(){const b=$('#clBox');if(b)b.innerHTML=clHtml();const s=document.querySelector('[data-sec=cl] .sec-b');if(s)s.innerHTML=clHtml();
+  const sm=document.querySelector('[data-sec=cl] summary small');if(sm)sm.textContent=clSub();}
+const clSub=()=>clOk()?'Eingerichtet ✓':clCount()+' von '+CL_STEPS.length+' erledigt';
+/* dezenter Hinweis auf „Heute“ für weitere Personen, bis Claude eingerichtet ist */
+function clBanner(){
+  if(!S.data||S.data.isOwner||clOk())return '';
+  let hide='';try{hide=localStorage.getItem('et-cl-hide')||''}catch(e){}
+  if(hide===today())return '';
+  return `<div class="clban"><button class="clban-m" data-act="clOpen">${ICON.claude}<span><b>Claude einrichten</b> · ${clCount()} von ${CL_STEPS.length}</span></button><button class="clban-x" data-act="clHide" aria-label="Heute ausblenden">×</button></div>`;
+}
+/* nach dem Verbindungslink oder beim ersten Start einer weiteren Person einmal automatisch öffnen */
+function clAutoOpen(){
+  if(!S.data||S.data.isOwner||clOk()||S.clChecked)return;S.clChecked=true;
+  let o=null;try{o=localStorage.getItem('et-cl-open')}catch(e){}
+  if(o==='1')setTimeout(()=>{if(!$('#sheet.open'))openClaudeSetup();},900);
+}
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='clOpen'){openClaudeSetup();return;}
+  if(a==='clHide'){try{localStorage.setItem('et-cl-hide',today())}catch(e){}render();return;}
+  if(a==='clTick'){const d=clGet();d[el.dataset.k]=!d[el.dataset.k];clPut(d);refreshCl();return;}
+  if(a==='clGo'){
+    const d=clGet();
+    if(el.dataset.q){ev.preventDefault();window.open('https://claude.ai/new?q='+encodeURIComponent(clPrompt(el.dataset.q)),'_blank','noopener');}
+    if(el.dataset.k!=='test'){d[el.dataset.k]=true;clPut(d);setTimeout(refreshCl,400);}
+    return;}
+});
+/* zurück in der App: neu laden, damit der Test-Haken erscheint */
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&LIVE&&S.data&&!clOk()&&clGet().sk1&&typeof resync==='function')setTimeout(()=>{try{resync().then(()=>{refreshCl();if(clOk())toast('Claude ist eingerichtet ✓');})}catch(e){}},600);});
 
 /* ================= Sheets (Overlays) ================= */
 function openSheet(html,o){
@@ -3148,6 +3306,8 @@ function openSettings(){
   ${sec('ber','Weitere Bereiche',MODULES.filter(x=>!x.nav&&m[x.key]).map(x=>x.title).join(', ')||'keine zusätzlichen',MODULES.filter(x=>!x.nav).map(x=>`<div class="sw"><div><b>${x.title}</b><span>${x.desc}</span></div><label class="tg"><input type="checkbox" data-mod="${x.key}" ${m[x.key]?'checked':''}><i></i></label></div>`).join(''))}
   ${tabOn('gewicht',S.data.settings)?sec('wtr','Gewicht-Trends',wCfg().trends.length+' Trends ausgewählt',wTrendSettings()):''}
   ${sec('rem','Erinnerung',remSub(),remHtml())}
+  ${S.data.isOwner?'':sec('cl','Claude einrichten',clSub(),clHtml())}
+  ${canPersons()?sec('pers','Personen',(S.data.persons||[]).length?(S.data.persons||[]).map(p=>p.name).join(', '):'Familie oder Freunde dazuholen',personsHtml()):''}
   ${sec('ger','PC, Tablet und weitere Geräte','App auch am Computer nutzen',deviceHtml())}
   ${LIVE?sec('con','Verbindung','Mit deinem Google Sheet verbunden',`<button class="btn ghost" data-act="disconnect">Verbindung trennen</button>`):''}
   <p class="hint">${LIVE?'Daten kommen live aus deinem Google Sheet.':'Vorschau: Änderungen werden nicht gespeichert.'}<br>App-Version ${APP_VERSION}${LIVE?' · Script-Version '+(S.data.scriptVersion||'alt'):''}</p>
@@ -3598,7 +3758,7 @@ const Demo=(()=>{
     [[0,'Abendessen','Protein-Pancakes'],[1,'Mittagessen','Hähnchen-Reis-Bowl'],[2,'Abendessen','Linsen-Curry'],[3,'Mittagessen','Lachs mit Ofenkartoffeln'],[4,'Abendessen','Vollkornnudeln Bolognese'],[5,'Frühstück','Gemüse-Omelett']].forEach(([i,m,n])=>{const d=addDays(mon,i-7);(P[d]=P[d]||[]).push({id:'v'+i,meal:m,type:'recipe',name:n,portions:1,done:true});});
     data.recipes.push({name:'Lachs-Erbsen-Pfanne',portions:2,per:{kcal:263,p:5.5,c:58.5,f:0.5},items:[I('Basmatireis','150 g',525,11,117,1),Object.assign(I('TK Lachs','1 Pack',0,0,0,0),{open:true}),Object.assign(I('Erbsen tk','3 EL',0,0,0,0),{open:true})]});
     data.inbox=[{row:5,date:t,meal:'',time:'',what:'Auftrag: Rezept vervollständigen „Lachs-Erbsen-Pfanne“ (Zutaten mit „offen“ in Spalte B: Produkt wählen, Gramm und Werte eintragen, „offen“ löschen)',amount:''},{row:6,date:t,meal:'',time:'',what:'Auftrag: Bild suchen für Rezept „Gemüse-Omelett“ (echtes Foto aus dem Web, direkte Bildadresse in Tab Bilder, Spalte D)',amount:''}];
-    data.plan=P;data.imgWanted={'Gemüse-Omelett':true};
+    data.plan=P;data.isOwner=true;data.persons=[{id:'p1',name:'Mama',email:'mama@gmail.com',claude:'',sheetUrl:'https://docs.google.com/spreadsheets/d/VORSCHAU/edit'}];data.myName='';data.claudeOk='';data.imgWanted={'Gemüse-Omelett':true};
     data.settings.modules.wochenplan=true;data.settings.modules.rezepte=true;
     for(let i=40;i>=0;i-=2)data.weights.push({row:i+2,date:addDays(t,-i),time:'07:10',kg:Math.round((84.6-i*0.06+Math.sin(i)*0.35)*10)/10,note:''});
     foods=[['Lachsfilet TK','Golden Seafood',190,20,0,0,12,0,'Packung',250,'Open Food Facts',0.2,'nein',0,0],['Erbsen TK','',81,5.4,11,4,0.4,5,'EL',15,'BLS',0,'nein',0,0],['Rote Linsen','',339,24,49,2,1.5,11,'','', 'BLS',0,'nein',0,0],['Hähnchenbrust roh','',110,23,0,0,1.5,0,'','', 'BLS',0.2,'nein',0,0],['Basmatireis roh','',349,7.1,77,0.2,0.8,1.4,'','', 'BLS',0,'nein',0,0],['Brokkoli roh','',34,2.8,2.7,1.7,0.4,3,'','', 'BLS',0,'nein',0,0],['Lachsfilet roh','',203,20,0,0,13.6,0,'','', 'BLS',0.1,'nein',0,0],['Kartoffeln roh','',71,2,15,0.8,0.1,2,'','', 'BLS',0,'nein',0,0],['Skyr','',63,11,4,4,0.2,0,'','', 'BLS',0.1,'nein',4,0],['Heidelbeeren','',57,0.6,11,10,0.6,4.9,'','', 'BLS',0,'nein',0,0],['Magerquark','',67,12,4,4,0.3,0,'','', 'BLS',0.1,'nein',4,0],['Banane roh','',95,1.2,20,17,0.2,2,'Stück',120,'BLS',0,'nein',0,0],['Haferflocken','',370,13,59,1,7,10,'','', 'BLS',0,'nein',0,0],['Hühnerei roh','',137,13,1.5,0.5,9,0,'Stück',54,'BLS',null,'',null,null]];
@@ -3616,6 +3776,9 @@ const Demo=(()=>{
   const find=it=>{const r=data.diary.find(x=>x[0]===it.row);if(!r||r[1]!==it.date||r[4]!==it.name)throw new Error('Eintrag nicht gefunden.');return r;};
   return {
     getData:()=>out(),
+    personNeu:(name,mail)=>{const id='p'+((data.persons||[]).length+1);(data.persons=data.persons||[]).push({id,name,email:mail,sheetUrl:'https://docs.google.com/spreadsheets/d/VORSCHAU/edit'});return {id,name,key:'vorschau-'+id,persons:data.persons};},
+    personSchluessel:(id,neu)=>{const p=(data.persons||[]).find(x=>x.id===id);if(!p)throw new Error('Diese Person gibt es nicht mehr.');return {id,name:p.name,key:'vorschau-'+id+(neu?'-neu':'')};},
+    personEntfernen:id=>{data.persons=(data.persons||[]).filter(x=>x.id!==id);return {persons:data.persons};},
     getFoods:()=>({count:data.foodsCount,foods}),
     saveSettings:s=>{data.settings=s;return s;},
     saveGoals:g=>{data.goals={kcalDay:g.kcalDay,proteinDay:g.proteinDay,kcalWeek:g.kcalWeek};data.settings.goals2={carbs:g.carbs||0,fat:g.fat||0};return out();},
