@@ -606,6 +606,12 @@ html,body{overscroll-behavior-x:none}
 .tt small{font-size:12px;color:var(--muted)}.tt b{font-size:19px}.tt span{font-size:11.5px;color:var(--faint);line-height:1.3}
 .wt-chart svg{touch-action:pan-y;cursor:crosshair;display:block;width:100%}
 .wsel{width:auto;min-width:96px;padding:8px 10px}
+/* v17: Plus-Menü kompakter */
+.addh{display:flex;align-items:center;justify-content:space-between;gap:10px}.addh h2{margin:0}
+.minibtn{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;padding:6px 10px;border-radius:999px;background:var(--brand-soft);color:var(--brand);font-weight:600;font-size:13px;border:0;cursor:pointer}
+.minibtn svg{width:15px;height:15px}
+.cother{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 4px;font-size:13px;color:var(--muted)}
+.cother input{border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--card);color:var(--ink);font:inherit;min-width:0}
 
 /* ================= Wochenplan ================= */
 .psum{padding:14px 16px}
@@ -1099,7 +1105,7 @@ function tabOrder(s){const o=((s&&s.navOrder)||[]).filter(k=>ALL_TABS.some(t=>t[
 function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{};return tabOrder(s).filter(key=>tabOn(key,s)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='17';
+const APP_VERSION='18';
 const MIN_SCRIPT=18;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1250,15 +1256,22 @@ function splitQty(q){
   const text=(q.slice(0,m.index)+' '+q.slice(m.index+m[0].length)).replace(/\s+/g,' ').trim();
   return {amount:/^[\d.,]+$/.test(a)?a+' g':a,text};
 }
+/* wie oft ein Lebensmittel schon im Tagebuch steht (für die Suche) */
+function eatCounts(){
+  if(S.eatCache&&S.eatCache.src===S.data.diary)return S.eatCache.m;
+  const m=new Map();for(const r of S.data.diary){const kk=norm(r[4]).replace(/\s*\([^)]*\)\s*$/,'');m.set(kk,(m.get(kk)||0)+(r[10]?0.5:1));}
+  S.eatCache={src:S.data.diary,m};return m;
+}
 const stem=w=>w.length>4?w.replace(/(en|n|e|s)$/,''):w;
 function searchFoods(q){
-  const t=norm(splitQty(q).text).split(/[\s,]+/).filter(w=>w&&!/^(tk|von|mit|und|oder|der|die|das|frisch)$/.test(w)).map(stem);
+  const t=norm(splitQty(q).text).split(/[\s,]+/).filter(w=>w&&!/^(tk|von|mit|und|oder|der|die|das|frisch|s|m|l|xl|gr|grosse?s?|kleine?s?|mittel)$/.test(w)).map(stem);
   if(!t.length||!S.foods)return [];
-  const out=[],part=[];
+  const out=[],part=[],eat=eatCounts(),t0=t[0];
   for(const x of S.foods){
     const hit=t.filter(w=>x.k.includes(w)).length;if(!hit)continue;
-    const n=norm(x.f[0]);let sc=n.length/12+(x.f[1]?1.5:0);
-    if(n.startsWith(t[0]))sc-=6;else if(n.includes(' '+t[0])||n.includes(','+t[0]))sc-=2;
+    const n=norm(x.f[0]),ws=n.split(/[^a-z0-9]+/).filter(Boolean);let sc=n.length/12+(x.f[1]?1.5:0);
+    if(ws[0]===t0||ws[0]===t0+'er'||ws[0]===t0+'s')sc-=10;else if(ws.includes(t0))sc-=7;else if(n.startsWith(t0))sc-=(t0.length<3?2:6);else if(ws.some(w=>w.startsWith(t0)))sc-=2;
+    const c=eat.get(n);if(c&&(t0.length>=4||ws.some(w=>w===t0||w===t0+'er'||w.endsWith(t0)||(t0.length>2&&w.startsWith(t0)))))sc-=Math.min(14,6+3*Math.log2(1+c));
     if(/roh\b/.test(n))sc-=.5;if(x.f[9])sc-=.5;if(x.f[11]!==null)sc-=.5;
     if(hit===t.length)out.push([sc,x.f]);else if(t.filter(w=>w.length>=3&&x.k.includes(w)).length)part.push([sc+(t.length-hit)*4,x.f]);
   }
@@ -2017,6 +2030,17 @@ function openTplCreate(){
     <button class="btn" data-act="saveTplNew">Vorlage speichern</button>`);
 }
 
+/* Plus-Menü: kleiner Knopf „Aus Rezept“ neben der Überschrift */
+function recipePickList(){
+  const q=norm(S.add.rq||''),rs=(S.data.recipes||[]).filter(r=>!q||norm(r.name).includes(q)).sort((a,b)=>a.name.localeCompare(b.name,'de'));
+  return rs.length?`<div class="res">${rs.map(r=>`<button class="item" data-act="pickRecipe" data-n="${esc(r.name)}"><div class="it-main"><div class="it-name">${esc(r.name)}</div><div class="it-sub">${fmtN(r.portions||1)} ${(r.portions||1)===1?"Portion":"Portionen"}</div></div><div class="it-val"><b class="num">${k(r.per.kcal)}</b><small class="faint">kcal/Port.</small></div></button>`).join('')}</div>`:'<div class="empty" style="padding:10px 2px">Kein Rezept gefunden.</div>';
+}
+function recipePickStep(){
+  return `<button class="back" data-act="addback">${ICON.back}Zurück</button><h2>Aus Rezept</h2>
+    ${(S.data.recipes||[]).length>6?`<div class="search" style="box-shadow:none;background:var(--soft);margin:8px 0 12px">${ICON.search}<input id="rpq" type="search" placeholder="Rezept suchen" value="${esc(S.add.rq||'')}" autocomplete="off"></div>`:''}
+    <div id="rplist">${recipePickList()}</div>`;
+}
+
 /* ================= Bericht (PDF) und Export ================= */
 const EXP_KINDS={
   voll:{t:'Ausführlich',parts:['ueb','tage','eintr','gew','top','zus','besch']},
@@ -2267,13 +2291,13 @@ async function photoShare(){
    Im Plus-Menü: "Kopieren von" (Standard: gestern Abendessen bzw. die letzte Mahlzeit mit Einträgen davor).
    In der Auswahl (lange drücken / Rechtsklick): "Kopieren" auf einen anderen Tag / eine andere Mahlzeit. */
 function copyDefault(toDate){
-  let d=addDays(toDate,-1),m='Abendessen';
-  if(day(d).meals[m])return {d,m};
-  for(let i=0;i<14;i++){const dd=addDays(toDate,-i);for(const mm of MEALS.slice().reverse()){if(i===0&&MEALS.indexOf(mm)>=MEALS.indexOf(S.add.meal))continue;if(day(dd).meals[mm])return {d:dd,m:mm};}}
-  return {d,m};
+  const d=addDays(toDate,-1),ms=day(d).meals,want=S.add&&S.add.meal;
+  if(want&&ms[want])return {d,m:want};
+  const m=MEALS.find(x=>ms[x]);
+  return {d,m:m||want||MEALS[0]};
 }
 const dayLabel=d=>relDay(d)||(DS[wd(d)]+', '+shortDate(d));
-function copyRowHtml(){
+function copyRowHtml(){ /* nicht mehr im Plus-Menü, bleibt für alte Aufrufe */
   const A=S.add;if(!A.copy)A.copy=copyDefault(A.date);
   const src=day(A.copy.d).meals[A.copy.m];
   return `<button class="copyrow" data-act="addstep" data-step="copy">${ICON.copy}<span><b>Kopieren von</b><small>${dayLabel(A.copy.d)} · ${MEAL_SHORT[A.copy.m]}${src?' · '+src.items.length+' '+(src.items.length===1?'Eintrag':'Einträge')+', '+k(src.kcal)+' kcal':' · leer'}</small></span>${ICON.right}</button>`;
@@ -2286,8 +2310,9 @@ function copyStep(){
   const on=new Set(A.copySel.on);
   const kc=groups.filter((_,i)=>on.has(i)).reduce((a,g)=>a+(g.single?g.single.kcal:g.kcal),0);
   S.copyGroups=groups;
-  return `<button class="back" data-act="addback">${ICON.back}Zurück</button><h2>Kopieren von</h2>
+  return `<button class="back" data-act="addback">${ICON.back}Zurück</button><h2>Kopieren von</h2><p class="sub">Tag und Mahlzeit wählen, dann abhaken, was du wirklich gegessen hast.</p>
     <div class="pdays cdays">${days.map(d=>`<button class="${d===c.d?'on':''}" data-act="copyDay" data-d="${d}"><b>${relDay(d)==='Heute'?'Heute':DS[wd(d)]}</b><small>${shortDate(d)}</small></button>`).join('')}</div>
+    <label class="cother"><span>${days.includes(c.d)?'Anderer Tag':dayLabel(c.d)}</span><input type="date" id="cpDay" value="${c.d}" max="${t}"></label>
     <div class="cmeal">${MEALS.map(m=>{const has=day(c.d).meals[m];return `<button type="button" class="${m===c.m?'on':''}" style="--mc:${MEAL_COLOR[m]}" data-act="copyMeal" data-meal="${m}"><i></i>${MEAL_SHORT[m]}${has?` <small class="num">${k(has.kcal)}</small>`:''}</button>`;}).join('')}</div>
     ${groups.length?`<div class="copylist">${groups.map((g,i)=>{const nm=g.single?g.single.name:g.recipe,sub=g.single?g.single.amount:g.amount+' · '+g.rows.length+' Zutaten',kk=g.single?g.single.kcal:g.kcal;
       return `<label class="shop "><input type="checkbox" data-copyi="${i}" ${on.has(i)?'checked':''}><i>${ICON.check}</i><span><b>${g.single?'':'<span class="tag">Rezept</span>'}${esc(nm)}</b><small>${esc(sub)}</small></span><em class="num">${k(kk)} kcal</em></label>`;}).join('')}</div>`
@@ -2314,7 +2339,10 @@ document.addEventListener('click',ev=>{
 });
 /* copyMeal nutzt eigene Knöpfe, damit die Ziel-Mahlzeit (mealpick unten) nicht mitspringt */
 document.addEventListener('change',ev=>{
-  const t=ev.target;if(t.dataset.copyi===undefined||!S.add||!S.add.copySel)return;
+  const t=ev.target;
+  if(t.id==='cpDay'&&S.add&&t.value){const A=S.add,d=t.value,ms=day(d).meals;A.meal=pickedMeal();A.date=val('cDate')||A.date;A.time=val('cTime')||A.time;
+    A.copy={d,m:ms[A.copy.m]?A.copy.m:(MEALS.find(x=>ms[x])||A.copy.m)};drawAdd();return;}
+  if(t.dataset.copyi===undefined||!S.add||!S.add.copySel)return;
   const i=+t.dataset.copyi,s=new Set(S.add.copySel.on);if(t.checked)s.add(i);else s.delete(i);S.add.copySel.on=[...s];
   const keep=$('#sheet').scrollTop;S.add.meal=pickedMeal();S.add.date=val('cDate')||S.add.date;S.add.time=val('cTime')||S.add.time;drawAdd();$('#sheet').scrollTop=keep;
 });
@@ -3154,12 +3182,13 @@ function drawAdd(){
   if(A.seg==='beschwerde'){openSheet(segHtml()+complaintForm());return;}
   if(A.seg==='gewicht'){openSheet(segHtml()+`<h2>Gewicht eintragen</h2><p class="sub">Mit Plus und Minus in 0,1-kg-Schritten vom letzten Wert aus.</p>`+weightForm('aKg'));return;}
   if(A.step==='search'){
-    openSheet(segHtml()+`<h2>Was hast du gegessen?</h2>
-      <div class="search" style="box-shadow:none;background:var(--soft);margin:8px 0 0">${ICON.search}<input id="fq" type="search" placeholder="z. B. Magerquark, Banane, Ehrmann" value="${esc(A.q)}" autocomplete="off"><button class="scanbtn" data-act="addstep" data-step="photo" aria-label="Foto an Claude">${ICON.camera}</button><button class="scanbtn" data-act="scan" aria-label="Barcode scannen">${ICON.barcode}</button></div>
+    openSheet(segHtml()+`<div class="addh"><h2>Was hast du gegessen?</h2>${(S.data.recipes||[]).length?`<button class="minibtn" data-act="addstep" data-step="recipes">${ICON.rezepte}Aus Rezept</button>`:''}</div>
+      <div class="search" style="box-shadow:none;background:var(--soft);margin:8px 0 0">${ICON.search}<input id="fq" type="search" placeholder="z. B. Magerquark, Banane, Ehrmann" value="${esc(A.q)}" autocomplete="off"><button class="scanbtn" data-act="addstep" data-step="copy" aria-label="Von einer anderen Mahlzeit kopieren" title="Kopieren von …">${ICON.copy}</button><button class="scanbtn" data-act="addstep" data-step="photo" aria-label="Foto an Claude">${ICON.camera}</button><button class="scanbtn" data-act="scan" aria-label="Barcode scannen">${ICON.barcode}</button></div>
       <div id="fres">${resultsHtml()}</div>`);
   } else if(A.step==='copy'){openSheet(copyStep());
   } else if(A.step==='photo'){openSheet(photoHtml());
   } else if(A.step==='recipe'){openSheet(recipeStep());
+  } else if(A.step==='recipes'){openSheet(recipePickStep());
   } else if(A.step==='tpl'){openSheet(tplStep());
   } else if(A.step==='scan'){
     openSheet(scanHtml());setTimeout(startScan,120);
@@ -3207,11 +3236,14 @@ function miniNut(kc,p,f){return `<div style="grid-column:span 2"><small>kcal</sm
 function factorHtml(cur){return `<label class="f"><span>Menge</span></label><div class="facts">${[0.5,1,1.5,2,3].map(f=>`<button class="${f===cur?'on':''}" data-act="factor" data-f="${f}">${f===0.5?'½':f===1.5?'1½':f}×</button>`).join('')}</div>`;}
 function resultsHtml(){
   const q=S.add.q.trim();
-  const rec=recentList().filter(x=>!q||norm((x.recipe||x.name)+' '+x.amount).includes(norm(q))).slice(0,q?8:(S.data.settings.recentN||20));
+  const qw=norm(q).split(/[^a-z0-9]+/).filter(w=>w&&!/^(s|m|l|xl)$/.test(w));
+  let rec=recentList().filter(x=>{if(!qw.length)return true;const ws=norm((x.recipe||x.name)+' '+x.amount).split(/[^a-z0-9]+/);return qw.every(w=>ws.some(v=>v.startsWith(w)));});
+  if(q){const by=new Map();for(const x of rec){const kk=norm(x.recipe||x.name),o=by.get(kk);if(!o)by.set(kk,Object.assign({},x,{total:x.count}));else o.total+=x.count;}
+    rec=[...by.values()].sort((a,b)=>b.total-a.total||(b.last+b.time).localeCompare(a.last+a.time));}
+  rec=rec.slice(0,q?8:(S.data.settings.recentN||20));
   S.add.recList=rec;
   let h='';
-  if(!q)h+=copyRowHtml();
-  h+=tplChips(q)+recipeChips(q);
+  h+=tplChips(q)+(q?recipeChips(q):'');
   if(!q&&mods().haeufig){const fq=frequent();if(fq.length)h+=`<div class="res-h">Häufig</div><div class="fchips">${fq.map((x,i)=>`<button class="fchip" data-act="pickFreq" data-i="${i}" style="--mc:${MEAL_COLOR[x.meal]||'var(--m4)'}"><i></i><span>${esc(x.recipe||x.name)}</span><small class="num">${k(x.kcal)}</small></button>`).join('')}</div>`;}
   if(rec.length)h+=`<div class="res-h">${q?'Schon gegessen':'Zuletzt gegessen'}</div><div class="res">${rec.map((x,i)=>`<button class="item" data-act="pickRecent" data-i="${i}"><div class="it-main"><div class="it-name">${x.recipe?'<span class="tag">Rezept</span>'+esc(x.recipe):esc(x.name)}</div><div class="it-sub">${esc(x.amount)} · ${relDay(x.last)||shortDate(x.last)}</div></div><div class="it-val"><b class="num">${k(x.kcal)}</b><small class="num">${g1(x.p)} g E</small></div></button>`).join('')}</div>`;
   if(q){
@@ -3482,7 +3514,7 @@ document.addEventListener('click',ev=>{
     break;}
   case 'add':openAdd(el.dataset.meal);break;
   case 'seg':A.seg=el.dataset.seg;drawAdd();break;
-  case 'addback':A.step='search';drawAdd();break;
+  case 'addback':A.step=A.step==='recipe'&&A.recBack?'recipes':'search';drawAdd();break;
   case 'addstep':A.step=el.dataset.step;drawAdd();break;
   case 'pickFreq':A.recent=frequent()[+el.dataset.i];A.factor=1;A.step='recent';drawAdd();break;
   case 'close':closeSheet();break;
@@ -3503,7 +3535,7 @@ document.addEventListener('click',ev=>{
   case 'introShow':closeSheet();introStep(0);break;
   case 'pickRecipe':{
     const r=(S.data.recipes||[]).find(x=>x.name===el.dataset.n);if(!r)break;
-    A.recipe=r;A.portions=1;A.hist=recipeHist(r.name);A.step='recipe';drawAdd();break;}
+    A.recBack=A.step==='recipes';A.recipe=r;A.portions=1;A.hist=recipeHist(r.name);A.step='recipe';drawAdd();break;}
   case 'portStep':{
     A.portions=Math.max(0.5,Math.round((A.portions+ +el.dataset.d)*2)/2);const r=A.recipe,n=A.portions;
     $('#portN').textContent=fmtN(n);$('#rnutR').innerHTML=`<div><small>kcal</small><b class="num">${k(r.per.kcal*n)}</b></div><div><small>Eiweiß</small><b class="num">${g1(r.per.p*n)}</b></div><div><small>KH</small><b class="num">${g1(r.per.c*n)}</b></div><div><small>Fett</small><b class="num">${g1(r.per.f*n)}</b></div>`;break;}
@@ -3652,6 +3684,7 @@ document.addEventListener('input',ev=>{
     setLook(k,hex,false);const sw=t.closest('.lc').querySelector('.lc-h i');sw.style.background=hex;t.closest('.lc').querySelector('.lc-h span').textContent=hex;return;}
   if(t.dataset&&t.dataset.look==='radius'){setLook('radius',+t.value,false);return;}
   if(t.id==='q'){S.search=t.value;S.limit=120;clearTimeout(t._h);t._h=setTimeout(()=>{render();const q=$('#q');q.focus();q.setSelectionRange(q.value.length,q.value.length);},250);}
+  if(t.id==='rpq'){S.add.rq=t.value;const b=$('#rplist');if(b)b.innerHTML=recipePickList();return;}
   if(t.id==='fq'){S.add.q=t.value;clearTimeout(t._h);t._h=setTimeout(()=>{$('#fres').innerHTML=resultsHtml();},150);}
   if(t.id==='fg'){const g=parseFloat(t.value.replace(',','.'))||0;S.add.g=g;$('#fnut').innerHTML=nutHtml(S.add.food,g);S.add.portion='';document.querySelectorAll('.portions button').forEach(b=>b.classList.remove('on'));}
   if(t.id==='eAmt'){const rows=itemsOf(S.sel);$('#enut').innerHTML=miniNut(rows.reduce((a,e)=>a+e.kcal,0),rows.reduce((a,e)=>a+e.p,0),editFactor());}
