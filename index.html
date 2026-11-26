@@ -967,6 +967,7 @@ details.sec[open]{border-color:var(--brand)}
 .aistar{font-size:20px;line-height:1}
 .trstrip,.trplans,.trnew{max-width:760px}.trs-d{max-width:520px}.trch{max-width:560px}
 .aibtn.sec{border-style:dashed;background:var(--card)}
+.aibtn.top{margin:2px 0 12px}
 
 /* ================= Tablet und PC ================= */
 .side{display:none}
@@ -1236,8 +1237,8 @@ function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{}
 function topTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{},top=navTopOf(s);return tabOrder(s).filter(key=>tabOn(key,s)&&top.includes(key)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='29';
-const MIN_SCRIPT=28;   /* so neu muss Code.gs mindestens sein */
+const APP_VERSION='30';
+const MIN_SCRIPT=29;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf0=new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
@@ -3760,7 +3761,7 @@ async function aiGo(btn){
   try{await loadFoods().catch(()=>{});}catch(e){}
   const req={text,meal:pickedMeal(),date:val('aiDate')||A.date,time:val('aiTime')||A.time,cands:aiCands(text)};
   if(A.aiImg){const m=A.aiImg.match(/^data:([^;]+);base64,(.*)$/);if(m)req.img={mime:m[1],b64:m[2]};}
-  call('aiEntry',req).then(r=>{
+  callT(100000,'aiEntry',req).then(r=>{
     closeSheet();vibe();
     if(r.limit){aiLimitAsk(req);return;}
     if(r.queued){toast('Liegt im Eingang.');if(LIVE)resync();return;}
@@ -3774,9 +3775,9 @@ document.addEventListener('click',ev=>{
   const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
   if(a==='aiKeySave'){const k2=val('aiKey').trim();if(!k2){toast('Bitte den Schlüssel einfügen.',true);return;}
     el.disabled=true;el.textContent='Wird geprüft …';
-    callT(60000,'setGeminiKey',k2).then(r=>{S.data.aiKey=r.aiKey;vibe();toast(r.warn?'Gespeichert, aber der Test hat nicht geklappt: '+r.warn+' Probier „Mit KI eintragen“ einfach aus.':'Gespeichert. „Mit KI eintragen“ ist jetzt im Plus-Menü.',!!r.warn);const b=document.querySelector('[data-sec=ai] .sec-b');if(b)b.innerHTML=aiSetHtml();const sm=document.querySelector('[data-sec=ai] summary small');if(sm)sm.textContent=aiSub();})
+    callT(60000,'setGeminiKey',k2).then(r=>{S.data.aiKey=r.aiKey;aiRefresh();vibe();toast(r.warn?'Gespeichert, aber der Test hat nicht geklappt: '+r.warn+' Probier „Mit KI eintragen“ einfach aus.':'Gespeichert. „Mit KI eintragen“ ist jetzt im Plus-Menü.',!!r.warn);const b=document.querySelector('[data-sec=ai] .sec-b');if(b)b.innerHTML=aiSetHtml();const sm=document.querySelector('[data-sec=ai] summary small');if(sm)sm.textContent=aiSub();})
       .catch(e=>{el.disabled=false;el.textContent='Speichern';toast(e.message||String(e),true);});return;}
-  if(a==='aiKeyDel'){call('setGeminiKey','').then(r=>{S.data.aiKey=r.aiKey;toast('Schlüssel entfernt.');const b=document.querySelector('[data-sec=ai] .sec-b');if(b)b.innerHTML=aiSetHtml();const sm=document.querySelector('[data-sec=ai] summary small');if(sm)sm.textContent=aiSub();}).catch(e=>toast(e.message,true));return;}
+  if(a==='aiKeyDel'){call('setGeminiKey','').then(r=>{S.data.aiKey=r.aiKey;aiRefresh();toast('Schlüssel entfernt.');const b=document.querySelector('[data-sec=ai] .sec-b');if(b)b.innerHTML=aiSetHtml();const sm=document.querySelector('[data-sec=ai] summary small');if(sm)sm.textContent=aiSub();}).catch(e=>toast(e.message,true));return;}
   if(a==='aiGo'){aiGo(el);return;}
   if(a==='aiImgDel'){S.add.aiText=val('aiText');S.add.aiImg=null;openSheet(aiHtml());return;}
 });
@@ -3789,8 +3790,10 @@ document.addEventListener('change',ev=>{const t=ev.target;if(!t.dataset||!t.data
 
 /* Mit Gemini-Schlüssel: der runde Knopf neben dem Plus öffnet „Mit KI eintragen“ statt Claude */
 function renderAiBtn(){const c=$('#cbtn');if(!c||!S.data)return;const ai=geminiPrimary();
-  if(ai&&c.dataset.ai!=='1'){c.dataset.ai='1';c.innerHTML='<span class="aistar">✨</span>';c.setAttribute('aria-label','Mit KI eintragen');c.title='Mit KI eintragen';}
-  else if(!ai&&c.dataset.ai==='1'){c.dataset.ai='';c.innerHTML=ICON.claude;c.setAttribute('aria-label','Mit Claude eintragen');c.title='';}}
+  if(ai&&c.dataset.ai!=='1'){c.dataset.ai='1';c.innerHTML='<span class="aistar">✨</span>';c.setAttribute('aria-label','Mit KI eintragen');c.title='Mit KI eintragen';c.removeAttribute('href');c.removeAttribute('target');c.setAttribute('role','button');}
+  else if(!ai&&c.dataset.ai==='1'){c.dataset.ai='';c.innerHTML=ICON.claude;c.setAttribute('aria-label','Mit Claude eintragen');c.title='';c.href='https://claude.ai/new';c.target='_blank';c.removeAttribute('role');}}
+/* nach jeder Änderung an KI-Einstellung oder Schlüssel sofort umschalten */
+function aiRefresh(){renderAiBtn();if(typeof renderClaudeBtn==='function')renderClaudeBtn();if(typeof renderSide==='function'&&$('#side'))try{renderSide();}catch(e){}}
 document.addEventListener('click',ev=>{const c=ev.target.closest('#cbtn,.sl-ai');if(!c||!geminiPrimary())return;if(c.id==='cbtn'&&c.dataset.ai!=='1')return;ev.preventDefault();ev.stopPropagation();openAdd(null);S.add.step='ai';drawAdd();},true);
 
 /* ---------- Gemini ausgelastet: Wahl anbieten ---------- */
@@ -3809,7 +3812,7 @@ async function aiInbox(){
   let done=0,kc=0;toast('Gemini arbeitet '+items.length+(items.length===1?' Eintrag':' Einträge')+' ab …');
   for(const i of items){
     const text=(i.what+(i.amount?', '+i.amount:'')).trim();
-    try{const r=await call('aiEntry',{text,meal:i.meal||mealByTime(i.time||nowHM()),date:i.date||today(),time:i.time||nowHM(),cands:aiCands(text)});
+    try{const r=await callT(100000,'aiEntry',{text,meal:i.meal||mealByTime(i.time||nowHM()),date:i.date||today(),time:i.time||nowHM(),cands:aiCands(text)});
       if(r.limit){toast((done?done+' erledigt. ':'')+'Gemini ist ausgelastet, wieder '+geminiReset()+'.',true);break;}
       await call('deleteInbox',i.row);done++;kc+=r.kcal||0;}
     catch(e){toast('„'+i.what+'“: '+(e.message||e),true);break;}
@@ -3818,7 +3821,7 @@ async function aiInbox(){
 }
 document.addEventListener('click',ev=>{
   const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
-  if(a==='aiMainSet'){const s=JSON.parse(JSON.stringify(S.data.settings));s.aiMain=el.dataset.v;commit('saveSettings',[s]);openSettings();setTimeout(()=>{const d=document.querySelector('[data-sec=ai]');if(d)d.open=true;},30);return;}
+  if(a==='aiMainSet'){const s=JSON.parse(JSON.stringify(S.data.settings));s.aiMain=el.dataset.v;commit('saveSettings',[s]);aiRefresh();openSettings();setTimeout(()=>{const d=document.querySelector('[data-sec=ai]');if(d)d.open=true;},30);return;}
   if(a==='aiLimClaude'){const q=S.aiLimitReq;call('aiEntry',Object.assign({},q,{queue:true})).then(()=>{closeSheet();if(LIVE)resync().then(claudeGo);else claudeGo();}).catch(e=>toast(e.message,true));return;}
   if(a==='aiLimQueue'){const q=S.aiLimitReq;call('aiEntry',Object.assign({},q,{queue:true})).then(()=>{closeSheet();toast('Liegt im Eingang. Später auf „Mit Gemini erledigen“ tippen.');if(LIVE)resync();}).catch(e=>toast(e.message,true));return;}
   if(a==='aiLimNo'){closeSheet();return;}
@@ -3828,7 +3831,7 @@ document.addEventListener('change',ev=>{const t=ev.target;if(!t.dataset||!t.data
   const b=document.querySelector('[data-sec=ai] .sec-b');if(b)b.innerHTML=aiSetHtml();const sm=document.querySelector('[data-sec=ai] summary small');if(sm)sm.textContent=aiSub();});
 /* ---------- Barcode per Foto (iPhone: Safari kann keine Barcodes live lesen) ---------- */
 document.addEventListener('change',ev=>{const t=ev.target;if(t.id!=='eanFoto'||!t.files||!t.files[0])return;
-  toast('Gemini liest die Nummer …');shrinkImage(t.files[0],1200,0.85).then(u=>{const m=u.match(/^data:([^;]+);base64,(.*)$/);return call('aiBarcode',{mime:m[1],b64:m[2]});})
+  toast('Gemini liest die Nummer …');shrinkImage(t.files[0],1200,0.85).then(u=>{const m=u.match(/^data:([^;]+);base64,(.*)$/);return callT(70000,'aiBarcode',{mime:m[1],b64:m[2]});})
     .then(r=>{if(r.limit){toast('Gemini ist ausgelastet, wieder '+geminiReset()+'. Bitte die Nummer eintippen.',true);return;}const i=$('#eanIn');if(i)i.value=r.ean;lookupEan(r.ean);})
     .catch(e=>toast(e.message||String(e),true));});
 
@@ -4178,6 +4181,7 @@ function resultsHtml(){
   rec=rec.slice(0,q?8:(S.data.settings.recentN||20));
   S.add.recList=rec;
   let h='';
+  if(hasAI()&&geminiPrimary())h+=`<button class="aibtn top" data-act="addstep" data-step="ai">✨<span><b>${q?'„'+esc(q)+'“ mit KI eintragen':'Mit KI eintragen'}</b><small>${q?'Sucht in deinen Lebensmitteln, rechnet die Menge aus':'Einfach hinschreiben oder Foto wählen'}</small></span></button>`;
   h+=tplChips(q)+(q?recipeChips(q):'');
   if(!q&&mods().haeufig&&!S.add.mealOnly){const mm=S.add.meal,fq=frequent().slice().sort((a,b)=>(b.meal===mm)-(a.meal===mm));if(fq.length)h+=`<div class="res-h">Häufig${fq[0].meal===mm?' · '+MEAL_SHORT[mm]+' zuerst':''}</div><div class="fchips">${fq.map((x,i)=>`<button class="fchip" data-act="pickFreq" data-i="${i}" style="--mc:${MEAL_COLOR[x.meal]||'var(--m4)'}"><i></i><span>${esc(x.recipe||x.name)}</span><small class="num">${k(x.kcal)}</small></button>`).join('')}</div>`;}
   if(rec.length||S.add.mealOnly)h+=`<div class="res-h">${q?'Schon gegessen':S.add.mealOnly?'Zuletzt zum '+MEAL_SHORT[S.add.mealOnly]+' <button class="linkbtn" data-act="mealOnlyOff" style="float:right;margin:0">alle zeigen</button>':'Zuletzt gegessen'}</div>`+(S.add.mealOnly&&!rec.length?'<div class="empty">Dazu gibt es noch nichts.</div>':'')+`<div class="res">${rec.map((x,i)=>`<button class="item" data-act="pickRecent" data-i="${i}"><div class="it-main"><div class="it-name">${x.recipe?'<span class="tag">Rezept</span>'+esc(x.recipe):esc(x.name)}</div><div class="it-sub">${esc(x.amount)} · ${relDay(x.last)||shortDate(x.last)}</div></div><div class="it-val"><b class="num">${k(x.kcal)}</b><small class="num">${g1(x.p)} g E</small></div></button>`).join('')}</div>`;
@@ -4187,8 +4191,8 @@ function resultsHtml(){
       const fs=searchFoods(q);S.add.foodList=fs;
       h+=`<div class="res-h">Lebensmittel (pro 100 g)</div>`+(fs.length?`<div class="res">${fs.map((f,i)=>`<button class="item" data-act="pickFood" data-i="${i}"><div class="it-main"><div class="it-name">${esc(f[0])}</div><div class="it-sub">${f[1]?esc(f[1])+' · ':''}${g1(f[3])} g E · ${g1(f[4])} g KH · ${g1(f[6])} g F</div></div><div class="it-val"><b class="num">${k(f[2])}</b><small class="faint">kcal</small></div></button>`).join('')}</div>`:'<div class="empty" style="padding:10px 2px">Nichts in der Datenbank gefunden.</div>');
     }
-    h+=`${hasAI()&&(geminiPrimary()||geminiFallback())?`<button class="aibtn ${geminiPrimary()?'':'sec'}" data-act="addstep" data-step="ai">✨<span><b>„${esc(q)}“ mit ${geminiPrimary()?'KI':'Gemini'} eintragen</b><small>Sucht in deinen Lebensmitteln, rechnet die Menge aus</small></span></button>`:''}<div class="fallback">${claudeOn()&&!geminiPrimary()?`<button data-act="addstep" data-step="claude">An Claude übergeben<small>Claude sucht die Werte</small></button>`:''}<button data-act="addstep" data-step="manual" ${claudeOn()&&!geminiPrimary()?'':'class="wide"'}>Selbst eintragen<small>Werte bekannt</small></button>${claudeOn()&&!geminiPrimary()?`<button class="wide" data-act="addstep" data-step="photo">Foto an Claude<small>Teller oder Packung</small></button>`:''}</div>`;
-  } else h+=`${geminiPrimary()?`<button class="aibtn" data-act="addstep" data-step="ai">✨<span><b>Mit KI eintragen</b><small>Einfach hinschreiben oder Foto wählen</small></span></button>`:''}<p class="hint">Tippe oben, um in deinen ${S.foods?k(S.foods.length)+' ':''}Lebensmitteln zu suchen.</p>`;
+    h+=`${hasAI()&&!geminiPrimary()&&geminiFallback()?`<button class="aibtn sec" data-act="addstep" data-step="ai">✨<span><b>„${esc(q)}“ mit ${geminiPrimary()?'KI':'Gemini'} eintragen</b><small>Sucht in deinen Lebensmitteln, rechnet die Menge aus</small></span></button>`:''}<div class="fallback">${claudeOn()&&!geminiPrimary()?`<button data-act="addstep" data-step="claude">An Claude übergeben<small>Claude sucht die Werte</small></button>`:''}<button data-act="addstep" data-step="manual" ${claudeOn()&&!geminiPrimary()?'':'class="wide"'}>Selbst eintragen<small>Werte bekannt</small></button>${claudeOn()&&!geminiPrimary()?`<button class="wide" data-act="addstep" data-step="photo">Foto an Claude<small>Teller oder Packung</small></button>`:''}</div>`;
+  } else h+=`<p class="hint">Tippe oben, um in deinen ${S.foods?k(S.foods.length)+' ':''}Lebensmitteln zu suchen.</p>`;
   return h;
 }
 
