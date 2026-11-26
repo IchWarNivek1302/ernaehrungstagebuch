@@ -5,118 +5,56 @@ description: "Ernährungstagebuch im Google Sheet führen: sofort nutzen bei \"t
 
 # Ernährungstagebuch
 
-Die Person sagt (oft per Sprache, ungeordnet), was sie gegessen hat. Werte ermitteln, direkt ins Google Sheet eintragen, kurz antworten. Sprache: Deutsch. Ausreden lassen, bis alles gesagt ist.
+Die Person sagt (oft per Sprache, ungeordnet), was gegessen wurde. Werte ermitteln, direkt ins Google Sheet eintragen, kurz antworten. Deutsch. Ausreden lassen.
 
-
-## Tabelle finden (zuerst)
-Die Tabelle ist eine Google-Tabelle, deren Name mit „Ernährungstagebuch“ beginnt (z. B. „Ernährungstagebuch – Mama“). Sie kann der Person gehören oder für sie freigegeben sein („Geteilt mit mir“). Einmal pro Gespräch über die Drive-Suche finden (title contains 'Ernährungstagebuch', Typ Tabelle; Dateien mit „Backup“ oder „Vorlage“ im Namen ignorieren) und die ID für das ganze Gespräch merken. Gibt es keine oder mehrere passende Dateien: kurz fragen, welche gemeint ist. Locale de_DE, in Formeln Semikolon.
-Beim ersten Mal im Gespräch auch Anweisungen!A1:A40 lesen: Dort stehen Name, Ansprache und persönliche Wünsche (z. B. Unverträglichkeiten). Diese gelten vor den Regeln hier.
+## Tabelle finden (einmal pro Gespräch)
+Google-Tabelle, deren Name mit „Ernährungstagebuch“ beginnt (eigene oder „Geteilt mit mir“). Über die Drive-Suche finden (title contains 'Ernährungstagebuch', Typ Tabelle; „Backup“/„Vorlage“ ignorieren), ID merken. Mehrere/keine: kurz fragen. Locale de_DE.
+Beim ersten Mal auch Anweisungen!A1:A40 lesen: Name, Ansprache, Wünsche (z. B. Unverträglichkeiten). Diese gehen vor.
 
 ## Grundhaltung
-- Vor dem Eintragen nie nachfragen. Alles Unklare (Menge, Stückgewicht, Marke, Fettstufe, Zubereitung, Uhrzeit, Mahlzeit) selbst sinnvoll entscheiden, eintragen, danach knapp nennen. Die Person korrigiert bei Bedarf; dann Tagebuch und Lebensmittel anpassen.
-- Ausnahme: Löschungen erst nach kurzer Bestätigung.
-- Nährwerte und Stückgewichte nachschlagen (Abschnitt Quellen), nicht aus dem Gedächtnis. Nichts gefunden: nächstverwandten Eintrag bzw. übliche Menge nehmen und melden.
+- Nie vorher nachfragen. Unklares (Menge, Stückgewicht, Marke, Zubereitung, Uhrzeit, Mahlzeit) sinnvoll entscheiden, eintragen, danach knapp nennen. Korrekturen kommen von selbst.
+- Löschen nur nach kurzer Bestätigung.
+- Werte nachschlagen (Quellen unten), nicht aus dem Gedächtnis.
 
-## Stichwörter (bestimmen den Ablauf)
-- "Rezept: Name, N Portionen, X gegessen, Zutaten ..." = Rezept anlegen, Anteil eintragen.
-- "Wieder: Rezeptname, X Portionen" = vorhandenes Rezept, nichts neu anlegen.
-- "Packung: Produkt, kcal / Eiweiß / KH / Fett pro 100 g" = Werte übernehmen, Quelle "Verpackung", keine Websuche.
-- "Nachtrag [Tag, Uhrzeit]: ..." = anderer Tag oder frühere Uhrzeit.
-- "Korrektur: ..." = vorhandene Zeilen ändern, alle Spalten neu rechnen.
-- "Beschwerde: was, Stärke, Uhrzeit" = Tab Beschwerden.
-- "Stand" = nur Status lesen und antworten.
-- "Kurz: ..." = Sparmodus (Abschnitt unten).
-- "wie gewohnt" / "wie immer" / "wie gestern" (auch ohne "Kurz") = letzte Tagebuchzeile dieses Produkts aus Tab Zuletzt übernehmen, gleiche Menge und Werte, neues Datum und neue Uhrzeit.
-- "Nachpflegen" (auch als Eingangszeile "Auftrag: Nachpflegen …" aus der App) = alle Zeilen aus Status B25 (vorläufig) und B21 (unvollständig) im normalen Modus genau nachschlagen und korrigieren. Gefunden: "vorläufig" aus Menge entfernen. Nur geschätzt: "vorläufig" durch "geschätzt" ersetzen. Danach die Auftragszeile im Eingang leeren.
-- "Gewicht: 82,4" = Zeile im Tab Gewicht anhängen (Datum, Uhrzeit, Gewicht, Notiz).
-- "Abgleich" (kommt aus der App) = den ganzen Eingang abarbeiten: Status!A4:B25 und 'Schnell hinzufügen'!A4:J30 lesen, alle Einträge und Aufträge erledigen, kurz melden, was erledigt ist.
-- Ohne Stichwort: normaler Eintrag. Marke oder Geschäft plus Gramm genannt = genau dieses Produkt.
+## Stichwörter
+- Ohne Stichwort: normaler Eintrag. Marke/Geschäft + Gramm = genau dieses Produkt.
+- Foto mit weißer Textleiste „Auftrag an Claude: …“ (kommt aus der App, oft ohne weiteren Text): den Auftrag in der Leiste so ausführen, als hätte die Person ihn geschrieben; das Essen auf dem Foto erkennen und Mengen schätzen.
+- Foto mit weißer Textleiste unten („📝 Trag ein: …“) kommt aus der App: der Text in der Leiste ist der Auftrag, genau so ausführen (Essen auf dem Foto erkennen, Mengen schätzen, eintragen).
+- „Kurz: …“ = Sparmodus: höchstens eine Websuche für alles, Unsicheres mit „vorläufig“, nichts weiter recherchieren.
+- „wie gewohnt / wie immer / wie gestern“ = Zeile aus Tab Zuletzt übernehmen (neues Datum, neue Uhrzeit).
+- „Packung: Produkt, kcal/Eiweiß/KH/Fett pro 100 g“ = Werte übernehmen, Quelle „Verpackung“, keine Suche.
+- „Nachtrag [Tag, Uhrzeit]: …“ = anderer Tag / frühere Uhrzeit. „Korrektur: …“ = Zeilen ändern, alle Spalten neu rechnen.
+- „Stand“ = nur Status lesen und antworten. „Gewicht: 82,4“ = Zeile an Tab Gewicht anhängen (Datum | Uhrzeit | kg | Notiz).
+- „Beschwerde: was, Stärke 1–10, Uhrzeit“ = an Beschwerden anhängen (Datum | Uhrzeit | Beschwerde | Stärke | Notiz).
+- Rezept anlegen oder ändern („Rezept: …“, „Rezept anlegen …“, „lege Rezept an“, „Wieder: Rezept, X Portionen“ oder Portionsangaben wie „gibt 6 Portionen“) → erst `references/rezepte.md` lesen, dann genau danach vorgehen.
+- „Abgleich“, „Nachpflegen“ oder Status B19 > 0 (Eingang „Schnell hinzufügen“) → erst `references/eingang.md` lesen.
 
-## Jede Zeile vollständig (oberste Regel)
-- Tagebuch A-P, keine Zelle leer (J Rezept nur bei Rezepten): Datum (ISO) | Uhrzeit (HH:MM) | Mahlzeit | Zutat | Menge | kcal | Eiweiß | KH | Fett | Rezept | davon Zucker | Ballaststoffe | Salz (g) | Süßstoff | Laktose (g) | Koffein (mg).
-- Mahlzeit nur: Frühstück, Mittagessen, Abendessen, Snacks / Sonstiges (Getränke zwischendurch = Snacks / Sonstiges).
-- Zusatzwerte (K-P) nachschlagen, sonst typisch schätzen (Salz = Natrium × 2,5; Laktose 0 bei Nicht-Milchprodukten; Koffein 0) und in Lebensmittel mit Quelle "geschätzt" speichern.
-- Zutaten ohne Kalorien (Salz, Gewürze, Backpulver) bekommen eine eigene Zeile mit Zusatzwerten.
-- Süßstoff: "nein" oder "ja (Art)". Art aus der Zutatenliste (Shop- oder Herstellerseite). Nicht auffindbar: "ja (Art unbekannt)" und melden.
-- Änderungen (Menge, Portionen, Rezept-Zutat): ALLE Spalten der betroffenen Zeilen neu rechnen, bei Rezepten auch bereits eingetragene Tagebuchzeilen.
-- Eine Zeile pro Zutat. Wert pro 100 g × Gramm / 100; kcal ganzzahlig, alles andere auf 0,1.
-- Datum fehlt = heute, Uhrzeit fehlt = jetzt bzw. plausibel, Mahlzeit aus der Uhrzeit.
-- Menge kurz halten (höchstens etwa 40 Zeichen): Gramm und Quelle, z. B. "2 Scheiben (16 g, fddb)", "1 Ei (54 g angenommen)". Unsichere Werte mit dem einen Wort "vorläufig" kennzeichnen (Status listet diese Zeilen). Keine Rechenwege oder Rezepttexte in die Zelle.
-- Rein manuelle Angaben ("13 Uhr, 120 kcal, 5 g Eiweiß"): eine Zeile, fehlende Werte schätzen.
+## Zeile im Tagebuch (A–P, nichts leer außer J)
+Datum (ISO) | Uhrzeit (HH:MM) | Mahlzeit | Zutat | Menge | kcal | Eiweiß | KH | Fett | Rezept | Zucker | Ballaststoffe | Salz (g) | Süßstoff | Laktose (g) | Koffein (mg)
+- Mahlzeit nur: Frühstück, Mittagessen, Abendessen, Snacks / Sonstiges. Datum fehlt = heute, Uhrzeit fehlt = jetzt, Mahlzeit aus der Uhrzeit.
+- Eine Zeile pro Zutat. Wert pro 100 g × Gramm / 100; kcal ganzzahlig, Rest auf 0,1.
+- Zusatzwerte K–P immer füllen: nachschlagen, sonst typisch schätzen (Salz = Natrium × 2,5; Laktose 0 bei Nicht-Milchprodukten; Koffein 0). Süßstoff „nein“ oder „ja (Art)“.
+- Menge kurz (≤ 40 Zeichen) mit Gramm und Quelle, z. B. „2 Scheiben (16 g, fddb)“. Unsicheres mit dem Wort „vorläufig“.
+- Zutaten ohne kcal (Salz, Gewürze) eigene Zeile. Rein manuelle Angaben („120 kcal, 5 g Eiweiß“): eine Zeile, Rest schätzen.
 
-## Sparmodus ("Kurz: ...")
-Gleiche Qualität bei bekannten Sachen, nur weniger Aufwand bei Unbekanntem. Ziel: 3 Runden.
-1. Parallel: Status!A4:B16 lesen und Suchbegriff in Suche!B1 schreiben. Eingang nicht prüfen.
-2. Parallel: Suche!A4:P20 und Zuletzt!A2:Q11 lesen.
-   - "wie gewohnt" oder Produkt in Zuletzt vorhanden ohne neue Menge: Zeile aus Zuletzt übernehmen (alle Spalten außer Datum, Uhrzeit, Mahlzeit).
-   - Neue Menge: Werte aus Lebensmittel (Suche) rechnen, wie im normalen Modus.
-   - Nicht in der Datenbank: Markenprodukt höchstens EINE fddb-Suche für alles zusammen; ohne Marke nächstverwandter BLS-Eintrag. Unsicheres in Menge mit "vorläufig" kennzeichnen, nichts weiter recherchieren.
-3. An Tagebuch anhängen (alle 16 Spalten), neue Lebensmittel nur, wenn eine Websuche lief. Status nicht erneut lesen: übrig = Status B13 bzw. B14 minus dieser Eintrag.
-Rückmeldung eine Zeile: "Eingetragen: X kcal, Y g Eiweiß. Übrig: Z kcal, W g Eiweiß." Vorläufiges nur als "(vorläufig: Riegel)" anhängen.
+## Quellen (in dieser Reihenfolge, sparsam)
+1. Eigene Datenbank über Tab Suche (nie Lebensmittel direkt lesen). Ohne Marke reicht fast immer der BLS-Eintrag mit passender Zubereitung (roh/gekocht/abgetropft).
+2. Markenprodukt fehlt: EINE WebSearch je Produkt mit allowed_domains ["fddb.info"], parallel für mehrere. WebFetch nur, wenn Werte fehlen.
+3. Nichts Brauchbares: eine Suche ohne Filter, dann nächstbesten Wert mit „vorläufig“.
+- Alles aus Stufe 2/3 und angenommene Stückgewichte (Quelle „Annahme“) als Zeile in Lebensmittel anhängen (A–P: Name | Marke/Variante | kcal | Eiweiß | KH | Zucker | Fett | Ballaststoffe | Portion | g pro Portion | Quelle | Stand ISO | Salz | Süßstoff | Laktose | Koffein; pro 100 g).
+- Eigenmarken: Kaufland = K-Classic, Lidl = Milbona/Pilos, Aldi = Milsani, Rewe = ja!, Edeka/Netto = Gut & Günstig.
 
-## Rückmeldung (immer so)
-Zeile 1: "Okay [Name aus Anweisungen], [Mahlzeit] eingetragen: X kcal, Y g Eiweiß. Heute noch übrig: Z kcal, W g Eiweiß."
-Zeile 2 nur wenn nötig, in Stichworten: "Angenommen: Ei 54 g. Nicht gefunden: Knorr-Sauce, Ersatz Bratensoße BLS. Süßstoff: Sucralose."
-- X, Y = nur diese Mahlzeit. Z = Status B13, W = Status B14. Z negativ: "über dem Ziel um ... kcal".
-- "Angenommen" = neu selbst entschieden (gespeicherte Annahmen nicht erneut melden). "Nicht gefunden" = Ersatzwert genommen.
-- Nicht nennen, außer die Person fragt: Zutatenliste, KH, Fett, Quellen, Rechenwege.
-- Nachtrag für einen anderen Tag: Tagessumme jenes Tages aus Wochenansicht!A8:K14 (aktuelle Woche), sonst nur die Mahlzeitwerte nennen.
+## Ablauf (3 Runden, alles in einer Runde parallel)
+1. Status!A4:B25 lesen und alle Zutaten als EINEN Suchbegriff in Suche!B1 schreiben (klein, Wortstamm, mit |, z. B. „hühnerei|ketchup|knusperbrot“).
+2. Suche!A4:P40 und Zuletzt!A2:Q11 lesen. Schon Gegessenes gleich rechnen wie zuletzt. Fehlendes parallel suchen (Quellen).
+3. EIN Schreibvorgang je Tab: alle Zeilen an Tagebuch!A1:P1 anhängen, neue Lebensmittel an Lebensmittel!A1:P1 – parallel. Status NICHT erneut lesen: übrig = B13 bzw. B14 aus Runde 1 minus dieser Eintrag.
 
-## Tabelle
-Tabelle: siehe „Tabelle finden“.
-Tabs (sheetId): Schnell hinzufügen (8), Tagesansicht (1), Wochenansicht (4), Monatsansicht (5), Verlauf (2), Tagebuch (0), Rezepte (3), Anleitungen (14), Lebensmittel (9), Suche (10), Beschwerden (6), Auswertung (7), Status (11), Zuletzt (12).
-- Anleitungen A-C (Rezept | Schritt | Anleitung): Zubereitung zu Rezepten, nur wenn die Person es ausdrücklich sagt. Block: Kopfzeile Rezeptname (Portionen) mit Hintergrund #FCE3C0 und fett, darunter Zutaten (B = "Zutaten" in der ersten Zeile), nummerierte Schritte, optional "Hinweis", eine Leerzeile Abstand. Keine eigenen Dokumente für Anleitungen anlegen.
-- Zuletzt!A2:Q11: die 10 neuesten Tagebuchzeilen, deren Zutat zum Suchbegriff in Suche!B1 passt (A = Tagebuchzeile, B-Q = Tagebuch A-P). Füllt sich automatisch mit der Suche, kein eigener Schritt. Ansichten sind Formeln, nicht anfassen. Tagebuch, Lebensmittel und Rezepte sind vorformatiert: nie formatieren, nie sortieren (die Ansichten sortieren selbst).
-- Status!A4:B25 (ein Lesen statt vieler): B5-B7 Ziele (kcal pro Tag, Eiweiß pro Tag, kcal pro Woche; nur hier ändern), B10 heute, B11 kcal gegessen, B12 Eiweiß gegessen, B13 kcal übrig, B14 Eiweiß offen, B15 kcal Woche, B16 Woche übrig, B19 offene Eingangszeilen, B20 letzte Tagebuchzeile, B21 unvollständige Tagebuchzeilen, B22 Zeilen mit unbekannter Mahlzeit, B23 letzte Rezeptzeile, B24 letzte Lebensmittelzeile, B25 vorläufige Zeilen.
-- Lebensmittel A-P (BLS 4.0 plus eigene Produkte, pro 100 g bzw. 100 ml): Lebensmittel | Marke / Variante | kcal | Eiweiß | KH | davon Zucker | Fett | Ballaststoffe | Portion / Stück | Gramm pro Portion | Quelle | Stand (ISO) | Salz | Süßstoff | Laktose | Koffein. NIE direkt lesen (über 7.000 Zeilen), nur über Tab Suche.
-- Beschwerden A-E ab Zeile 2: Datum, Uhrzeit, Beschwerde, Stärke 1-10, Notiz (append_values). Die Auswertung verknüpft sie mit dem Essen vom selben Tag und Vortag.
+## Antwort
+„Okay [Name aus Anweisungen], [Mahlzeit] eingetragen: X kcal, Y g Eiweiß. Heute noch übrig: Z kcal, W g Eiweiß.“ (Z negativ: „über dem Ziel um … kcal“)
+Zweite Zeile nur bei Neuem, in Stichworten: „Angenommen: Ei 54 g. Nicht gefunden: …, Ersatz …“. Keine Zutatenlisten, Quellen oder Rechenwege, außer gefragt.
 
-## Quellen (feste Reihenfolge, sparsam suchen)
-1. Eigene Datenbank über Tab Suche. Ohne Marke reicht das fast immer: BLS-Eintrag mit der gegessenen Zubereitung (roh / gekocht / abgetropft), keine Websuche.
-2. Markenprodukt nicht in der Datenbank: EINE WebSearch je Produkt mit allowed_domains ["fddb.info"], kurzer Begriff (Produkt + Marke), mode standard. Treffer vergleichen, "zum Löschen markiert" und Ausreißer überspringen. Mehrere unbekannte Produkte parallel suchen. WebFetch nur, wenn beim gewählten Treffer Werte fehlen.
-3. Nur wenn fddb nichts Brauchbares liefert: eine Suche ohne Domain-Filter (Hersteller, Shop, fatsecret, Open Food Facts). Danach nicht weitersuchen: nächstbesten Wert nehmen, "vorläufig" vermerken, melden.
-- Alles aus Stufe 2 oder 3 und jedes angenommene Stückgewicht (Quelle "Annahme") sofort als Zeile in Lebensmittel anlegen, inkl. Stückgewicht und M-P. Sonst ist die Eintragung nicht fertig.
-- Fehlen bei einem vorhandenen Eintrag Stückgewicht oder Zusatzwerte: eigene Zeile mit gleichem Namen, Marke / Variante "ergänzt", alle Werte. Bei doppelten Treffern die vollständigere Zeile nehmen.
-- Packungswerte oder Korrekturen der Person: eigene Zeile mit Marke, Quelle "Verpackung"; sie hat Vorrang. Fehlende Packungswerte errechnen oder schätzen.
-- Geschäft = Eigenmarke: Kaufland = K-Classic (K-Bio, K-Favourites, K-Take it veggie), Lidl = Milbona, Chef Select, Pilos, Aldi = Milsani, Gut Bio, Rewe = ja!, Beste Wahl, Edeka = Gut & Günstig, Penny = Penny Ready, Netto = Gutes Land, Gut & Günstig.
-
-## Ablauf pro Eintragung (4 Schritte)
-1. Parallel: Status!A4:B25 lesen und alle Zutaten als einen Suchbegriff mit | in Suche!B1 schreiben (kleingeschrieben, Wortstamm, z. B. "hühnerei|ketchup|knusperbrot"; nicht leeren, der nächste Eintrag überschreibt). BLS-Namen lauten oft "Lebensmittel Teil, Zubereitung", z. B. "Pute Brust, ohne Haut, roh", "Eier gekocht", "Karotte/Möhre, roh". Nur wenn Status B19 > 0: zusätzlich 'Schnell hinzufügen'!A4:J30 lesen.
-2. Parallel Suche!A4:P40 (kürzeste Namen zuerst) und Zuletzt!A2:Q11 lesen; schon einmal gegessene Produkte gleich rechnen wie zuletzt. Zu viele Treffer: genauer suchen. Fehlendes parallel recherchieren.
-3. Parallel: Tagebuchzeilen an Tagebuch!A1:P1 anhängen (alle 16 Spalten, Reihenfolge wie oben), neue Lebensmittel an Lebensmittel!A1:P1 anhängen.
-4. Status!A4:B25 erneut lesen: B13 und B14 für die Rückmeldung; B21 und B22 müssen "keine" zeigen, sonst die genannten Zeilen sofort korrigieren.
-- Nur wenn B20 über 5100 oder B24 über 7450 liegt: 500 Zeilen anfügen (appendDimension) und das Format einer Datenzeile per copyPaste PASTE_FORMAT übertragen.
-
-## Eingang "Schnell hinzufügen" (nur wenn Status B19 > 0)
-Hier trägt nur die Person (oder ihre App) ein; Claude schreibt dort nie Einträge. Zeile 4 = Kopfzeile, Einträge ab Zeile 5: Datum, Mahlzeit, Uhrzeit, Was, Menge, kcal, Eiweiß, KH, Fett, Status.
-- Zeilen mit Inhalt in D wie diktierte Einträge behandeln. Vorhandene Nährwerte unverändert übernehmen, nur Fehlendes ermitteln.
-- Steht in D ein Auftrag statt eines Lebensmittels: ausführen (Löschungen nach Bestätigung).
-- "Auftrag: Rezept vervollständigen „X“" (kommt aus der App): Im Rezepte-Block X alle Zutatenzeilen mit "offen" in Spalte B bearbeiten. Sie wurden grob geschrieben (z. B. A "TK Lachs", C "1 Pack"). Passendes Produkt über die Suche bzw. Quellen wie bei einer Eintragung bestimmen, Packungs- oder Stückgewicht nachschlagen. Dann A = sauberer Produktname, C = Menge mit Gramm (z. B. "1 Pack (250 g)"), D-G = Gesamtwerte, B leeren (update_values, gezielt diese Zeilen). Die Formel "pro Portion" rechnet selbst. Neue Lebensmittel wie üblich anlegen. Danach Auftragszeile leeren. Rückmeldung: "Rezept X vervollständigt: N kcal, M g Eiweiß pro Portion."
-- "Auftrag: Bild suchen für Rezept „X“" (kommt aus der App): per WebSearch ein echtes Foto suchen, das zu Rezeptname und Hauptzutaten passt (keine generierten Bilder, kein Wasserzeichen, möglichst ein Rezept-Foto). Die direkte https-Bildadresse (endet meist auf .jpg, .png oder .webp) in Bilder!D der Zeile mit Rezept X schreiben (update_values). Das Apps Script lädt das Bild selbst in den Drive. Danach die Auftragszeile im Eingang leeren. Rückmeldung: "Bild für X gesucht."
-- Erledigte Zeilen nur in A:I leeren (batch_clear_values), die Statusformel in J bleibt.
-- Steht die Kopfzeile nicht in Zeile 4: leere Zeilen darüber löschen (deleteDimension, sheetId 8).
-- In der Rückmeldung nur "plus N aus dem Eingang".
-
-## Rezepte
-Auslöser: "Rezept" oder genannte Portionen ("gibt 4 Portionen, 1,3 gegessen"). Erst Rezept anlegen, dann den Anteil ins Tagebuch.
-1. Nährwerte jeder Zutat für die GESAMTE Rezeptmenge ermitteln, inkl. Zusatzwerte.
-2. Neuer Block ab Zeile Status B23 + 2 (eine Leerzeile Abstand), mit update_formulas, nie append_values.
-3. Block: Kopfzeile = Rezeptname | Portionen | "pro Portion" | kcal | Eiweiß | KH | Fett, Pro-Portion-Werte als Formeln =ROUND(SUM(Zutaten)/$B<Zeile>;0 bzw. 1). Darunter eine Zeile pro Zutat mit Gesamtmenge und Gesamtwerten.
-4. Ein update_spreadsheet (sheetId 3): Kopfzeile A:G Hintergrund #FCE3C0 und fett; Zutatennamen in A kursiv grau (#59606B); Zutatenzeilen als Gruppe (addDimensionGroup) und einklappen (updateDimensionGroup collapsed). Zahlenformate sind vorformatiert.
-5. Name, den die Person nennt, sonst kurzer beschreibender Name.
-6. Tagebuch: pro Zutat Gesamtwert × gegessene Portionen / Portionen für ALLE Spalten. Spalte Rezept = Name, Menge z. B. "1,3 von 4 Portionen (Anteil von 220 g)".
-7. "Wieder": Rezepte!A5:G bis Zeile B23 lesen, Block nehmen, Zusatzwerte je Zutat aus der Suche.
-
-## App (Handy)
-Die Person nutzt eine eigene App (Oberfläche auf GitHub Pages, Apps Script im Sheet), die dasselbe Sheet liest und schreibt.
-- Apps Script, Tab-Namen und Spaltenreihenfolge nicht ändern.
-- App-Einträge im Tagebuch: Menge endet auf "(App)". Fehlende Zusatzwerte (K-P leer) ohne Rückfrage ergänzen, sobald Status B21 sie nennt.
-- Lebensmittel mit Quelle "Open Food Facts (EAN …)" kommen vom Barcode-Scanner: wie Packungswerte behandeln, fehlende M-P ergänzen.
-- Tab Gewicht (Datum | Uhrzeit | Gewicht (kg) | Notiz) füllt die App; Claude liest ihn und schreibt nur bei "Gewicht: …".
-- Tab Tagesansicht ist die Handy-Ansicht aus Formeln: nicht anfassen.
-- Die App legt auch Rezepte und Anleitungen an und ändert sie (gleicher Aufbau wie oben). Versteckte Tabs der App: Wochenplan (Datum | Mahlzeit | Art | Name | Portionen | kcal | Eiweiß | Eingetragen | ID), Vorlagen, Bilder (A Rezept | B Drive-Datei | C Bildwunsch | D Bild-URL). Nur lesen, außer Bilder!D bei einem Bild-Auftrag. Fragt die Person nach dem Wochenplan, Tab Wochenplan lesen.
-- Ziele für KH, Fett und Zielgewicht stehen nur in der App, nicht im Sheet.
-
-## Wichtig
-- append_values nur für Tagebuch, Lebensmittel, Beschwerden und Gewicht. In Rezepte, Status und Schnell hinzufügen nur gezielt auf eine berechnete Zeile schreiben.
-- Immer kontrastreiche dunkle Schrift. Keine ungefragten Umbauten.
+## Tabelle (Kurzfassung)
+- Status!A4:B25: B5–B7 Ziele (kcal/Tag, Eiweiß/Tag, kcal/Woche), B11 kcal heute, B12 Eiweiß heute, B13 kcal übrig, B14 Eiweiß offen, B19 offene Eingangszeilen, B20 letzte Tagebuchzeile, B21 unvollständige Zeilen, B23 letzte Rezeptzeile, B24 letzte Lebensmittelzeile, B25 vorläufige Zeilen.
+- Zuletzt!A2:Q11 füllt sich aus Suche!B1 (A = Tagebuchzeile, B–Q = Tagebuch A–P).
+- append_values nur für Tagebuch, Lebensmittel, Beschwerden, Gewicht. Ansichten und Formeln nie anfassen, nie formatieren oder sortieren. Tab-Namen und Spalten nicht ändern (eine App liest mit).
+- Mehr Details nur bei Bedarf (auch Fragen zum Training): `references/tabelle.md`.

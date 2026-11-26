@@ -13,7 +13,8 @@
 <script>/* Verbindungslink von einem anderen Gerät (#verbinden=…) übernehmen, nur für script.google.com */
 try{(function(){var m=location.hash.match(/^#verbinden=(.+)$/);if(!m)return;var c=JSON.parse(decodeURIComponent(escape(atob(m[1]))));
   if(c&&c.key&&/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(c.url)){localStorage.setItem('et-conn',JSON.stringify({url:c.url,key:String(c.key)}));localStorage.setItem('et-cl-open','1');}
-  history.replaceState(null,'',location.pathname+location.search);})();}catch(e){}
+  var ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),sa=navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+  if(!(ios&&!sa))history.replaceState(null,'',location.pathname+location.search);})();}catch(e){}
 /* Geteiltes Rezept (#rezept=ID) merken, die App öffnet es nach dem Laden */
 try{(function(){var m=location.hash.match(/^#rezept=([A-Za-z0-9]{6,32})$/);if(!m)return;localStorage.setItem('et-share-open',m[1]);history.replaceState(null,'',location.pathname+location.search);})();}catch(e){}
 window.ET_FONTS={"System": "-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Arial,sans-serif", "Manrope": "'Manrope',sans-serif", "Nunito": "'Nunito',sans-serif", "Fredoka": "'Fredoka',sans-serif", "Outfit": "'Outfit',sans-serif", "Space Grotesk": "'Space Grotesk',sans-serif", "Playfair Display": "'Playfair Display',serif", "Cormorant Garamond": "'Cormorant Garamond',serif"};
@@ -614,6 +615,7 @@ html,body{overscroll-behavior-x:none}
 .minibtn svg{width:15px;height:15px}
 .cother{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 4px;font-size:13px;color:var(--muted)}
 .cother input{border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--card);color:var(--ink);font:inherit;min-width:0}
+html{overscroll-behavior-y:contain}
 
 /* ================= Wochenplan ================= */
 .psum{padding:14px 16px}
@@ -874,6 +876,97 @@ em.ropen{font-size:11px;background:var(--brand-soft);border-radius:6px;padding:1
 .rimg.mini.none{display:grid;place-items:center;background:var(--soft);color:var(--faint)}.rimg.mini.none svg{width:22px;height:22px}
 .rr-m{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.rr-m b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rr-m small{color:var(--muted)}
 @container (min-width:1000px){.rlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));align-items:start}}
+/* v22: Ziel-Rechner, Filter löschen, Rezept-Popup */
+.rbx{padding:7px 10px;color:var(--muted)}
+.calcbtn{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 14px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--brand-soft);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.calcbtn>svg{width:20px;height:20px;flex:0 0 20px;color:var(--brand)}.calcbtn span{flex:1;min-width:0;display:flex;flex-direction:column}.calcbtn small{color:var(--muted)}
+.seg2{display:flex;gap:6px;background:var(--soft);padding:4px;border-radius:12px;margin:6px 0 10px}.seg2 button{flex:1;padding:9px;border:0;border-radius:9px;background:none;font:inherit;font-weight:600;color:var(--muted);cursor:pointer}.seg2 button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.row3 .f input{min-width:0}
+.crange{width:100%;accent-color:var(--brand);margin:8px 0 2px}
+.calc-r{margin-top:14px;padding:14px}.calc-g{display:grid;grid-template-columns:1fr 1fr;gap:10px}.calc-g>div{display:flex;flex-direction:column;background:var(--soft);border-radius:12px;padding:10px}.calc-g small{color:var(--muted);font-size:12px}.calc-g b{font-size:20px}
+.calc-h{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:14px 0 6px}
+.calc-r .btn{margin-top:12px}
+.incpop{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:60;display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;padding:14px;border-radius:18px;background:var(--card);border:1px solid var(--line);box-shadow:0 10px 30px rgba(30,35,32,.18);transform:translateY(20px);opacity:0;transition:transform .25s,opacity .25s;max-width:480px;margin:0 auto}
+.incpop.on{transform:none;opacity:1}
+.incpop-i{width:40px;height:40px;border-radius:12px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;flex:0 0 40px}.incpop-i svg{width:22px;height:22px}
+.incpop-t{flex:1;min-width:0;display:flex;flex-direction:column}.incpop-t span{color:var(--muted);font-size:14px}
+.incpop-a{display:flex;align-items:center;gap:12px;width:100%;justify-content:flex-end}.incpop-a .btn{width:auto;padding:9px 18px;margin:0}
+@media (max-width:440px){.rsort>span{display:none}}
+.pname{display:flex;gap:8px}.pname input{flex:1;min-width:0}
+.cpct{display:block;color:var(--faint);font-size:11px;margin-top:2px}
+/* v24: Kopfleiste, Rückmeldungen, Sterne, Kochbuch, Wischen, Einstellungen */
+#title.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.top .topnav{flex:1;display:flex;align-items:center;gap:2px;min-width:0}
+.top .tn.on{color:var(--brand);background:var(--brand-soft)}
+.fbbtn{width:22px;height:22px;flex:0 0 22px;border-radius:50%;border:1.5px solid var(--line);background:none;color:var(--faint);font:700 12px/1 inherit;padding:0;display:grid;place-items:center;cursor:pointer;margin:0 6px 0 2px;position:relative}
+.fbbtn.has{border-color:var(--warn);color:var(--warn)}.fbbtn.has::after{content:attr(data-n);position:absolute;top:-6px;right:-7px;background:var(--warn);color:#fff;border-radius:999px;font-size:9px;padding:1px 4px;line-height:1.2}
+.fbl{display:flex;flex-direction:column;gap:8px}.fbr{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--card)}.fbr.done{opacity:.6}
+.fbr-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.fbr-h small{color:var(--muted);flex:1}.fbr-h em{font-style:normal;font-size:12px;color:var(--muted)}.fbk{font-weight:700;font-size:13px}.fbr-t{margin:6px 0 4px;white-space:pre-wrap;line-height:1.45}
+.stars{display:inline-flex;gap:1px;vertical-align:middle;--star:#E8B84A}.stars .st{background:none;border:0;padding:2px 1px;font-size:20px;line-height:1;color:var(--line);cursor:pointer}
+.stars.ro .st{font-size:12px;padding:0;cursor:default}.stars.sm{margin-top:2px}
+.stars .st.full{color:var(--star)}.stars .st.half{background:linear-gradient(90deg,var(--star) 50%,var(--line) 50%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.rc-st{margin:2px 0 0 -1px}.re-rate{display:flex;align-items:center;gap:10px;margin:6px 0 10px}.re-rate .lbl{font-size:13px;color:var(--muted);font-weight:600}.re-rate small{margin-left:6px}
+.re-kb{margin:0 0 6px}.rtabs{margin:0 0 12px}.rtabs small{background:var(--brand);color:#fff;border-radius:999px;font-size:11px;padding:1px 6px;margin-left:4px}
+.pnoch{display:flex;flex-direction:column;gap:6px;margin:10px 0;padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+.pn-l{font-weight:600;font-size:14px}.pn-l small{color:var(--muted);font-weight:400}.pn-c{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.pn-c .fchip{--mc:#7BBF8E;flex:0 0 auto}
+.swr{position:relative;overflow:hidden;border-radius:12px}.swr>.item{position:relative;z-index:1;background:var(--card);touch-action:pan-y;will-change:transform}
+.swa{position:absolute;top:0;bottom:0;border:0;display:flex;align-items:center;gap:6px;padding:0 16px;font:inherit;font-weight:700;font-size:13px;color:#fff;cursor:pointer;opacity:0;line-height:1.15}
+.swa svg{width:18px;height:18px}.swa-l{left:0;background:#6FAF83;justify-content:flex-start;width:150px}.swa-r{right:0;background:#D9776B;justify-content:flex-end;width:104px}
+.swr.open-l .swa-l,.swr.open-r .swa-r{opacity:1}
+.sgrp{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:18px 2px 6px}
+details.sec[open]>summary{position:sticky;top:0;z-index:3;background:var(--brand-soft);border-radius:14px 14px 0 0;box-shadow:0 1px 0 var(--line)}
+details.sec[open]>summary b{color:var(--brand)}
+details.sec[open]{border-color:var(--brand)}
+.tabrow .pos3{display:flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;flex:0 0 auto}
+.tabrow .pos3 button{border:0;background:var(--card);font:inherit;font-size:12px;padding:6px 7px;color:var(--muted);cursor:pointer}.tabrow .pos3 button.on{background:var(--brand);color:#fff}.tabrow .pos3 button:disabled{opacity:.35}
+@media (max-width:420px){.tabrow>div span{display:none}.tabrow .pos3 button{padding:6px 5px}}
+/* v26: KI, Rückgängig */
+.aibtn{display:flex;align-items:center;gap:12px;width:100%;margin:10px 0;padding:12px 14px;border-radius:14px;border:1px solid var(--brand);background:var(--brand-soft);color:inherit;font:inherit;text-align:left;cursor:pointer;font-size:18px}
+.aibtn span{flex:1;min-width:0;display:flex;flex-direction:column;font-size:15px}.aibtn small{color:var(--muted);font-size:12.5px}
+.aisteps{margin:6px 0 12px;padding-left:20px;line-height:1.5}.aisteps li{margin:4px 0}
+#btnUndo{color:var(--brand)}
+.pwrap.swr{border-radius:12px}.swr>.pitem{position:relative;z-index:1;touch-action:pan-y;will-change:transform}
+/* v27: Training */
+.trstrip{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid var(--line);flex-wrap:wrap}
+.trs-l{font-size:13px;color:var(--muted)}.trs-l b{color:var(--ink);font-size:15px}
+.trs-d{display:grid;grid-template-columns:repeat(28,1fr);gap:2px;flex:1;min-width:220px}
+.trs-d i{aspect-ratio:1;border-radius:4px;background:var(--soft);display:grid;place-items:center;color:#fff}.trs-d i.on{background:var(--brand)}.trs-d i.t{outline:1.5px solid var(--brand);outline-offset:1px}.trs-d i svg{width:80%;height:80%}
+.trp{padding:0;margin:0 0 10px;overflow:hidden}.trh-w{border-radius:0}
+.trh{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--card);position:relative;z-index:1;touch-action:pan-y}
+.drag-h{cursor:grab;color:var(--faint);font-size:16px;letter-spacing:-2px;padding:6px 4px;touch-action:none;user-select:none;flex:0 0 auto}
+.trh-m{flex:1;min-width:0;background:none;border:0;padding:0;text-align:left;font:inherit;color:inherit;cursor:pointer;display:flex;flex-direction:column}.trh-m b{font-size:16px}.trh-m small{color:var(--muted)}
+.trdone{flex:0 0 auto;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 10px;font:inherit;font-size:12.5px;color:var(--muted);cursor:pointer}.trdone.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.trchev{color:var(--faint);font-size:13px}
+.trbody{padding:0 12px 12px;border-top:1px solid var(--line)}
+.trname{display:flex;align-items:center;gap:8px;margin:10px 0}.trname span{font-size:12px;color:var(--muted)}.trname input{flex:1;min-width:0;padding:7px 10px}
+.trex{display:flex;flex-direction:column;gap:6px}
+.trx{border:1px solid var(--line);border-radius:12px;background:var(--card);position:relative}
+.trx.sup-a{border-bottom-left-radius:0;border-bottom-right-radius:0;border-left:3px solid var(--warn)}.trx.sup-b{border-top-left-radius:0;border-top-right-radius:0;margin-top:-6px;border-left:3px solid var(--warn)}
+.supl{position:absolute;left:10px;bottom:-9px;font-size:10px;font-weight:700;color:var(--warn);background:var(--card);padding:0 4px;z-index:2}
+.trx-h{display:flex;align-items:center;gap:6px;padding:6px 8px}
+.trx-m{flex:1;min-width:0;display:flex;align-items:center;gap:10px;background:none;border:0;padding:0;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.trx-m span{display:flex;flex-direction:column;min-width:0}.trx-m small{color:var(--muted);font-size:12.5px}
+.dimg{width:48px;height:48px;flex:0 0 48px;border-radius:10px;background:var(--soft) center/cover no-repeat;display:grid;place-items:center;color:var(--faint);font-size:20px}.dimg.sm{width:42px;height:42px;flex-basis:42px}.dimg svg{width:22px;height:22px}
+.res .item .dimg{margin-right:10px}
+.tred{padding:4px 12px 12px;border-top:1px dashed var(--line)}
+.trst{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}.trst-l{font-size:14px;color:var(--ink)}
+.trst-c{display:flex;align-items:center;gap:6px}.trst-c button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--soft);font:700 18px/1 inherit;color:var(--brand);cursor:pointer}
+.trst-c input{width:74px;text-align:center;padding:8px 6px}.trst-c em{font-style:normal;font-size:12px;color:var(--muted);margin-left:-2px}
+.trsave{font-size:12px;color:var(--faint);margin:6px 0}
+.trch{margin:8px 0 4px;padding:8px 10px;border-radius:12px;background:var(--soft)}.trch.empty{font-size:12.5px;color:var(--muted)}
+.trch-h{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}.trch-h b{color:var(--ink)}.trch svg{width:100%;height:70px;display:block}.trch-x{display:flex;justify-content:space-between;font-size:11px;color:var(--faint)}
+.tracts{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:8px}
+.trnew{display:flex;align-items:center;justify-content:center;gap:6px}.trnew svg{width:18px;height:18px}
+.trp.dragging,.trx.dragging{position:relative;z-index:20;box-shadow:0 10px 26px rgba(0,0,0,.18);opacity:.95}
+.drop-b{box-shadow:0 -3px 0 var(--brand)}
+.trtimer{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom));z-index:70;display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:999px;border:0;background:var(--ink);color:#fff;font:inherit;font-size:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);cursor:pointer}
+.trtimer small{opacity:.7;font-size:11px}.trtimer.done{background:var(--brand)}
+.tdb{display:inline-flex;vertical-align:middle;margin-left:4px;color:var(--brand);opacity:.85}.tdb svg{width:13px;height:13px}
+.cal .tdb.m{position:absolute;bottom:2px;right:3px;margin:0}.cal .tdb.m svg{width:10px;height:10px}
+.cal button{position:relative}
+.aistar{font-size:20px;line-height:1}
+.trstrip,.trplans,.trnew{max-width:760px}.trs-d{max-width:520px}.trch{max-width:560px}
+.aibtn.sec{border-style:dashed;background:var(--card)}
 
 /* ================= Tablet und PC ================= */
 .side{display:none}
@@ -1058,8 +1151,11 @@ details.clb{margin-top:12px}details.clb summary{cursor:pointer;font-size:.9em;co
 <aside class="side" id="side"></aside>
 <div class="app">
   <header class="top">
-    <h1 id="title">Heute</h1>
+    <h1 id="title" class="sr">Heute</h1>
+    <button class="fbbtn" id="btnFb" data-act="fbOpen" aria-label="Bug oder Wunsch melden" title="Bug oder Wunsch melden">!</button>
+    <div class="topnav" id="topnav"></div>
     <button class="iconbtn cq" id="btnClaude" aria-label="Aufträge für Claude" hidden data-act="claudeQueue"></button>
+    <button class="iconbtn" id="btnUndo" aria-label="Letzte Änderung rückgängig" title="Letzte Änderung rückgängig" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></button>
     <button class="iconbtn" id="btnReload" aria-label="Aktualisieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
     <button class="iconbtn" id="btnMore" aria-label="Mehr" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg></button>
     <button class="iconbtn" id="btnSettings" aria-label="Einstellungen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
@@ -1085,8 +1181,10 @@ const DS=['Mo','Di','Mi','Do','Fr','Sa','So'];
 const MONTHS=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 const MODULES=[
   {key:'haeufig',title:'Häufig gegessen',desc:'Kurzwahl im Plus-Menü',page:false},
+  {key:'passtnoch',title:'Was passt noch?',desc:'Ab nachmittags auf Heute: Rezepte, die noch in deine kcal passen',page:false},
   {key:'wochenplan',title:'Wochenplan',desc:'Eigener Reiter unten: Rezepte für die Woche planen, mit Einkaufsliste',nav:true},
   {key:'gewicht',title:'Gewicht',desc:'Eigener Reiter unten: Gewicht eintragen, Verlauf als Kurve',nav:true},
+  {key:'training',title:'Training',desc:'Eigener Reiter: Trainingspläne mit Geräten, Gewichten und Verlauf',nav:true},
   {key:'rezepte',title:'Rezepte',desc:'Eigener Reiter unten mit Werten pro Portion',nav:true},
   {key:'beschwerden',title:'Beschwerden',desc:'Beschwerden eintragen und im Tag anzeigen',page:true},
   {key:'auswertung',title:'Auswertung der Beschwerden',desc:'Was vor Beschwerden gegessen wurde',page:true},
@@ -1126,18 +1224,20 @@ const ICON={
 const TABS=[['heute','Heute'],['woche','Woche'],['monat','Monat'],['verlauf','Verlauf'],['tagebuch','Tagebuch']];
 /* Standard: Heute, Woche, Monat, Verlauf, Wochenplan, Rezepte */
 const TAB_DEFAULT_ON=['heute','woche','monat','verlauf','wochenplan','rezepte'];
-const NAV_EXTRA=[['wochenplan','Plan'],['rezepte','Rezepte'],['gewicht','Gewicht']];
+const NAV_EXTRA=[['wochenplan','Plan'],['rezepte','Rezepte'],['gewicht','Gewicht'],['training','Training']];
 /* Reiter: alle ein-/ausblendbar (außer Heute), Reihenfolge frei wählbar */
 const ALL_TABS=TABS.concat(NAV_EXTRA);
 const CORE_TABS=['heute','woche','monat','verlauf','tagebuch'];
 const TAB_DESC={heute:'Startseite mit Ring und Mahlzeiten',woche:'Wochenüberblick mit Rückblick',monat:'Kalender mit Tageswerten',verlauf:'Kurven über Wochen und Monate',tagebuch:'Alle Einträge zum Durchsuchen'};
 function tabOn(key,s){const m=(s&&s.modules)||{};if(key==='heute')return true;return m[key]===undefined?TAB_DEFAULT_ON.includes(key):!!m[key];}
 function tabOrder(s){const o=((s&&s.navOrder)||[]).filter(k=>ALL_TABS.some(t=>t[0]===k));ALL_TABS.forEach(t=>{if(!o.includes(t[0]))o.push(t[0]);});return o;}
-function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{};return tabOrder(s).filter(key=>tabOn(key,s)).map(key=>ALL_TABS.find(t=>t[0]===key));}
+const navTopOf=s=>((s&&s.navTop)||[]).filter(k=>k!=='heute');
+function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{},top=navTopOf(s);return tabOrder(s).filter(key=>tabOn(key,s)&&!top.includes(key)).map(key=>ALL_TABS.find(t=>t[0]===key));}
+function topTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{},top=navTopOf(s);return tabOrder(s).filter(key=>tabOn(key,s)&&top.includes(key)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='21';
-const MIN_SCRIPT=20;   /* so neu muss Code.gs mindestens sein */
+const APP_VERSION='28';
+const MIN_SCRIPT=26;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf0=new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
@@ -1192,10 +1292,11 @@ function cssHex(v){v=String(v||'').trim();if(/^#[0-9a-f]{6}$/i.test(v))return v.
 /* Android: claude.ai-Links in der Claude-App öffnen statt im Browser (dort ist man oft nicht angemeldet).
    Ist die App nicht installiert oder kennt sie die Seite nicht, öffnet Android die normale Webseite. */
 const IS_ANDROID=/Android/i.test(navigator.userAgent||'');
+const IS_IOS=/iPhone|iPad|iPod/.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 function claudeIntent(u){return 'intent://'+u.replace(/^https:\/\//,'')+'#Intent;scheme=https;package=com.anthropic.claude;S.browser_fallback_url='+encodeURIComponent(u)+';end';}
 function openClaude(u){
   /* Sicherheitsnetz: falls die App den vorbereiteten Text nicht übernimmt, liegt er in der Zwischenablage */
-  const q=(u.match(/[?&]q=([^&]*)/)||[])[1];if(q){try{navigator.clipboard&&navigator.clipboard.writeText(decodeURIComponent(q));}catch(e){}}
+  const q=(u.match(/[?&]q=([^&]*)/)||[])[1];if(q){try{navigator.clipboard&&navigator.clipboard.writeText(decodeURIComponent(q)).catch(()=>{});}catch(e){}}
   if(IS_ANDROID){location.href=claudeIntent(u);if(q&&typeof toast==='function')setTimeout(()=>toast('Text ist kopiert. Fehlt er in Claude: lange ins Feld tippen → Einfügen.'),300);return null;}return window.__open(u,'_blank','noopener');}
 window.__open=window.open.bind(window);
 window.open=function(u){if(IS_ANDROID&&/^https:\/\/claude\.ai\//.test(String(u||'')))return openClaude(String(u));return window.__open.apply(window,arguments);};
@@ -1342,9 +1443,9 @@ function go(view){S.view=view;window.scrollTo(0,0);render();}
 function render(){
   if(!S.data)return;
   renderTabs();
-  const titles={wochenplan:'Wochenplan',gewicht:'Gewicht',heute:'Heute',woche:'Woche',monat:'Monat',verlauf:'Verlauf',tagebuch:'Tagebuch',rezepte:'Rezepte',anleitungen:'Anleitungen',beschwerden:'Beschwerden',auswertung:'Auswertung der Beschwerden',anweisungen:'Anweisungen'};
+  const titles={wochenplan:'Wochenplan',training:'Training',gewicht:'Gewicht',heute:'Heute',woche:'Woche',monat:'Monat',verlauf:'Verlauf',tagebuch:'Tagebuch',rezepte:'Rezepte',anleitungen:'Anleitungen',beschwerden:'Beschwerden',auswertung:'Auswertung der Beschwerden',anweisungen:'Anweisungen'};
   $('#title').textContent=titles[S.view]||'';$('#title').classList.toggle('long',(titles[S.view]||'').length>14);
-  const fn={wochenplan:vWochenplan,gewicht:vGewicht,heute:vHeute,woche:vWoche,monat:vMonat,verlauf:vVerlauf,tagebuch:vTagebuch,rezepte:vRezepte,anleitungen:vAnleitungen,beschwerden:vBeschwerden,auswertung:vAuswertung,anweisungen:vAnweisungen}[S.view];
+  const fn={wochenplan:vWochenplan,training:vTraining,gewicht:vGewicht,heute:vHeute,woche:vWoche,monat:vMonat,verlauf:vVerlauf,tagebuch:vTagebuch,rezepte:vRezepte,anleitungen:vAnleitungen,beschwerden:vBeschwerden,auswertung:vAuswertung,anweisungen:vAnweisungen}[S.view];
   const pre=!LIVE?`<div class="demo">${window.PREVIEW?'Vorschau mit deinen echten Daten · Änderungen werden nicht gespeichert':'Vorschau mit Beispieldaten'}</div>`:(S.stale?`<div class="stale">Stand von ${S.stale} · wird aktualisiert …</div>`:'');
   const V=$('#view');V.dataset.v=S.view;V.innerHTML=pre+fn();
   afterRender();loadImages();
@@ -1401,13 +1502,15 @@ function vHeute(){
     </div>${moreVals(d)}</div>`;
   h=h.replace('<div class="card"><div class="hero">','<div class="hz"><div class="hz-a"><div class="card"><div class="hero">');
   h+=clBanner();
+  h+=iosHint();
+  h+=passtNoch(d,t);
   if(S.day===t)h+=incomingHtml('rinc');
   h+=planToday();
   const unsure=unsureList();
   if(unsure.length&&S.day===t)h+=`<button class="unsure" data-act="nachpflegen">${ICON.spark}<span>${unsure.length} unsichere ${unsure.length===1?'Wert':'Werte'} · nachpflegen</span>${ICON.right}</button>`;
   const inbox=S.data.inbox||[];
-  if(inbox.length)h+=`<div class="cqbar ${S.inboxOpen?'open':''}"><button class="cq-main" data-act="claudeGo">${ICON.claude}<span><b>${inbox.length}</b> ${inbox.length===1?'wartet':'warten'} auf Claude</span><em>Jetzt erledigen</em></button><button class="cq-more" data-act="inboxToggle" aria-label="${S.inboxOpen?'Liste zuklappen':'Liste ansehen'}">${S.inboxOpen?'▴':'▾'}</button>
-    ${S.inboxOpen?`<div class="cqlist">${inbox.map((i,n)=>`<button class="inb" data-act="inbox" data-i="${n}">${esc(cqText(i))}${i.amount?` <span>· ${esc(i.amount)}</span>`:''}</button>`).join('')}<div class="small muted">Antippen zum Ändern oder Löschen.</div></div>`:''}</div>`;
+  if(inbox.length)h+=`<div class="cqbar ${S.inboxOpen?'open':''}">${geminiPrimary()?`<button class="cq-main" data-act="aiInbox"><span class="aistar">✨</span><span><b>${inbox.length}</b> ${inbox.length===1?'wartet':'warten'} auf die KI</span><em>Mit Gemini erledigen</em></button>`:`<button class="cq-main" data-act="claudeGo">${ICON.claude}<span><b>${inbox.length}</b> ${inbox.length===1?'wartet':'warten'} auf Claude</span><em>Jetzt erledigen</em></button>`}<button class="cq-more" data-act="inboxToggle" aria-label="${S.inboxOpen?'Liste zuklappen':'Liste ansehen'}">${S.inboxOpen?'▴':'▾'}</button>
+    ${S.inboxOpen?`<div class="cqlist">${inbox.map((i,n)=>`<button class="inb" data-act="inbox" data-i="${n}">${esc(cqText(i))}${i.amount?` <span>· ${esc(i.amount)}</span>`:''}</button>`).join('')}<div class="small muted">Antippen zum Ändern oder Löschen.</div>${geminiFallback()?`<button class="linkbtn" data-act="aiInbox" style="margin-top:6px">Claude ausgelastet? ✨ Mit Gemini erledigen</button>`:''}</div>`:''}</div>`;
   h+='</div><div class="hz-b">';
   MEALS.forEach(m=>{
     const md=d.meals[m];
@@ -1457,9 +1560,10 @@ function unsureList(){
 function itemRow(x){
   const id='i'+(itemSeq++);S.items[id]=x;
   const sk=selKey(x),sel=S.selected&&S.selected.has(sk)?' sel':'';
+  const wrap=h=>`<div class="swr"><button class="swa swa-l" data-act="swAgain" data-id="${id}" tabindex="-1">${ICON.again||'↻'}<span>Nochmal<br>essen</span></button><button class="swa swa-r" data-act="swDel" data-id="${id}" tabindex="-1"><span>Löschen?</span></button>${h}</div>`;
   if(x.single){const e=x.single;
-    return `<button class="item${sel}" data-act="item" data-id="${id}"><div class="it-main"><div class="it-name">${esc(e.name)}</div><div class="it-sub">${badge([e])}${esc(e.amount)}${e.time?' · '+e.time:''}</div></div><div class="it-val"><b class="num">${k(e.kcal)}</b><small class="num">${g1(e.p)} g E</small></div></button>`;}
-  return `<button class="item${sel}" data-act="item" data-id="${id}"><div class="it-main"><div class="it-name"><span class="tag">Rezept</span>${esc(x.recipe)}</div><div class="it-sub">${badge(x.rows)}${esc(x.amount)} · ${x.rows.length} Zutaten${x.time?' · '+x.time:''}</div></div><div class="it-val"><b class="num">${k(x.kcal)}</b><small class="num">${g1(x.p)} g E</small></div></button>`;
+    return wrap(`<button class="item${sel}" data-act="item" data-id="${id}"><div class="it-main"><div class="it-name">${esc(e.name)}</div><div class="it-sub">${badge([e])}${esc(e.amount)}${e.time?' · '+e.time:''}</div></div><div class="it-val"><b class="num">${k(e.kcal)}</b><small class="num">${g1(e.p)} g E</small></div></button>`);}
+  return wrap(`<button class="item${sel}" data-act="item" data-id="${id}"><div class="it-main"><div class="it-name"><span class="tag">Rezept</span>${esc(x.recipe)}</div><div class="it-sub">${badge(x.rows)}${esc(x.amount)} · ${x.rows.length} Zutaten${x.time?' · '+x.time:''}</div></div><div class="it-val"><b class="num">${k(x.kcal)}</b><small class="num">${g1(x.p)} g E</small></div></button>`);
 }
 
 /* ================= Sofort-Änderungen + Speichern im Hintergrund =================
@@ -1523,8 +1627,15 @@ const L={
     const oi=instrFor(old||rec.name),list=S.data.instructions=(S.data.instructions||[]).filter(x=>x!==oi);if(ins)list.push(ins);
     if(old&&old!==rec.name){const im=S.data.images||{};if(im[old]){im[rec.name]=im[old];delete im[old];}const w=S.data.imgWanted||{};if(w[old]){w[rec.name]=true;delete w[old];}
       Object.values(S.data.plan||{}).forEach(l=>l.forEach(it=>{if(it.type==='recipe'&&it.name===old)it.name=rec.name;}));}
+    if(rec.rating!==undefined){const st=S.data.recipeStats=S.data.recipeStats||{};st[rec.name]=Object.assign({n:0},st[old]||st[rec.name]||{},{rating:rec.rating});}
+    if(rec.kochbuch!==undefined){const kb=S.data.kochbuch=(S.data.kochbuch||[]).filter(x=>!(x.mine&&(x.name===rec.name||x.name===old)));
+      if(rec.kochbuch)kb.push({author:S.data.myName||'dir',mine:true,aid:'me',name:rec.name,portions:rec.portions,per:rec.per,items:rec.items,ins});}
     if(!LIVE)demoOrder('Auftrag: Rezept vervollständigen „'+rec.name+'“',rec.items.some(x=>x.open));
     return {};},
+  savePlans(plans){TRD().plans=JSON.parse(JSON.stringify(plans));return {};},
+  logTraining(e){const L2=TRD().log,i=L2.findIndex(r=>r[0]===e.date&&r[1]===e.plan&&r[2]===(e.dev||''));if(i>=0)L2.splice(i,1);
+    if(!e.remove){const n=v=>v===''||v===null||v===undefined||isNaN(+v)?null:+v,pd=(e.pads||[]).concat(['','','']);L2.push([e.date,e.plan,e.dev||'',n(e.kg),n(e.sets),n(e.reps),pd[0]||'',pd[1]||'',pd[2]||'',n(e.level),n(e.dur),e.note||'']);}return {};},
+  setRating(name,v){const st=S.data.recipeStats=S.data.recipeStats||{};st[name]=Object.assign({n:0},st[name]||{},{rating:v});return {};},
   deleteRecipe(name){const oi=instrFor(name);S.data.recipes=(S.data.recipes||[]).filter(r=>r.name!==name);S.data.instructions=(S.data.instructions||[]).filter(x=>x!==oi);return {};}
 };
 
@@ -1581,7 +1692,7 @@ function scheduleResync(now){
 function resync(manual){
   if(!LIVE)return Promise.resolve();
   if(Q.q.length||Q.busy){if(manual)toast('Speichere noch '+Q.q.length+' Änderung'+(Q.q.length>1?'en':'')+' …');pump();return Promise.resolve();}
-  const v=Q.ver;if(manual)$('#btnReload').classList.add('spin');
+  const v=Q.ver;if(manual){$('#btnReload').classList.add('spin');clearTimeout(S.spinT);S.spinT=setTimeout(()=>$('#btnReload').classList.remove('spin'),25000);}
   return api(CONN.url,CONN.key,'getData',[]).then(d=>{
     $('#btnReload').classList.remove('spin');S.lastSync=Date.now();
     if(Q.ver===v&&!Q.q.length){if(S.older){S.data=d;mergeOlder();d=S.data;}apply(d);if(manual)toast('Aktualisiert');}
@@ -1659,7 +1770,7 @@ function vWoche(){
   <div class="card"><h3>Tage</h3>`;
   for(let i=0;i<7;i++){
     const s=addDays(mon,i),d=day(s),over=d.kcal>g.kcalDay;
-    h+=`<button class="wk-day ${s===t?'today':''}" data-act="openday" data-day="${s}" ${s>t?'disabled style="opacity:.45"':''}><div class="d"><b>${DS[i]}</b><span>${shortDate(s)}</span></div>
+    h+=`<button class="wk-day ${s===t?'today':''}" data-act="openday" data-day="${s}" ${s>t?'disabled style="opacity:.45"':''}><div class="d"><b>${DS[i]}${trainedOn(s)?`<span class="tdb" title="Trainiert">${TR_MINI}</span>`:''}</b><span>${shortDate(s)}</span></div>
       ${stackBar(d,max,g.kcalDay)}<div class="v ${over?'over':''}"><b class="num">${d.n?k(d.kcal):'–'}</b><small class="num">${d.n?g1(d.p)+' g E':''}</small></div></button>`;
   }
   h+=`<div class="legend">${MEALS.map(m=>`<span style="--c:${MEAL_COLOR[m]}">${MEAL_SHORT[m]}</span>`).join('')}<span style="--c:var(--ink);opacity:.6">Strich = Tagesziel</span></div></div>
@@ -1683,7 +1794,7 @@ function vMonat(){
     if(inM&&d.n){sum.kcal+=d.kcal;sum.p+=d.p;sum.c+=d.c;sum.f+=d.f;sum.days++;}
     const cls=['d',!inM?'out':'',inM&&d.n?(d.kcal>g.kcalDay?'hi':'has'):'',s===t?'today':''].join(' ');
     const cx=mods().beschwerden&&S.comp[s]&&inM?`<span class="cx">!</span>`:'';
-    cells+=`<button class="${cls}" ${inM&&s<=t?`data-act="openday" data-day="${s}"`:''}>${cx}${inM&&d.n&&d.p>=g.proteinDay?'<span class="pd"></span>':''}<b>${parse(s).getDate()}</b>${inM&&d.n?`<small class="num">${k(d.kcal)}</small>`:''}</button>`;
+    cells+=`<button class="${cls}" ${inM&&s<=t?`data-act="openday" data-day="${s}"`:''}>${cx}${inM&&d.n&&d.p>=g.proteinDay?'<span class="pd"></span>':''}<b>${parse(s).getDate()}</b>${inM&&trainedOn(s)?`<span class="tdb m" title="Trainiert">${TR_MINI}</span>`:''}${inM&&d.n?`<small class="num">${k(d.kcal)}</small>`:''}</button>`;
   }
   return `<div class="nav"><button class="arrow" data-act="month" data-m="${prevM}">${ICON.left}</button>
     <div class="lbl"><b>${MONTHS[mo-1]}</b><span>${y}</span></div>
@@ -1968,7 +2079,8 @@ function scanHtml(){
   const can='BarcodeDetector' in window&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia;
   return `<button class="back" data-act="addback">${ICON.back}Zurück</button><h2>Barcode scannen</h2>
     ${can?`<div class="scanbox"><video id="scanVid" playsinline muted></video><div class="scanframe"></div><div class="scanmsg" id="scanMsg">Kamera wird gestartet …</div></div>`:
-      `<p class="sub">Dein Browser kann hier keine Barcodes lesen. Gib die Nummer unter dem Strichcode einfach ein.</p>`}
+      `<p class="sub">Dein Browser kann hier keine Barcodes live lesen (z. B. Safari auf dem iPhone). ${typeof hasAI==='function'&&hasAI()?'Fotografier den Strichcode, Gemini liest die Nummer, oder tipp sie ein.':'Gib die Nummer unter dem Strichcode einfach ein.'}</p>
+      ${typeof hasAI==='function'&&hasAI()?`<label class="ph-pick" style="padding:12px">${ICON.camera}<span>Strichcode fotografieren</span><input type="file" accept="image/*" capture="environment" id="eanFoto" hidden></label>`:''}`}
     <label class="f" style="margin-top:12px"><span>Oder Nummer eingeben</span><div class="gramrow"><input class="in-t num" id="eanIn" inputmode="numeric" placeholder="z. B. 4001234567890" style="font-size:16px;text-align:left"><button class="btn" style="width:auto;padding:12px 16px" data-act="eanGo">Suchen</button></div></label>`;
 }
 function startScan(){
@@ -2257,44 +2369,7 @@ function removeRecipeImage(name){
   if(LIVE)api(CONN.url,CONN.key,'deleteRecipeImage',[name]).then(()=>toast('Bild entfernt.')).catch(e=>toast(e.message,true));
 }
 /* ================= Abenderinnerung (ntfy) und Foto an Claude ================= */
-const NTFY_PLAY='https://play.google.com/store/apps/details?id=io.heckel.ntfy';
-function remCfg(){
-  const r=Object.assign({on:false,time:'20:00',only:false,topic:''},S.data.settings.reminder||{});
-  if(!r.topic){const a=new Uint8Array(12);(crypto.getRandomValues?crypto.getRandomValues(a):a.forEach((_,i)=>a[i]=Math.random()*256|0));
-    r.topic='tagebuch-'+[...a].map(b=>(b%36).toString(36)).join('');}
-  return r;
-}
-function remSub(){const r=remCfg();return r.on?'Jeden Abend um '+r.time+' Uhr'+(r.only?', nur wenn etwas fehlt':''):'aus';}
-function remHtml(){
-  const r=remCfg();
-  return `<div class="sw"><div><b>Abenderinnerung</b><span>Echte Benachrichtigung auf dem Handy, mit dem was heute noch offen ist</span></div><label class="tg"><input type="checkbox" data-rem="on" ${r.on?'checked':''}><i></i></label></div>
-  ${r.on?`<div class="sw"><div><b>Uhrzeit</b><span>Kommt bis zu 15 Minuten danach</span></div><input type="time" class="in-t remtime" id="remTime" value="${esc(r.time)}"></div>
-  <div class="sw"><div><b>Nur wenn etwas fehlt</b><span>Nichts eingetragen oder Eiweißziel noch offen</span></div><label class="tg"><input type="checkbox" data-rem="only" ${r.only?'checked':''}><i></i></label></div>
-  <div class="remsteps"><b>Einmalig auf dem Handy einrichten</b>
-    <ol><li>Die kostenlose App <a href="${NTFY_PLAY}" target="_blank" rel="noopener">ntfy</a> aus dem Play Store installieren.</li>
-    <li><a href="ntfy://ntfy.sh/${esc(r.topic)}" data-act="remSub">Kanal in ntfy abonnieren</a>. Klappt der Link nicht: in ntfy auf „+“ tippen und diesen Namen einfügen:
-      <button class="remtopic" data-act="remCopy"><code>${esc(r.topic)}</code><small>kopieren</small></button></li>
-    <li>Test schicken. Kommt die Nachricht an, ist alles fertig.</li></ol>
-    <button class="btn ghost" data-act="remTest">Test-Benachrichtigung schicken</button>
-    <p class="hint">Der Kanalname ist zufällig und wirkt wie ein Passwort: Nur wer ihn kennt, sieht die Nachrichten. Gib ihn nicht weiter.</p></div>`:''}`;
-}
-function remSave(patch){
-  const s=JSON.parse(JSON.stringify(S.data.settings));
-  s.reminder=Object.assign(remCfg(),patch,{url:location.origin+location.pathname});
-  commit('saveSettings',[s]);
-  const b=document.querySelector('[data-sec=rem] .sec-b');if(b)b.innerHTML=remHtml();
-  const sm=document.querySelector('[data-sec=rem] summary small');if(sm)sm.textContent=remSub();
-}
-async function remTest(){
-  if(!LIVE){toast('In der Vorschau werden keine Benachrichtigungen verschickt.');return;}
-  const s=JSON.parse(JSON.stringify(S.data.settings));s.reminder=Object.assign(remCfg(),{url:location.origin+location.pathname});
-  toast('Schicke Test …');
-  try{await call('testReminder',s.reminder);toast('Test verschickt. Kommt er nicht an: Kanal in ntfy prüfen.');}
-  catch(e){toast(e.net?'Keine Verbindung. Bitte online nochmal probieren.':e.message,true);}
-}
-function remCopy(){const t=remCfg().topic;try{navigator.clipboard.writeText(t);toast('Kanalname kopiert.');}catch(e){toast(t);}}
-
-/* ---- Foto an Claude ---- */
+/* Erinnerungen wurden in v24 entfernt. */
 function photoHtml(){
   const P=S.photo||{};
   return `<button class="back" data-act="addback">${ICON.back}Zurück</button>
@@ -2303,12 +2378,12 @@ function photoHtml(){
     <label class="f"><span>Hinweis für Claude (optional)</span><input class="in-t" id="phNote" value="${esc(P.note||'')}" placeholder="z. B. halbe Portion, ohne Soße"></label>
     ${mealPick(S.add.meal)}
     ${P.url?`<button class="btn" data-act="phShare">An Claude teilen</button><button class="linkbtn" data-act="phReset" style="display:block;margin:10px auto 0">Anderes Foto</button>
-    <p class="hint">Im Teilen-Menü „Claude“ wählen. Der Text ist zusätzlich kopiert, falls er nicht mitkommt: einfach einfügen.</p>`:''}`;
+    <p class="hint">Im Teilen-Menü „Claude“ wählen und in Claude einfach <b>Senden</b> tippen. Die Claude-App übernimmt beim Teilen nur das Bild, deshalb steht dein Auftrag samt Hinweis unten <b>im Bild</b> – Claude liest ihn und trägt ein. Zur Sicherheit liegt der Text auch in der Zwischenablage.</p>`:''}`;
 }
 function photoText(){
   const P=S.photo||{},note=(val('phNote')||P.note||'').trim(),mb=document.querySelector('.mealpick .on'),meal=mb?mb.dataset.meal:'';
   const t=new Date(),hm=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
-  return `Trag ein: das Essen auf dem Foto${meal?', '+meal:''}, heute ${hm} Uhr.${note?' '+note+'.':''}`;
+  return `Auftrag an Claude: Trag ein: das Essen auf dem Foto${meal?', '+meal:''}, heute ${hm} Uhr.${note?' '+note+'.':''}`;
 }
 async function photoPick(file){
   if(!file)return;
@@ -2318,17 +2393,31 @@ async function photoPick(file){
 async function photoShare(){
   const P=S.photo;if(!P||!P.url)return;
   P.note=val('phNote');const text=photoText();
-  try{navigator.clipboard&&navigator.clipboard.writeText(text);}catch(e){}
-  const blob=await (await fetch(P.url)).blob();
+  try{navigator.clipboard&&navigator.clipboard.writeText(text).catch(()=>{});}catch(e){}
+  /* Die Claude-App übernimmt beim Teilen nur das Bild, nicht den Text: deshalb steht der Auftrag zusätzlich IM Bild (Leiste unten) */
+  const blob=await captionImage(P.url,text).catch(async()=>await (await fetch(P.url)).blob());
   const file=new File([blob],'essen.jpg',{type:'image/jpeg'});
   if(navigator.canShare&&navigator.canShare({files:[file]})){
-    try{await navigator.share({files:[file],text});S.photo=null;closeSheet();toast('Geteilt. Claude trägt es ein.');}
+    try{await navigator.share({files:[file],text,title:text});S.photo=null;closeSheet();toast('In Claude einfach auf Senden tippen – der Auftrag steht im Bild.');}
     catch(e){if(e.name!=='AbortError')toast('Teilen hat nicht geklappt.',true);}
   }else{
     const a=document.createElement('a');a.href=P.url;a.download='essen.jpg';document.body.appendChild(a);a.click();a.remove();
     toast('Teilen geht hier nicht. Foto gespeichert und Text kopiert: in Claude einfügen.',true);
     window.open('https://claude.ai/new','_blank','noopener');
   }
+}
+
+/* Foto + Textleiste darunter: gut lesbar für Claude (dunkle Schrift auf hellem Grund) */
+function captionImage(url,text){
+  return new Promise((res,rej)=>{const im=new Image();im.onload=()=>{
+    const W=Math.min(1600,im.naturalWidth),H=Math.round(im.naturalHeight*W/im.naturalWidth),fs=Math.max(30,Math.round(W/30)),pad=Math.round(fs*0.9);
+    const c=document.createElement('canvas'),x=c.getContext('2d');x.font=`600 ${fs}px Arial, sans-serif`;
+    const words=('📝 '+text).split(' '),lines=[];let cur='';
+    for(const w of words){const t=cur?cur+' '+w:w;if(x.measureText(t).width>W-pad*2&&cur){lines.push(cur);cur=w;}else cur=t;}if(cur)lines.push(cur);
+    const band=pad*2+lines.length*fs*1.3;c.width=W;c.height=H+band;
+    x.drawImage(im,0,0,W,H);x.fillStyle='#FFFFFF';x.fillRect(0,H,W,band);x.fillStyle='#1E2320';x.font=`600 ${fs}px Arial, sans-serif`;x.textBaseline='top';
+    lines.forEach((l,i)=>x.fillText(l,pad,H+pad+i*fs*1.3));
+    c.toBlob(b=>b?res(b):rej(new Error('Bild')),'image/jpeg',0.88);};im.onerror=rej;im.src=url;});
 }
 
 /* ================= Kopieren von einer anderen Mahlzeit =================
@@ -2487,7 +2576,8 @@ const CAT_ORDER=SHOP_CATS.map(c=>c[0]).filter(c=>c!=='Tiefkühl').concat(['Tiefk
 function shopGroups(list){const g={};list.forEach(x=>{(g[shopCat(x.name)]=g[shopCat(x.name)]||[]).push(x);});return CAT_ORDER.filter(c=>g[c]).map(c=>[c,g[c]]);}
 function shopShareText(){
   const got=store.get(shopKey(S.pweek))||{},list=shopItems(S.pweek).filter(x=>!got[x.key]);
-  return `*Einkaufsliste KW ${isoWeek(S.pweek)}*\n`+shopGroups(list).map(([c,xs])=>`\n*${c}*\n`+xs.map(x=>'• '+x.name+(x.amount?' – '+x.amount:'')).join('\n')).join('\n');
+  const EMO={'Obst & Gemüse':'🥦','Fleisch & Fisch':'🥩','Kühlregal & Eier':'🧀','Brot, Nudeln, Reis & Co.':'🍞','Konserven & Soßen':'🥫','Gewürze, Öle & Backen':'🧂','Tiefkühl':'❄️','Getränke':'🥤','Sonstiges':'🛒'};
+  return `🛒 *Einkaufsliste KW ${isoWeek(S.pweek)}*\n`+shopGroups(list).map(([c,xs])=>`\n${EMO[c]||'•'} *${c}*\n`+xs.map(x=>'• '+x.name+(x.amount?' – '+x.amount:'')).join('\n')).join('\n');
 }
 
 document.addEventListener('click',ev=>{
@@ -2578,7 +2668,7 @@ function vWochenplan(){
       h+=`<div class="pcell ${list.length?'':'empty'}" data-drop="${d}|${m}" style="--r:${j+2};--mc:${MEAL_COLOR[m]}">
         <div class="pcl"><i></i>${MEAL_SHORT[m]}</div>
         ${list.map(it=>{const vv=planVals(it),miss=it.type==='recipe'&&!recipeBy(it.name);
-          return `<div class="pwrap"><button class="pitem ${it.done?'done':''}" data-act="planItem" data-d="${d}" data-id="${it.id}"${drag}>${pThumb(it.name)}
+          return `<div class="pwrap swr"><button class="swa swa-l" data-act="swPlanEat" data-d="${d}" data-id="${it.id}" tabindex="-1">${ICON.check}<span>Gegessen<br>eintragen</span></button><button class="swa swa-r" data-act="swPlanDel" data-d="${d}" data-id="${it.id}" tabindex="-1"><span>Entfernen?</span></button><button class="pitem ${it.done?'done':''}" data-act="planItem" data-d="${d}" data-id="${it.id}"${drag}>${pThumb(it.name)}
           <span class="pn"><b>${esc(it.name)}</b><small class="num">${it.type==='text'?'eigener Eintrag':fmtN(it.portions||1)+' Port.'}${vv.kcal?' · '+k(vv.kcal)+' kcal':''}${miss?' · Rezept fehlt':''}</small></span>${it.done&&!tgt?`<span class="pok" title="eingetragen">${ICON.check}</span>`:''}</button>${tgt?`<button class="pcopy" data-act="planCopyOne" data-d="${d}" data-id="${it.id}" data-to="${tgt}" title="In KW ${isoWeek(tgt)} übernehmen" aria-label="${esc(it.name)} in KW ${isoWeek(tgt)} übernehmen">${ICON.plus}</button>`:''}</div>`;}).join('')}
         <button class="padd" data-act="planAdd" data-d="${d}" data-m="${m}" aria-label="${MEAL_SHORT[m]} am ${DS[i]} planen">${ICON.plus}</button></div>`;
     });
@@ -2700,6 +2790,8 @@ function vRezepte(){
   const rs=S.data.recipes||[];
   let h=`<div class="rtools"><div class="search">${ICON.search}<input id="recQ" placeholder="Rezept oder Zutat suchen" value="${esc(S.recQ||'')}" autocomplete="off"></div><button class="btn rnew" data-act="recNew">${ICON.plus}<span class="l1">Neues Rezept</span><span class="l2">Neu</span></button></div>`;
   h+=incomingHtml('rinc');
+  h+=rTabsHtml();
+  if(S.rtab==='kb'&&canKB())return h+kbView();
   if(!rs.length)return h+'<div class="card faint">Noch keine Rezepte. Lege eins an oder sag Claude „lege Rezept an“.</div>';
   const used=new Set(rs.map(r=>instrFor(r.name)).filter(Boolean)),loose=(S.data.instructions||[]).filter(x=>!used.has(x));
   return h+`<div id="rbarBox">${recipeBar()}</div><div class="${rf().view==='list'?'rlist':'rgrid'}" id="rgrid">${recipeCards()}</div>`+(loose.length?`<h3 class="ph3" style="margin-top:22px">Anleitungen ohne passendes Rezept</h3><p class="small muted" style="margin-top:-4px">Heißt ein Rezept genauso wie die Anleitung (ohne Klammer), erscheint sie direkt beim Rezept.</p>
@@ -2713,14 +2805,14 @@ function recipeCards(){
   return rs.map(([r,i])=>{const st=rStat(r);const o=S.open['r'+i],hasImg=(S.data.images||{})[r.name],ins=instrFor(r.name);
     return `<div class="card rcard">${recipeImgHtml(r.name)||(imgWanted(r.name)?'<div class="rimg want"><span>Claude sucht beim nächsten Abgleich ein Bild</span></div>':'')}<button class="rc" data-act="toggle" data-key="r${i}"><div class="top2"><b>${esc(r.name)}</b><span class="num">${fitDot(r)}${k(r.per.kcal)} kcal</span></div>
     <div class="small muted num">${g1(r.portions).replace(',0','')} ${r.portions===1?'Portion':'Portionen'} · pro Portion E ${g1(r.per.p)} g · KH ${g1(r.per.c)} g · F ${g1(r.per.f)} g</div>
-    <div class="rmeta">${r.items.length} Zutaten${ins?' · mit Anleitung':''}${st.n?' · '+st.n+'× gegessen':''}${rSince(st)?' · seit '+rSince(st):''}${r.items.some(x=>x.open)?' · <b class="ropen">Claude rechnet noch</b>':''}<span>${o?'▴':'▾'}</span></div></button>
+    <div class="rmeta">${r.items.length} Zutaten${ins?' · mit Anleitung':''}${st.n?' · '+st.n+'× gegessen':''}${rSince(st)?' · seit '+rSince(st):''}${r.items.some(x=>x.open)?' · <b class="ropen">Claude rechnet noch</b>':''}<span>${o?'▴':'▾'}</span></div></button>${starsHtml(r.name,rRating(r.name),{cls:'rc-st'})}
     ${o?`<div class="ing" style="margin-top:10px">${r.items.map(it=>`<div><span>${esc(it.name)}${it.open?' <em class="ropen">offen</em>':''}</span><span>${esc(it.amount)}</span></div>`).join('')}</div><div class="small faint">Mengen für das ganze Rezept.</div>${ins?instrBlock(ins,S.open['ri'+i]).replace('data-pins="1"','data-ri="'+i+'"'):''}`:''}
     <div class="racts">${mods().wochenplan?`<button class="linkbtn" data-act="recPlan" data-n="${esc(r.name)}">Einplanen</button>`:''}<button class="linkbtn" data-act="recEdit" data-n="${esc(r.name)}">Bearbeiten</button><button class="linkbtn" data-act="recShare" data-n="${esc(r.name)}">Teilen</button></div></div>`;}).join('');
 }
 function openRecipeEdit(name){
   const r=name?recipeBy(name):null,ins=name?instrFor(name):null;
   const im=r?(S.data.images||{})[r.name]:null;
-  S.redit={img:im?imgCache(im):null,hadImg:!!im,file:null,dropImg:false,want:r?imgWanted(r.name):false,old:r?r.name:null,name:r?r.name:'',portions:r?r.portions:2,items:r?JSON.parse(JSON.stringify(r.items)):[],steps:ins?ins.steps.join('\n'):'',notes:ins?ins.notes.join('\n'):'',fq:'',fres:[]};
+  S.redit={rating:r?rRating(r.name):0,kb:r?(S.data.kochbuch||[]).some(x=>x.mine&&x.name===r.name):false,img:im?imgCache(im):null,hadImg:!!im,file:null,dropImg:false,want:r?imgWanted(r.name):false,old:r?r.name:null,name:r?r.name:'',portions:r?r.portions:2,items:r?JSON.parse(JSON.stringify(r.items)):[],steps:ins?ins.steps.join('\n'):'',notes:ins?ins.notes.join('\n'):'',fq:'',fres:[]};
   drawRecipeEdit();
 }
 const imgWanted=n=>!!(S.data.imgWanted||{})[n];
@@ -2754,6 +2846,8 @@ function drawRecipeEdit(){
   openSheet(`<p class="sub" style="margin-top:2px">Mengen und Werte gelten für das ganze Rezept. Die App rechnet daraus die Portion.</p>
     <div class="row2 re-top"><label class="f"><span>Name</span><input class="in-t" id="reName" value="${esc(R.name)}" placeholder="z. B. Linsen-Curry"></label>
     <label class="f"><span>Portionen</span><input class="in-t num" inputmode="decimal" id="rePort" value="${fmtN(R.portions)}"></label></div>
+    <div class="re-rate"><span class="lbl">Bewertung</span><span id="reStars">${starsHtml('',R.rating||0,{act:'reRate'})}<small class="muted">${R.rating?String(R.rating/2).replace('.',',')+' von 5':'antippen'}</small></span></div>
+    ${canKB()?`<label class="chk re-kb"><input type="checkbox" id="reKB" ${R.kb?'checked':''}><i>${ICON.check}</i><span><b>Ins Familien-Kochbuch</b> – alle, die mit deiner App verbunden sind, sehen das Rezept und können es übernehmen.</span></label>`:''}
     <h3 class="ph3">Bild</h3><div id="reImg">${reImgHtml()}</div>
     <h3 class="ph3">Zutaten</h3><div id="reRows">${reRows()}</div>
     <div class="re-add"><div class="search" style="box-shadow:none;background:var(--bg);border:1px solid var(--line);margin:10px 0 0">${ICON.search}<input id="reFoodQ" placeholder="Zutat suchen oder einfach hinschreiben, z. B. TK Lachs 1 Pack" value="${esc(R.fq)}" autocomplete="off" enterkeyhint="done"></div>
@@ -2804,6 +2898,8 @@ function reSave(){
   if(!items.length){toast('Bitte mindestens eine Zutat eintragen.',true);return;}
   const s=f=>items.reduce((a,x)=>a+x[f],0);
   const rec={name,portions:P,per:{kcal:Math.round(s('kcal')/P),p:r1(s('p')/P),c:r1(s('c')/P),f:r1(s('f')/P)},items};
+  if((R.rating||0)!==(R.old?rRating(R.old):0))rec.rating=R.rating||0;
+  const kbEl=$('#reKB');if(kbEl&&kbEl.checked!==R.kb)rec.kochbuch=kbEl.checked;
   const steps=$('#reSteps').value.split('\n').map(x=>x.replace(/^\s*\d+[.)]\s*/,'').trim()).filter(Boolean),notes=$('#reNotes').value.split('\n').map(x=>x.trim()).filter(Boolean);
   const oi=instrFor(R.old||name),ing=oi?oi.ingredients:[];
   const ins=steps.length||notes.length||ing.length?{title:oi&&R.old===name?oi.title:name,ingredients:ing,steps,notes}:null;
@@ -2929,8 +3025,8 @@ function migrateV12(){
 /* Oben rechts: was auf Claude wartet (nur sichtbar, wenn etwas wartet) */
 function claudeQueue(){return (S.data&&S.data.inbox)||[];}
 function renderClaudeBtn(){
-  const b=$('#btnClaude');if(!b)return;const n=claudeQueue().length;b.hidden=!n;b.dataset.act='claudeGo';
-  b.innerHTML=ICON.claude+(n?`<i>${n}</i>`:'');b.title=n+(n===1?' Auftrag wartet':' Aufträge warten')+' auf Claude: antippen öffnet Claude';
+  const b=$('#btnClaude');if(!b)return;const n=claudeQueue().length;b.hidden=!n;const gp=typeof geminiPrimary==='function'&&geminiPrimary();b.dataset.act=gp?'aiInbox':'claudeGo';
+  b.innerHTML=(gp?'<span class="aistar" style="font-size:18px">✨</span>':ICON.claude)+(n?`<i>${n}</i>`:'');if(gp){b.title=n+' warten: antippen erledigt sie mit Gemini';return;}b.title=n+(n===1?' Auftrag wartet':' Aufträge warten')+' auf Claude: antippen öffnet Claude';
 }
 /* Lesbarer Text je Eintrag im Eingang */
 function cqText(i){return /^Auftrag/.test(i.what)?i.what.replace(/^Auftrag: /,'').replace(/\s*\((echtes Foto|Zutaten mit|alle vorläufigen)[^)]*\)\s*$/,'').replace(/ – alle vorläufigen.*$/,''):'Eintragen: '+i.what;}
@@ -2940,7 +3036,7 @@ function claudePrompt(){
   return 'Abgleich – bitte im Ernährungstagebuch erledigen:\n'+q.map(i=>'- '+cqText(i)+(i.amount&&!/^Auftrag/.test(i.what)?' ('+i.amount+')':'')).join('\n');
 }
 function claudeGo(){
-  const t=claudePrompt();try{navigator.clipboard&&navigator.clipboard.writeText(t);}catch(e){}
+  const t=claudePrompt();try{navigator.clipboard&&navigator.clipboard.writeText(t).catch(()=>{});}catch(e){}
   window.open('https://claude.ai/new?q='+encodeURIComponent(t),'_blank','noopener');
   toast('Claude geöffnet. Fehlt der Text dort: einfügen, er ist kopiert. Danach hier aktualisieren.');
 }
@@ -2955,7 +3051,7 @@ document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');
   if(el.dataset.act==='claudeQueue')openClaudeQueue();
   if(el.dataset.act==='claudeGo'){closeSheet();claudeGo();}
   if(el.dataset.act==='inboxToggle'){S.inboxOpen=!S.inboxOpen;render();}
-  if(el.dataset.act==='askAbgleich'){try{navigator.clipboard&&navigator.clipboard.writeText('Abgleich');}catch(e){}setTimeout(closeSheet,300);}
+  if(el.dataset.act==='askAbgleich'){try{navigator.clipboard&&navigator.clipboard.writeText('Abgleich').catch(()=>{});}catch(e){}setTimeout(closeSheet,300);}
 });
 /* Script-Version prüfen und der App-Adresse Bescheid geben (für den QR-Code beim Einrichten) */
 const scriptOld=()=>LIVE&&S.data&&(+S.data.scriptVersion||0)<MIN_SCRIPT;
@@ -2967,7 +3063,7 @@ function checkScript(){
   if(location.protocol==='https:'&&S.data.appUrl!==me)api(CONN.url,CONN.key,'setAppUrl',[me]).catch(()=>{});
 }
 function renderSide(){
-  migrateV12();renderClaudeBtn();checkScript();clAutoOpen();rshareAutoOpen();
+  migrateV12();renderClaudeBtn();checkScript();clAutoOpen();rshareAutoOpen();renderTop();renderAiBtn();
   const el=$('#side');if(!el||!S.data)return;
   const pages=MODULES.filter(x=>x.page&&mods()[x.key]);
   const link=(key,lbl,act)=>`<button class="sl ${S.view===key?'on':''}" ${act?`data-act="goview" data-view="${key}"`:`data-tab="${key}"`}>${ICON[key]}<span>${lbl}</span></button>`;
@@ -2978,7 +3074,7 @@ function renderSide(){
     ${pages.length?`<div class="side-h">Mehr</div><nav class="side-nav">${pages.map(x=>link(x.key,x.title,true)).join('')}</nav>`:''}
     <nav class="side-nav side-low"><button class="sl" data-act="openExport">${ICON.report}<span>Bericht und Export</span></button>
       ${claudeQueue().length?`<button class="sl" data-act="claudeGo">${ICON.claude}<span>Wartet auf Claude</span><b class="sbadge">${claudeQueue().length}</b></button>`:''}
-      <a class="sl" href="https://claude.ai/new" target="_blank" rel="noopener">${ICON.claude}<span>Mit Claude eintragen</span></a>
+      ${geminiPrimary()?`<button class="sl sl-ai"><span class="aistar">✨</span><span>Mit KI eintragen</span></button>`:`<a class="sl" href="https://claude.ai/new" target="_blank" rel="noopener">${ICON.claude}<span>Mit Claude eintragen</span></a>`}
       <button class="sl" data-act="sideSettings">${ICON.settings}<span>Einstellungen</span></button></nav>
     <div class="side-keys"><kbd>←</kbd><kbd>→</kbd> blättern · <kbd>T</kbd> heute · <kbd>Esc</kbd> schließen</div></div>`;
 }
@@ -3029,13 +3125,29 @@ document.addEventListener('keydown',e=>{
 
 /* Einstellungen: Reiter ein-/ausblenden und sortieren */
 function tabsHtml(){
-  const s=S.data.settings,o=tabOrder(s),desc=k=>{const d=TAB_DESC[k]||(MODULES.find(x=>x.key===k)||{}).desc||'';const t=d.replace(/^Eigener Reiter unten:?\s*/,'');return t.charAt(0).toUpperCase()+t.slice(1);};
+  const s=S.data.settings,o=tabOrder(s),top=navTopOf(s),desc=k=>{const d=TAB_DESC[k]||(MODULES.find(x=>x.key===k)||{}).desc||'';const t=d.replace(/^Eigener Reiter unten:?\s*/,'');return t.charAt(0).toUpperCase()+t.slice(1);};
   const title=k=>({wochenplan:'Wochenplan'})[k]||ALL_TABS.find(t=>t[0]===k)[1];
-  return `<p class="sub" style="margin-top:0">Ausgeblendete Bereiche verschwinden aus der Leiste. Deine Daten bleiben erhalten.</p>`+o.map((key,i)=>`<div class="sw tabrow ${tabOn(key,s)?'':'off'}">
+  const pos=k=>!tabOn(k,s)?'aus':top.includes(k)?'oben':'unten';
+  return `<p class="sub" style="margin-top:0"><b>Unten</b> = in der Leiste unten, <b>Oben</b> = als kleines Symbol oben neben dem Zahnrad, <b>Aus</b> = ausgeblendet (Daten bleiben).</p>`+o.map((key,i)=>{const p=pos(key);return `<div class="sw tabrow ${p==='aus'?'off':''}">
     <span class="tabico">${ICON[key]}</span><div><b>${title(key)}</b><span>${desc(key)}</span></div>
     <span class="ord"><button data-act="navMove" data-k="${key}" data-d="-1" ${i===0?'disabled':''} aria-label="${title(key)} nach oben">▲</button><button data-act="navMove" data-k="${key}" data-d="1" ${i===o.length-1?'disabled':''} aria-label="${title(key)} nach unten">▼</button></span>
-    <label class="tg"><input type="checkbox" data-mod="${key}" ${tabOn(key,s)?'checked':''} ${key==='heute'?'disabled':''}><i></i></label></div>`).join('');
+    <span class="pos3">${['unten','oben','aus'].map(v=>`<button class="${p===v?'on':''}" data-act="navPos" data-k="${key}" data-v="${v}" ${key==='heute'&&v!=='unten'?'disabled':''}>${v.charAt(0).toUpperCase()+v.slice(1)}</button>`).join('')}</span></div>`;}).join('')
+  +`<div class="rfh" style="margin-top:16px">Weitere Funktionen</div>`+MODULES.filter(x=>!x.nav).map(x=>`<div class="sw"><div><b>${x.title}</b><span>${x.desc}</span></div><label class="tg"><input type="checkbox" data-mod="${x.key}" ${mods()[x.key]?'checked':''}><i></i></label></div>`).join('');
 }
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act=navPos]');if(!el)return;
+  const s=JSON.parse(JSON.stringify(S.data.settings)),k=el.dataset.k,v=el.dataset.v;s.modules=s.modules||{};
+  s.modules[k]=v!=='aus';let top=navTopOf(s).filter(x=>x!==k);if(v==='oben')top.push(k);s.navTop=top;
+  if(v==='aus'&&S.view===k)S.view='heute';
+  commit('saveSettings',[s]);const box=document.querySelector('[data-sec=tabs] .sec-b');if(box)box.innerHTML=tabsHtml();
+});
+/* Oben angepinnte Bereiche als kleine Symbole */
+function renderTop(){
+  const el=$('#topnav');if(!el)return;
+  el.innerHTML=topTabs().map(([key,lbl])=>`<button class="iconbtn tn ${S.view===key?'on':''}" data-top="${key}" aria-label="${lbl}" title="${lbl}">${ICON[key]}</button>`).join('');
+  const fb=$('#btnFb');if(fb){const n=fbOpenCount();fb.classList.toggle('has',n>0);fb.dataset.n=n||'';}
+}
+document.addEventListener('click',ev=>{const b=ev.target.closest('[data-top]');if(!b)return;S.view=b.dataset.top;window.scrollTo(0,0);render();});
 document.addEventListener('click',ev=>{
   const el=ev.target.closest('[data-act=navMove]');if(!el)return;
   const s=JSON.parse(JSON.stringify(S.data.settings)),o=tabOrder(s),i=o.indexOf(el.dataset.k),j=i+ +el.dataset.d;if(i<0||j<0||j>=o.length)return;
@@ -3054,6 +3166,7 @@ function personsHtml(){
       <a class="linkbtn" href="${esc(p.sheetUrl)}" target="_blank" rel="noopener">Tabelle</a>
       <button class="linkbtn" data-act="persRenew" data-id="${p.id}">${arm['r'+p.id]?'Wirklich? Altes Handy wird getrennt':'Neuer Schlüssel'}</button>
       <button class="linkbtn" style="color:var(--bad)" data-act="persDel" data-id="${p.id}">${arm['d'+p.id]?'Wirklich entfernen?':'Entfernen'}</button></div></div>`).join('')}</div>`:''}
+  <label class="f"><span>Dein Name (so steht es bei den anderen, z. B. „Neu von …“)</span><div class="pname"><input class="in-t" id="ownName" value="${esc(S.data.myName||'')}" autocomplete="off"><button class="pbtn" data-act="persName">Speichern</button></div></label>
   <div class="pnew"><div class="row2"><label class="f"><span>Name</span><input class="in-t" id="pnName" placeholder="z. B. Mama" autocomplete="off"></label>
     <label class="f"><span>Gmail-Adresse</span><input class="in-t" id="pnMail" type="email" placeholder="name@gmail.com" autocomplete="off"></label></div>
     <button class="btn" data-act="persAdd" id="pnBtn">Person anlegen</button>
@@ -3095,7 +3208,9 @@ document.addEventListener('click',ev=>{
     if(a==='persRenew')call('personSchluessel',el.dataset.id,true).then(r=>{toast('Neuer Schlüssel. Das alte Handy ist getrennt.');openPersonConnect(r.name,r.key);}).catch(e=>toast(e.message,true));
     else call('personEntfernen',el.dataset.id).then(r=>{S.data.persons=r.persons;refreshPersonsBox();toast('Entfernt. Ihre Tabelle bleibt erhalten.');}).catch(e=>toast(e.message,true));
     return;}
-  if(a==='persShare'){const p=S.persLink;shareOut({title:'Ernährungstagebuch',text:'Hallo '+p.name+', hier ist dein Ernährungstagebuch. Bitte auf dem Handy in Chrome öffnen, dann im Chrome-Menü „App installieren“. Danach zeigt dir die App Schritt für Schritt, wie du Claude dazu einrichtest:\n'+p.link});return;}
+  if(a==='persShare'){const p=S.persLink;shareOut({title:'Ernährungstagebuch',text:'Hallo '+p.name+', hier ist dein Ernährungstagebuch:\n'+p.link+'\n\nAndroid: in Chrome öffnen, dann im Chrome-Menü „App installieren“.\niPhone: in Safari öffnen, dann Teilen ⬆︎ → „Zum Home-Bildschirm“. Fragt die App danach nach einer Verbindung: diesen Link lange drücken → „Link kopieren“ und in der App einfügen.'});return;}
+  if(a==='persName'){const n=val('ownName');if(!(+S.data.scriptVersion>=22)&&LIVE){toast('Dafür bitte zuerst Code.gs auf Version 22 bringen.',true);return;}
+    call('setOwnerName',n).then(r=>{S.data.myName=r.name;toast('Gespeichert: „'+r.name+'“.');}).catch(e=>toast(e.message,true));return;}
   if(a==='persCopy'){copyText(S.persLink.link).then(()=>toast('Link kopiert.'),()=>toast('Kopieren nicht möglich.',true));return;}
 });
 /* ================= Claude einrichten: Checkliste mit Direktlinks (v17) ================= */
@@ -3110,11 +3225,8 @@ const CL_STEPS=[
    d:'Bei <b>Google Drive</b> auf <b>Verbinden</b> tippen, dein Google-Konto wählen und <b>Zulassen</b> tippen. Danach genauso bei <b>Google Sheets</b>. Stehen sie nicht in der Liste: auf <b>Durchsuchen</b> tippen und „Google“ suchen.',
    b:'Verbindungen öffnen',href:'https://claude.ai/customize/connectors'},
   {k:'sk1',t:'Skill „Ernährungstagebuch“',
-   d:'Claude legt den Skill selbst an und sagt dir, wo du tippen musst. Am Ende tippst du auf <b>Speichern</b> (englisch: <i>Save skill</i>).',
-   b:'In Claude anlegen',q:'sk1'},
-  {k:'sk2',t:'Skill „Rezeptideen“',
-   d:'Genauso wie eben: Claude legt ihn an, du tippst auf <b>Speichern</b>.',
-   b:'In Claude anlegen',q:'sk2'},
+   d:'Das geht nur auf der <b>Webseite</b>, nicht in der Claude-App. Der Knopf öffnet deshalb Chrome. Falls nötig, dort einmal mit demselben Google-Konto anmelden. Claude legt den Skill an und sagt dir, wo du tippen musst: am Ende auf <b>Speichern</b> (<i>Save skill</i>). Danach läuft alles wieder in der App.',
+   b:'Im Browser anlegen',q:'sk1',web:1},
   {k:'test',t:'Test',
    d:'Claude liest deine Tabelle und schreibt einen Haken hinein. Fragt Claude nach Erlaubnis, tippe <b>Immer erlauben</b> (<i>Always allow</i>). Dann fragt es nie wieder. Dieser Schritt hakt sich von selbst ab.',
    b:'Test starten',q:'test'}
@@ -3127,9 +3239,8 @@ function clIsDone(k){return clOk()||!!clGet()[k];}
 function clCount(){return CL_STEPS.filter(s=>clIsDone(s.k)).length;}
 function clPrompt(q){
   const n=S.data&&S.data.myName,hi=n?`Hallo, ich bin ${n}. `:'';
-  const skill=(id,nm)=>`${hi}Bitte lege mir einen neuen Skill namens „${id}“ an. Ruf dazu diese Adresse ab: ${clBase()}skills/${id}.json – im Feld „inhalt“ steht der komplette Text der SKILL.md. Übernimm ihn genau so als SKILL.md, ohne etwas zu ändern oder zu kürzen (auch den Kopf mit name und description). Ich kenne mich damit nicht aus: Sag mir danach in einfachen, kurzen Worten, worauf ich tippen muss, damit der Skill „${nm}“ gespeichert ist.`;
+  const skill=(id,nm)=>`${hi}Bitte lege mir einen neuen Skill namens „${id}“ an. Ruf dazu diese Adresse ab: ${clBase()}skills/${id}.json – im Feld „dateien“ stehen alle Dateien des Skills mit Pfad (SKILL.md und references/…). Lege den Skill mit genau diesen Dateien an, ohne etwas zu ändern oder zu kürzen (auch den Kopf mit name und description). Geht nur eine Datei: nimm das Feld „inhalt“ als SKILL.md. Ich kenne mich damit nicht aus: Sag mir danach in einfachen, kurzen Worten, worauf ich tippen muss, damit der Skill „${nm}“ gespeichert ist.`;
   if(q==='sk1')return skill('ernaehrungstagebuch','Ernährungstagebuch');
-  if(q==='sk2')return skill('rezeptideen','Rezeptideen');
   const d=new Date().toLocaleDateString('de-DE');
   return `${hi}Ich richte gerade mein Ernährungstagebuch ein. Erklär mir bitte zuerst in einem Satz: Gleich kann eine Frage nach Erlaubnis kommen, dann soll ich „Immer erlauben“ (Always allow) tippen, damit du nicht jedes Mal fragst. Dann mach den Test: Such in Google Drive meine Tabelle, deren Name mit „Ernährungstagebuch“ beginnt (auch unter „Geteilt mit mir“; Dateien mit „Backup“ oder „Vorlage“ im Namen ignorieren). Lies den Tab Status und sag mir kurz, wie viel ich heute schon gegessen habe. Schreib danach in derselben Tabelle in den Tab Anweisungen in Zelle C1 genau: Claude verbunden am ${d}. Sag mir zum Schluss, dass alles geklappt hat und ich zurück in die App gehen kann.`;
 }
@@ -3142,7 +3253,7 @@ function clHtml(){
     <div class="cl-b"><b>${s.t}</b><p>${s.d}</p>
       ${s.href?`<a class="pbtn" href="${s.href}" target="_blank" rel="noopener" data-act="clGo" data-k="${s.k}">${s.b}</a>`:`<button class="pbtn" data-act="clGo" data-k="${s.k}" data-q="${s.q}">${s.b}</button>`}</div></li>`}).join('')}</ol>
   <details class="clb"><summary>Klappt ein Skill nicht?</summary><p class="small">Dann am PC <b>claude.ai/customize/skills</b> öffnen, auf <b>+</b> bzw. <b>Skill hochladen</b> tippen und diese Datei wählen (nicht entpacken):<br>
-    <a href="${base}skills/ernaehrungstagebuch.zip" download>ernaehrungstagebuch.zip</a> · <a href="${base}skills/rezeptideen.zip" download>rezeptideen.zip</a></p></details>`;
+    <a href="${base}skills/ernaehrungstagebuch.zip" download>ernaehrungstagebuch.zip</a></p></details>`;
 }
 function openClaudeSetup(){
   try{localStorage.removeItem('et-cl-open')}catch(e){}
@@ -3171,7 +3282,9 @@ document.addEventListener('click',ev=>{
   if(a==='clTick'){const d=clGet();d[el.dataset.k]=!d[el.dataset.k];clPut(d);refreshCl();return;}
   if(a==='clGo'){
     const d=clGet();
-    if(el.dataset.q){ev.preventDefault();window.open('https://claude.ai/new?q='+encodeURIComponent(clPrompt(el.dataset.q)),'_blank','noopener');}
+    if(el.dataset.q){ev.preventDefault();const u='https://claude.ai/new?q='+encodeURIComponent(clPrompt(el.dataset.q));
+      /* Skills lassen sich nur auf der Webseite anlegen: bewusst im Browser öffnen, nicht in der App */
+      if(CL_STEPS.find(s=>s.k===el.dataset.k&&s.web))window.__open(u,'_blank','noopener');else window.open(u,'_blank','noopener');}
     if(el.dataset.k!=='test'){d[el.dataset.k]=true;clPut(d);setTimeout(refreshCl,400);}
     return;}
 });
@@ -3227,8 +3340,21 @@ function incomingHtml(cls){
 function rshareAutoOpen(){
   if(!S.data||S.rsChecked)return;S.rsChecked=true;
   let id=null;try{id=localStorage.getItem('et-share-open');localStorage.removeItem('et-share-open');}catch(e){}
-  if(id&&/^[a-z0-9]{6,32}$/i.test(id))setTimeout(()=>openShareImport(id),700);
+  if(id&&/^[a-z0-9]{6,32}$/i.test(id)){setTimeout(()=>openShareImport(id),700);return;}
+  incomingPopup();
 }
+/* Beim Start ein kleines Fenster: „Gina hat dir ein Rezept geschickt“ */
+function incomingPopup(){
+  const inc=S.data&&S.data.incoming||[];if(!inc.length||$('#incpop'))return;
+  const i=inc[0],more=inc.length-1,el=document.createElement('div');el.id='incpop';el.className='incpop';el.setAttribute('role','dialog');
+  el.innerHTML=`<div class="incpop-i">${ICON.rezepte}</div><div class="incpop-t"><b>${esc(i.from)} hat dir ein Rezept geschickt</b><span>${esc(i.name)}${more>0?' und '+more+' weitere'+(more===1?'s':''):''}</span></div>
+    <div class="incpop-a"><button class="linkbtn" data-act="incpopX">Später</button><button class="btn" data-act="incpopGo" data-id="${esc(i.id)}">Ansehen</button></div>`;
+  setTimeout(()=>{if(!$('#sheet.on')&&!$('#incpop')){document.body.appendChild(el);requestAnimationFrame(()=>el.classList.add('on'));}},1200);
+}
+function incpopClose(){const el=$('#incpop');if(!el)return;el.classList.remove('on');setTimeout(()=>el.remove(),250);}
+document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');if(!el)return;
+  if(el.dataset.act==='incpopGo'){incpopClose();openShareImport(el.dataset.id);}
+  if(el.dataset.act==='incpopX')incpopClose();});
 document.addEventListener('click',ev=>{
   const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
   if(a==='rsendTo'){
@@ -3249,9 +3375,11 @@ document.addEventListener('click',ev=>{
     return;}
   if(a==='rimpDrop'){const x=S.rimp;call('dropShare',x.id).then(()=>{S.data.incoming=(S.data.incoming||[]).filter(i=>i.id!==x.id);closeSheet();render();toast('Nicht übernommen.');}).catch(e=>toast(e.message,true));return;}
 });
+/* Popup schließen, sobald ein Fenster aufgeht */
+const __openSheet=openSheet;openSheet=function(){incpopClose();return __openSheet.apply(this,arguments);};
 /* ================= Rezepte: Liste/Kacheln, Filter, Sortierung (v21) ================= */
 const FILTER_SVG='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>';
-const RF_DEF={view:'grid',sort:'name',kmin:'',kmax:'',src:'',fit:false,freq:false,open:false};
+const RF_DEF={view:'grid',sort:'name',kmin:'',kmax:'',src:'',fit:false,freq:false,star:0,open:false};
 function rf(){if(!S.rf){let o={};try{o=JSON.parse(localStorage.getItem('et-rf')||'{}')}catch(e){}S.rf=Object.assign({},RF_DEF,o,{open:false});}return S.rf;}
 function rfSave(){const o=Object.assign({},S.rf);delete o.open;try{localStorage.setItem('et-rf',JSON.stringify(o))}catch(e){}}
 const PROT_SRC=[['Ei',/\beier?\b|huhnerei|omelett|ruhrei|spiegelei/],['Geflügel',/hahnchen|huhn|pute|chicken|geflugel|ente\b/],['Fisch',/lachs|thunfisch|fisch|garnele|pangasius|kabeljau|seelachs|forelle|shrimp|scampi|makrele|hering/],
@@ -3279,9 +3407,10 @@ function recipeList(){
   const F=rf(),q=norm(S.recQ||''),left=kcalLeft();
   let rs=(S.data.recipes||[]).map((r,i)=>[r,i]).filter(([r])=>!q||norm(r.name+' '+r.items.map(x=>x.name).join(' ')).includes(q));
   const lo=parseFloat(F.kmin),hi=parseFloat(F.kmax);
-  rs=rs.filter(([r])=>(isNaN(lo)||r.per.kcal>=lo)&&(isNaN(hi)||r.per.kcal<=hi)&&(!F.src||protSrc(r)===F.src)&&(!F.fit||r.per.kcal<=left)&&(!F.freq||rStat(r).n>=3));
+  rs=rs.filter(([r])=>(isNaN(lo)||r.per.kcal>=lo)&&(isNaN(hi)||r.per.kcal<=hi)&&(!F.src||protSrc(r)===F.src)&&(!F.fit||r.per.kcal<=left)&&(!F.freq||rStat(r).n>=3)&&(!F.star||rRating(r.name)>=F.star));
   const by={
     name:(a,b)=>a.name.localeCompare(b.name,'de'),
+    sterne:(a,b)=>rRating(b.name)-rRating(a.name),
     neu:(a,b)=>(rSinceKey(b)).localeCompare(rSinceKey(a)),
     oft:(a,b)=>rStat(b).n-rStat(a).n,
     zuletzt:(a,b)=>(rStat(b).last||'').localeCompare(rStat(a).last||''),
@@ -3291,18 +3420,20 @@ function recipeList(){
   return rs.sort((x,y)=>by(x[0],y[0])||x[0].name.localeCompare(y[0].name,'de'));
 }
 const rSinceKey=r=>{const st=rStat(r);return st.created||st.first||'';};
-const RSORTS=[['name','Name A–Z'],['neu','Neueste zuerst'],['oft','Am häufigsten gegessen'],['zuletzt','Zuletzt gegessen'],['kauf','Kalorien aufsteigend'],['kab','Kalorien absteigend'],['eiw','Meiste Eiweiß'],['dichte','Eiweiß pro kcal']];
-function rfCount(){const F=rf();return (F.kmin!==''||F.kmax!==''?1:0)+(F.src?1:0)+(F.fit?1:0)+(F.freq?1:0);}
+const RSORTS=[['name','Name A–Z'],['sterne','Beste zuerst'],['neu','Neueste zuerst'],['oft','Am häufigsten gegessen'],['zuletzt','Zuletzt gegessen'],['kauf','Kalorien aufsteigend'],['kab','Kalorien absteigend'],['eiw','Meiste Eiweiß'],['dichte','Eiweiß pro kcal']];
+function rfCount(){const F=rf();return (F.kmin!==''||F.kmax!==''?1:0)+(F.src?1:0)+(F.fit?1:0)+(F.freq?1:0)+(F.star?1:0);}
 function recipeBar(){
   const F=rf(),n=rfCount(),srcs=[...new Set((S.data.recipes||[]).map(protSrc))].sort((a,b)=>a==='Sonstiges'?1:b==='Sonstiges'?-1:a.localeCompare(b,'de'));
   const kc=[['','400','bis 400'],['400','600','400–600'],['600','800','600–800'],['800','','über 800']];
-  return `<div class="rbar"><button class="rb ${F.open||n?'on':''}" data-act="rfOpen">${FILTER_SVG}Filter${n?` <b>${n}</b>`:''}</button>
+  return `<div class="rbar"><button class="rb ${F.open||n?'on':''}" data-act="rfOpen">${FILTER_SVG}Filter${n?` <b>${n}</b>`:''}</button>${n?`<button class="rb rbx" data-act="rfReset" aria-label="Alle Filter löschen" title="Alle Filter löschen">✕</button>`:''}
     <label class="rsort"><span>Sortieren</span><select id="rfSort">${RSORTS.map(([v,l])=>`<option value="${v}" ${F.sort===v?'selected':''}>${l}</option>`).join('')}</select></label>
     <div class="rview"><button class="${F.view==='grid'?'on':''}" data-act="rfView" data-v="grid" aria-label="Kacheln">▦</button><button class="${F.view==='list'?'on':''}" data-act="rfView" data-v="list" aria-label="Liste">☰</button></div></div>
   ${F.open?`<div class="rfp card">
     <div class="rfh">Kalorien pro Portion</div>
     <div class="fchips">${kc.map(([a,b,l])=>`<button class="fchip ${F.kmin===a&&F.kmax===b?'on':''}" data-act="rfK" data-a="${a}" data-b="${b}"><span>${l}</span></button>`).join('')}</div>
     <div class="rfk"><input class="in-t num" id="rfMin" inputmode="numeric" placeholder="von" value="${esc(F.kmin)}"><span>bis</span><input class="in-t num" id="rfMax" inputmode="numeric" placeholder="bis" value="${esc(F.kmax)}"><span>kcal</span></div>
+    <div class="rfh">Bewertung</div>
+    <div class="fchips">${[[6,'ab 3 ★'],[8,'ab 4 ★'],[9,'ab 4½ ★'],[10,'nur 5 ★']].map(([v,l])=>`<button class="fchip ${F.star===v?'on':''}" data-act="rfStar" data-v="${v}"><span>${l}</span></button>`).join('')}</div>
     <div class="rfh">Eiweißquelle</div>
     <div class="fchips">${srcs.map(s=>`<button class="fchip ${F.src===s?'on':''}" data-act="rfSrc" data-s="${esc(s)}"><span>${esc(s)}</span></button>`).join('')}</div>
     <label class="sw"><div><b><i class="fdot ok"></i> Passt heute noch</b><span>Nur Rezepte, deren Portion in die restlichen ${k(Math.max(0,kcalLeft()))} kcal passt</span></div><span class="tg"><input type="checkbox" data-rf="fit" ${F.fit?'checked':''}><i></i></span></label>
@@ -3313,7 +3444,7 @@ function recipeRow(r,i){
   const st=rStat(r),o=S.open['r'+i],ins=instrFor(r.name),id=(S.data.images||{})[r.name];
   return `<div class="card rrow ${o?'open':''}"><button class="rr" data-act="toggle" data-key="r${i}">
     ${id?recipeImgHtml(r.name,'mini'):`<div class="rimg mini none">${ICON.rezepte}</div>`}
-    <div class="rr-m"><b>${esc(r.name)}</b><small class="num">${k(r.per.kcal)} kcal · ${g1(r.per.p)} g E${st.n?' · '+st.n+'× gegessen':''}</small></div>
+    <div class="rr-m"><b>${esc(r.name)}</b><small class="num">${k(r.per.kcal)} kcal · ${g1(r.per.p)} g E${st.n?' · '+st.n+'× gegessen':''}</small>${rRating(r.name)?starsHtml(r.name,rRating(r.name),{ro:true,cls:'sm'}):''}</div>
     ${fitDot(r)}</button>
     ${o?recipeDetail(r,i,ins):''}</div>`;
 }
@@ -3329,15 +3460,604 @@ document.addEventListener('click',ev=>{
   if(a==='rfOpen'){F.open=!F.open;refreshRecipes();return;}
   if(a==='rfView'){F.view=el.dataset.v;rfSave();refreshRecipes();return;}
   if(a==='rfK'){const same=F.kmin===el.dataset.a&&F.kmax===el.dataset.b;F.kmin=same?'':el.dataset.a;F.kmax=same?'':el.dataset.b;rfSave();refreshRecipes();return;}
+  if(a==='rfStar'){F.star=F.star===+el.dataset.v?0:+el.dataset.v;rfSave();refreshRecipes();return;}
   if(a==='rfSrc'){F.src=F.src===el.dataset.s?'':el.dataset.s;rfSave();refreshRecipes();return;}
-  if(a==='rfReset'){Object.assign(F,{kmin:'',kmax:'',src:'',fit:false,freq:false});rfSave();refreshRecipes();return;}
+  if(a==='rfReset'){Object.assign(F,{kmin:'',kmax:'',src:'',fit:false,freq:false,star:0});rfSave();refreshRecipes();toast('Filter gelöscht.');return;}
 });
 document.addEventListener('change',ev=>{
   const t=ev.target,F=S.rf;if(!F)return;
   if(t.id==='rfSort'){F.sort=t.value;rfSave();refreshRecipes();return;}
-  if(t.dataset&&t.dataset.rf){F[t.dataset.rf]=t.checked;rfSave();const g=$('#rgrid');if(g){g.innerHTML=recipeCards();loadImages();}const btn=document.querySelector('[data-act=rfOpen]');if(btn)btn.innerHTML=FILTER_SVG+'Filter'+(rfCount()?' <b>'+rfCount()+'</b>':'');return;}
+  if(t.dataset&&t.dataset.rf){F[t.dataset.rf]=t.checked;rfSave();refreshRecipes();return;}
   if(t.id==='rfMin'||t.id==='rfMax'){F[t.id==='rfMin'?'kmin':'kmax']=t.value.replace(/[^\d]/g,'');rfSave();refreshRecipes();}
 });
+/* ================= Ziel-Rechner (Vorschlag, v22) =================
+   Mifflin-St-Jeor-Grundumsatz × Aktivität, minus Defizit für das Abnehm-Tempo. Nur Vorschlag, übernehmen per Knopf. */
+const CALC_ACT=[[1.2,'Kaum Bewegung','Bürojob, wenig Sport'],[1.375,'Leicht aktiv','1–3× pro Woche Sport oder viel zu Fuß'],[1.55,'Mäßig aktiv','3–5× pro Woche Sport'],[1.725,'Sehr aktiv','6–7× pro Woche Sport'],[1.9,'Extrem aktiv','Körperliche Arbeit und viel Sport']];
+function calcIn(){
+  if(!S.calc){let o={};try{o=JSON.parse(localStorage.getItem('et-calc')||'{}')}catch(e){}
+    const w=typeof weights==='function'?weights():[];const last=w.length?w[w.length-1].kg:'';
+    S.calc=Object.assign({sex:'w',age:'',cm:'',act:1.375,loss:0.5,prot:true},o,{kg:last||o.kg||''});}
+  return S.calc;
+}
+function calcRes(){
+  const c=calcIn(),kg=+String(c.kg).replace(',','.'),cm=+c.cm,age=+c.age;
+  if(!(kg>30&&cm>100&&age>=14))return null;
+  const bmr=10*kg+6.25*cm-5*age+(c.sex==='m'?5:-161),tdee=bmr*c.act;
+  const floor=c.sex==='m'?1500:1200;
+  let day=tdee-c.loss*1100,capped=false;if(day<floor){day=floor;capped=true;}
+  const realLoss=Math.max(0,(tdee-day)/1100);
+  const ref=(cm/100)**2*25,adj=kg<=ref?kg:ref+0.25*(kg-ref);
+  const prot=Math.round(adj*(c.prot?1.6:1.0)/5)*5;
+  const kc=Math.round(day/10)*10;
+  /* Makros: Fett ca. 30 % der kcal (mind. 0,6 g/kg angepasst), Rest Kohlenhydrate */
+  let fat=Math.round(Math.max(kc*0.30/9,adj*0.6)/5)*5;
+  if(prot*4+fat*9>kc*0.85)fat=Math.round(Math.max(0,(kc*0.85-prot*4)/9)/5)*5;
+  const carbs=Math.max(0,Math.round((kc-prot*4-fat*9)/4/5)*5);
+  return {bmr:Math.round(bmr),tdee:Math.round(tdee),day:kc,week:kc*7,prot,fat,carbs,capped,realLoss,fast:c.loss>kg*0.01};
+}
+function calcHtml(){
+  const c=calcIn(),r=calcRes();
+  return `<button class="back" data-act="calcBack">${ICON.back}Zurück</button><h2>Ziele ausrechnen</h2>
+    <p class="sub">Ein Vorschlag aus Gewicht, Größe, Alter und Bewegung. Du entscheidest, ob du ihn übernimmst.</p>
+    <div class="seg2 csex"><button class="${c.sex==='w'?'on':''}" data-act="calcSex" data-v="w">Frau</button><button class="${c.sex==='m'?'on':''}" data-act="calcSex" data-v="m">Mann</button></div>
+    <div class="row3"><label class="f"><span>Gewicht (kg)</span><input class="in-t num" inputmode="decimal" data-calc="kg" value="${esc(String(c.kg).replace('.',','))}"></label>
+      <label class="f"><span>Größe (cm)</span><input class="in-t num" inputmode="numeric" data-calc="cm" value="${esc(c.cm)}" placeholder="z. B. 170"></label>
+      <label class="f"><span>Alter</span><input class="in-t num" inputmode="numeric" data-calc="age" value="${esc(c.age)}" placeholder="Jahre"></label></div>
+    <label class="f"><span>Bewegung im Alltag</span><select class="in-t" data-calc="act">${CALC_ACT.map(([f,t,d])=>`<option value="${f}" ${+c.act===f?'selected':''}>${t} – ${d}</option>`).join('')}</select></label>
+    <label class="f"><span>Abnehmen pro Woche: <b id="calcLossL">${calcLossTxt(c.loss)}</b></span>
+      <input type="range" class="crange" min="0" max="1" step="0.1" data-calc="loss" value="${c.loss}"></label>
+    <label class="sw"><div><b>Eiweißreich</b><span>Mehr Eiweiß hält satt und schützt die Muskeln beim Abnehmen</span></div><span class="tg"><input type="checkbox" data-calc="prot" ${c.prot?'checked':''}><i></i></span></label>
+    <div id="calcOut">${calcOutHtml(r)}</div>`;
+}
+const calcLossTxt=v=>+v===0?'Gewicht halten':String(v).replace('.',',')+' kg (ca. '+String(Math.round(v*4.3*10)/10).replace('.',',')+' kg im Monat)';
+function calcOutHtml(r){
+  if(!r)return '<p class="hint">Gewicht, Größe und Alter eintragen, dann erscheint der Vorschlag.</p>';
+  return `<div class="card calc-r"><div class="calc-g"><div><small>Grundumsatz</small><b class="num">${k(r.bmr)}</b><small>kcal in Ruhe</small></div><div><small>Gesamtbedarf</small><b class="num">${k(r.tdee)}</b><small>kcal mit Bewegung</small></div></div>
+    <div class="calc-h">Vorschlag</div>
+    <div class="calc-g"><div><small>kcal pro Tag</small><b class="num">${k(r.day)}</b></div><div><small>kcal pro Woche</small><b class="num">${k(r.week)}</b></div></div>
+    <div class="nut" style="margin-top:10px;grid-template-columns:repeat(3,1fr)"><div><small>Eiweiß</small><b class="num">${k(r.prot)} g</b><small class="cpct">${Math.round(r.prot*4/r.day*100)} %</small></div><div><small>Kohlenhydrate</small><b class="num">${k(r.carbs)} g</b><small class="cpct">${Math.round(r.carbs*4/r.day*100)} %</small></div><div><small>Fett</small><b class="num">${k(r.fat)} g</b><small class="cpct">${Math.round(r.fat*9/r.day*100)} %</small></div></div>
+    ${r.capped?`<p class="note">Weniger als ${k(r.day)} kcal am Tag sind ohne ärztliche Begleitung nicht ratsam. Damit sind es eher ${String(Math.round(r.realLoss*10)/10).replace('.',',')} kg pro Woche.</p>`:''}
+    ${r.fast&&!r.capped?'<p class="note">Mehr als 1 % des Körpergewichts pro Woche ist sehr schnell. Langsamer hält meist besser.</p>':''}
+    <button class="btn" data-act="calcTake">Vorschlag übernehmen</button>
+    <p class="hint">Richtwerte nach der Mifflin-St-Jeor-Formel, 1 kg Fett ≈ 7.700 kcal. Fett ca. 30 % der kcal, der Rest Kohlenhydrate. Ersetzt keine ärztliche Beratung, bei Vorerkrankungen bitte vorher absprechen.</p></div>`;
+}
+function openCalc(){openSheet(calcHtml());}
+function calcSave(){const c=Object.assign({},S.calc);delete c.kg;try{localStorage.setItem('et-calc',JSON.stringify(c))}catch(e){}}
+function calcUpd(){const o=$('#calcOut');if(o)o.innerHTML=calcOutHtml(calcRes());const l=$('#calcLossL');if(l)l.textContent=calcLossTxt(S.calc.loss);}
+document.addEventListener('input',ev=>{const t=ev.target;if(!t.dataset||!t.dataset.calc||!S.calc)return;const k2=t.dataset.calc;
+  S.calc[k2]=t.type==='checkbox'?t.checked:k2==='act'||k2==='loss'?+t.value:t.value;calcSave();calcUpd();});
+document.addEventListener('change',ev=>{const t=ev.target;if(t.dataset&&t.dataset.calc&&S.calc){const k2=t.dataset.calc;S.calc[k2]=t.type==='checkbox'?t.checked:k2==='act'||k2==='loss'?+t.value:t.value;calcSave();calcUpd();}});
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='calcOpen'){openCalc();return;}
+  if(a==='calcBack'){S.setOpen={ziele:true};openSettings();return;}
+  if(a==='calcSex'){S.calc.sex=el.dataset.v;calcSave();document.querySelectorAll('.csex button').forEach(b=>b.classList.toggle('on',b===el));calcUpd();return;}
+  if(a==='calcTake'){const r=calcRes();if(!r)return;const g0=S.data.goals||{};
+    const g={kcalDay:r.day,proteinDay:r.prot,kcalWeek:r.week,carbs:r.carbs,fat:r.fat,weight:g2().weight||0};
+    commit('saveGoals',[g]);vibe();toast('Neue Ziele: '+k(r.day)+' kcal, '+r.prot+' g Eiweiß, '+r.carbs+' g KH, '+r.fat+' g Fett.');S.setOpen={ziele:true};openSettings();return;}
+});
+
+/* Sicherheitsnetz: Rezept ohne Werte pro Portion (kaputte Formel), aber mit Zutaten → aus den Zutaten rechnen */
+function fixRecipePer(d){(d&&d.recipes||[]).forEach(r=>{const P=r.portions||1,sum=f=>(r.items||[]).reduce((a,x)=>a+(+x[f]||0),0);
+  if(!(r.per&&r.per.kcal>0)&&sum('kcal')>0)r.per={kcal:Math.round(sum('kcal')/P),p:Math.round(sum('p')/P*10)/10,c:Math.round(sum('c')/P*10)/10,f:Math.round(sum('f')/P*10)/10};});}
+/* ================= Sterne (5 mit halben = 0–10) und Familien-Kochbuch (v24, Script ab 23) ================= */
+const canKB=()=>S.data&&(DEMO||(LIVE&&(+S.data.scriptVersion||0)>=23));
+const rRating=name=>{const st=(S.data.recipeStats||{})[name];return st&&st.rating?+st.rating:0;};
+function starsHtml(name,val,opt){
+  opt=opt||{};let h='';
+  for(let i=1;i<=5;i++){const c=val>=i*2?'full':val===i*2-1?'half':'';
+    h+=opt.ro?`<i class="st ${c}">★</i>`:`<button class="st ${c}" data-act="${opt.act||'rate'}" data-n="${esc(name)}" data-i="${i}" aria-label="${i} Sterne">★</button>`;}
+  return `<span class="stars ${opt.ro?'ro':''} ${opt.cls||''}" title="${val?String(val/2).replace('.',',')+' von 5 Sternen':'Noch nicht bewertet'}">${h}</span>`;
+}
+/* Tippen: Stern i voll → nochmal tippen = halber Stern → beim ersten Stern nochmal = keine Sterne */
+function nextRating(cur,i){if(cur===i*2)return i*2-1;if(cur===i*2-1&&i===1)return 0;return i*2;}
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='rate'){ev.stopPropagation();const n=el.dataset.n,v=nextRating(rRating(n),+el.dataset.i);
+    commit('setRating',[n,v]);vibe(8);return;}
+  if(a==='reRate'){const R=S.redit;R.rating=nextRating(R.rating||0,+el.dataset.i);const b=$('#reStars');if(b)b.innerHTML=starsHtml('',R.rating,{act:'reRate'})+`<small class="muted">${R.rating?String(R.rating/2).replace('.',',')+' von 5':'antippen'}</small>`;return;}
+  if(a==='rTab'){S.rtab=el.dataset.v;render();return;}
+  if(a==='kbTake'){const x=(S.data.kochbuch||[])[+el.dataset.i];if(!x)return;
+    const exists=(S.data.recipes||[]).some(r=>r.name===x.name),mode=el.dataset.m||(exists?'':'copy');
+    if(!mode){S.kbAsk=+el.dataset.i;render();return;}
+    el.disabled=true;el.textContent='Wird übernommen …';
+    call('takeKochbuch',x.aid,x.name,mode).then(r=>{S.kbAsk=null;vibe();toast('„'+r.name+'“ ist jetzt in deinen Rezepten.');S.rtab='mine';if(LIVE)resync();else render();})
+      .catch(e=>{el.disabled=false;toast(e.message||String(e),true);});return;}
+  if(a==='kbAskNo'){S.kbAsk=null;render();return;}
+});
+function kbView(){
+  const kb=S.data.kochbuch||[],q=norm(S.recQ||'');
+  const list=kb.map((x,i)=>[x,i]).filter(([x])=>!q||norm(x.name+' '+x.author+' '+(x.items||[]).map(y=>y.name).join(' ')).includes(q)).sort((a,b)=>a[0].name.localeCompare(b[0].name,'de'));
+  if(!kb.length)return `<div class="card faint">Im Familien-Kochbuch ist noch nichts. Beim Anlegen oder Bearbeiten eines Rezepts den Haken <b>„Ins Familien-Kochbuch“</b> setzen, dann sehen es alle.</div>`;
+  if(!list.length)return '<div class="card faint">Nichts gefunden.</div>';
+  return `<div class="rlist">${list.map(([x,i])=>{const o=S.open['kb'+i],have=(S.data.recipes||[]).some(r=>r.name===x.name);
+    return `<div class="card rrow ${o?'open':''}"><button class="rr" data-act="toggle" data-key="kb${i}"><div class="rimg mini none">${ICON.rezepte}</div>
+      <div class="rr-m"><b>${esc(x.name)}</b><small class="num">${k(x.per.kcal)} kcal · ${g1(x.per.p)} g E · von ${x.mine?'dir':esc(x.author)}</small></div>${fitDot(x)}</button>
+      ${o?`<div class="ing" style="margin-top:10px">${(x.items||[]).map(it=>`<div><span>${esc(it.name)}</span><span>${esc(it.amount)}</span></div>`).join('')}</div>
+        ${x.ins&&x.ins.steps&&x.ins.steps.length?`<details class="clb"><summary>Zubereitung (${x.ins.steps.length} Schritte)</summary><ol class="rimp-st">${x.ins.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></details>`:''}`:''}
+      ${x.mine?'<div class="small muted" style="margin-top:6px">Dein Rezept. Rausnehmen: beim Rezept auf „Bearbeiten“, Haken entfernen.</div>'
+        :S.kbAsk===i?`<p class="note" style="margin-top:8px">„${esc(x.name)}“ hast du schon.</p><div class="pacts"><button class="btn" data-act="kbTake" data-i="${i}" data-m="replace">Ersetzen</button><button class="btn ghost" data-act="kbTake" data-i="${i}" data-m="copy">Als Kopie</button></div><button class="linkbtn" data-act="kbAskNo">Abbrechen</button>`
+        :`<div class="racts"><button class="linkbtn" data-act="kbTake" data-i="${i}">${have?'Nochmal übernehmen':'In meine Rezepte übernehmen'}</button></div>`}</div>`;}).join('')}</div>`;
+}
+function rTabsHtml(){
+  if(!canKB())return '';const n=(S.data.kochbuch||[]).filter(x=>!x.mine).length;
+  return `<div class="seg2 rtabs"><button class="${S.rtab!=='kb'?'on':''}" data-act="rTab" data-v="mine">Meine Rezepte</button><button class="${S.rtab==='kb'?'on':''}" data-act="rTab" data-v="kb">Familien-Kochbuch${n?' <small>'+n+'</small>':''}</button></div>`;
+}
+
+/* „Was passt noch?“ auf Heute: ab 14 Uhr, wenn fürs Abendessen noch nichts eingetragen oder geplant ist */
+function passtNoch(d,t){
+  if(S.day!==t||(S.data.settings.modules||{}).passtnoch===false)return '';
+  const h=+nowHM().slice(0,2);if(h<14&&!S.pnForce)return '';
+  if(d.meals['Abendessen'])return '';
+  if(((S.data.plan||{})[t]||[]).some(x=>x.meal==='Abendessen'))return '';
+  const left=kcalLeft();if(left<150)return '';
+  const rs=(S.data.recipes||[]).filter(r=>r.per&&r.per.kcal>0&&r.per.kcal<=left&&!r.items.some(x=>x.open))
+    .sort((a,b)=>(rRating(b.name)-rRating(a.name))||(rStat(b).n-rStat(a).n)||(b.per.p-a.per.p)).slice(0,3);
+  if(!rs.length)return '';
+  return `<div class="pnoch"><span class="pn-l"><i class="fdot ok"></i>Passt noch <small>(${k(left)} kcal frei)</small></span><div class="pn-c">${rs.map(r=>`<button class="fchip" data-act="pnPick" data-n="${esc(r.name)}"><span>${esc(r.name)}</span><small class="num">${k(r.per.kcal)}</small></button>`).join('')}</div></div>`;
+}
+document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act=pnPick]');if(!el)return;
+  const r=recipeBy(el.dataset.n);if(!r)return;openAdd('Abendessen');Object.assign(S.add,{recipe:r,portions:1,hist:recipeHist(r.name),step:'recipe'});drawAdd();});
+/* ================= Bug / Wunsch melden (v24, Script ab 23) ================= */
+const canFB=()=>S.data&&(DEMO||(LIVE&&(+S.data.scriptVersion||0)>=23));
+function fbOpenCount(){if(!S.data||!S.data.isOwner)return 0;return (S.data.feedback||[]).filter(x=>!x.done).length;}
+const VIEW_NAMES={heute:'Heute',woche:'Woche',monat:'Monat',verlauf:'Verlauf',tagebuch:'Tagebuch',wochenplan:'Plan',rezepte:'Rezepte',gewicht:'Gewicht'};
+function fbHtml(){
+  const F=S.fb||(S.fb={kind:'wunsch',text:''}),mine=(S.data.feedback||[]).filter(x=>x.mine).slice(0,10);
+  return `<h2>Bug oder Wunsch</h2><p class="sub">${S.data.isOwner?'Notiz für dich selbst.':'Geht direkt an '+esc(ownerLabel())+'.'} Die App hängt Seite und Version selbst an.</p>
+    <div class="seg2"><button class="${F.kind==='bug'?'on':''}" data-act="fbKind" data-v="bug">🐞 Bug</button><button class="${F.kind==='wunsch'?'on':''}" data-act="fbKind" data-v="wunsch">💡 Wunsch</button></div>
+    <label class="f"><span>${F.kind==='bug'?'Was ist passiert? Was hast du gemacht?':'Was wünschst du dir?'}</span><textarea class="in-t" id="fbText" rows="5" placeholder="${F.kind==='bug'?'z. B. Beim Speichern eines Rezepts kommt eine Fehlermeldung …':'z. B. Ich hätte gern …'}">${esc(F.text)}</textarea></label>
+    <button class="btn" data-act="fbSend">Abschicken</button>
+    ${mine.length?`<div class="rfh" style="margin-top:18px">Deine Meldungen</div><div class="fbl">${mine.map(fbRow).join('')}</div>`:''}`;
+}
+const ownerLabel=()=>{const c=(S.data.contacts||[]).find(x=>x.id==='owner');return c?c.name:'den Besitzer der App';};
+function fbRow(x){
+  return `<div class="fbr ${x.done?'done':''}"><div class="fbr-h"><span class="fbk">${x.kind==='Bug'?'🐞':'💡'} ${esc(x.kind)}</span><small>${esc(x.from)} · ${esc(x.date.slice(8,10)+'.'+x.date.slice(5,7)+'. '+x.date.slice(11))}</small>
+    ${S.data.isOwner?`<button class="pbtn ${x.done?'sent':''}" data-act="fbDone" data-row="${x.row}" data-v="${x.done?0:1}">${x.done?'✓ erledigt':'Erledigt?'}</button>`:`<em>${x.done?'✓ erledigt':'offen'}</em>`}</div>
+    <div class="fbr-t">${esc(x.text)}</div>${x.where?`<small class="faint">${esc(x.where)}</small>`:''}</div>`;
+}
+function fbAdminHtml(){
+  const all=S.data.feedback||[];
+  if(!all.length)return '<p class="sub" style="margin-top:0">Noch keine Rückmeldungen. Alle können oben über das kleine <b>!</b> einen Bug oder Wunsch schicken.</p>';
+  const open=all.filter(x=>!x.done),done=all.filter(x=>x.done);
+  return `<div class="fbl">${open.map(fbRow).join('')||'<p class="small muted">Alles erledigt 🎉</p>'}</div>${done.length?`<details class="clb"><summary>Erledigt (${done.length})</summary><div class="fbl">${done.map(fbRow).join('')}</div></details>`:''}
+    <p class="hint">Alles steht auch in deiner Tabelle im Tab „Rückmeldungen“.</p>`;
+}
+const fbSub=()=>{const n=fbOpenCount();return n?n+' offen':'Bugs und Wünsche aus der Familie';};
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='fbOpen'){if(!canFB()){toast('Dafür bitte das Script im Sheet auf Version 23 bringen.',true);return;}openSheet(fbHtml());return;}
+  if(a==='fbKind'){S.fb.text=val('fbText');S.fb.kind=el.dataset.v;openSheet(fbHtml());return;}
+  if(a==='fbSend'){const text=val('fbText').trim();if(!text){toast('Bitte kurz beschreiben, worum es geht.',true);return;}
+    el.disabled=true;el.textContent='Wird geschickt …';
+    const where=(VIEW_NAMES[S.view]||S.view)+' · App '+APP_VERSION+' · '+(innerWidth<700?'Handy':'PC')+(/Android/i.test(navigator.userAgent)?' (Android)':/iPhone|iPad/i.test(navigator.userAgent)?' (iOS)':'');
+    call('sendFeedback',{kind:S.fb.kind,text,where}).then(r=>{S.data.feedback=r.feedback;S.fb={kind:S.fb.kind,text:''};closeSheet();vibe();renderTop();
+      toast(S.data.isOwner?'Notiert.':'Danke! '+ownerLabel()+' sieht es in seiner App.');})
+      .catch(e=>{el.disabled=false;el.textContent='Abschicken';toast(e.message||String(e),true);});return;}
+  if(a==='fbDone'){call('feedbackDone',+el.dataset.row,el.dataset.v==='1').then(r=>{S.data.feedback=r.feedback;renderTop();
+      const b=document.querySelector('[data-sec=fb] .sec-b');if(b)b.innerHTML=fbAdminHtml();const sm=document.querySelector('[data-sec=fb] summary small');if(sm)sm.textContent=fbSub();})
+      .catch(e=>toast(e.message,true));return;}
+});
+/* ================= Wischen auf Einträgen (v24) =================
+   Nach links: „Löschen?“ erscheint, Tippen löscht (mit Rückgängig).
+   Nach rechts: „Nochmal essen“ erscheint, Tippen trägt denselben Eintrag für jetzt ein.
+   Wischen auf einem Eintrag wechselt nie die Seite; erst ab 12 px waagerecht wird es als Wischen erkannt. */
+(function(){
+  let st=null,suppress=0;
+  const W_DEL=104,W_AGAIN=150;
+  function close(row){if(!row)return;const it=row.querySelector(':scope>.item,:scope>.pitem,:scope>.trh');if(it){it.style.transition='transform .2s';it.style.transform='';}row.classList.remove('open-l','open-r','swiping');delete row.dataset.open;}
+  function closeAll(except){document.querySelectorAll('.swr[data-open]').forEach(r=>{if(r!==except)close(r);});}
+  document.addEventListener('touchstart',e=>{
+    const it=e.target.closest('.swr>.item,.swr>.pitem,.swr>.trh');
+    if(!it||S.selMode||S.sheetOpen||e.target.closest('.drag-h,input,select,.trdone')){if(!e.target.closest('.swa'))closeAll();st=null;return;}
+    const row=it.parentNode;closeAll(row);
+    st={row,it,x:e.touches[0].clientX,y:e.touches[0].clientY,lock:null,dx:0,base:row.dataset.open==='r'?-W_DEL:row.dataset.open==='l'?W_AGAIN:0};
+    it.style.transition='none';
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!st)return;const dx=e.touches[0].clientX-st.x,dy=e.touches[0].clientY-st.y;
+    if(!st.lock){if(Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.3)st.lock='h';else if(Math.abs(dy)>12){st.lock='v';return;}else return;}
+    if(st.lock!=='h')return;
+    e.preventDefault();
+    const hasL=!!st.row.querySelector(':scope>.swa-l'),x=Math.max(-W_DEL-30,Math.min(hasL?W_AGAIN+30:0,st.base+dx));st.dx=x;
+    st.row.classList.add('swiping');st.row.classList.toggle('open-r',x<0);st.row.classList.toggle('open-l',x>0);
+    st.it.style.transform=`translateX(${x}px)`;
+  },{passive:false});
+  document.addEventListener('touchend',()=>{
+    if(!st)return;const s=st;st=null;
+    if(s.lock!=='h'){s.it.style.transition='';return;}
+    suppress=Date.now();s.it.style.transition='transform .2s';s.row.classList.remove('swiping');
+    if(s.dx<-60){s.it.style.transform=`translateX(${-W_DEL}px)`;s.row.dataset.open='r';s.row.classList.add('open-r');s.row.classList.remove('open-l');vibe(8);}
+    else if(s.dx>60){s.it.style.transform=`translateX(${W_AGAIN}px)`;s.row.dataset.open='l';s.row.classList.add('open-l');s.row.classList.remove('open-r');vibe(8);}
+    else close(s.row);
+  },{passive:true});
+  /* Tipp direkt nach dem Wischen oder auf einen offenen Eintrag: nur zurückschieben */
+  document.addEventListener('click',ev=>{
+    const it=ev.target.closest('.swr>.item,.swr>.pitem,.swr>.trh');if(!it)return;
+    if(Date.now()-suppress<400||it.parentNode.dataset.open){ev.stopPropagation();ev.preventDefault();close(it.parentNode);}
+  },true);
+  document.addEventListener('click',ev=>{
+    const pl=ev.target.closest('[data-act=swPlanDel],[data-act=swPlanEat]');
+    if(pl){const d=pl.dataset.d,id=pl.dataset.id;
+      if(pl.dataset.act==='swPlanEat'){S.pitem={d,id};planEat();return;}
+      const before=clonePlan(),p=clonePlan(),gone=(p[d]||[]).find(x=>x.id===id);p[d]=(p[d]||[]).filter(x=>x.id!==id);savePlan(p);vibe(15);
+      toast('Entfernt: '+(gone?gone.name:''),false,{label:'Rückgängig',fn:()=>savePlan(before)});return;}
+    const el=ev.target.closest('[data-act=swDel],[data-act=swAgain]');if(!el)return;
+    const x=S.items[el.dataset.id];if(!x)return;
+    if(el.dataset.act==='swDel'){delWithUndo([x]);return;}
+    const rows=itemsOf(x),t=nowHM(),m=mealByTime(t);
+    commit('repeatRows',[rows.map(e=>e.row),today(),t,m,1]);vibe(15);
+    toast('Nochmal eingetragen: '+(x.single?x.single.name:x.recipe)+' ('+MEAL_SHORT[m]+', '+t+')');
+  });
+})();
+
+/* Lange auf „+“ bei einer Mahlzeit drücken: gleich „Zuletzt zum …“ für genau diese Mahlzeit */
+(function(){
+  let t=null,fired=0;
+  const start=b=>{clearTimeout(t);t=setTimeout(()=>{t=null;fired=Date.now();vibe(20);openAdd(b.dataset.meal);S.add.mealOnly=b.dataset.meal;drawAdd();},480);};
+  document.addEventListener('touchstart',e=>{const b=e.target.closest('.addmini');if(b)start(b);},{passive:true});
+  document.addEventListener('touchmove',()=>{clearTimeout(t);t=null;},{passive:true});
+  document.addEventListener('touchend',()=>{clearTimeout(t);t=null;},{passive:true});
+  document.addEventListener('contextmenu',e=>{const b=e.target.closest('.addmini');if(!b)return;e.preventDefault();fired=Date.now();openAdd(b.dataset.meal);S.add.mealOnly=b.dataset.meal;drawAdd();});
+  document.addEventListener('click',e=>{if(e.target.closest('.addmini')&&Date.now()-fired<700){e.stopPropagation();e.preventDefault();}},true);
+})();
+/* ================= KI in der App (Gemini, eigener Schlüssel je Person) — v26, Script ab 24 ================= */
+const canAIset=()=>S.data&&(DEMO||(LIVE&&(+S.data.scriptVersion||0)>=24));
+const hasAI=()=>canAIset()&&!!S.data.aiKey;
+/* Haupt-KI: 'claude' oder 'gemini' (je Person in den Einstellungen). Zweite KI nur als Ausweich bei Auslastung. */
+const aiMain=()=>{const m=(S.data&&S.data.settings&&S.data.settings.aiMain)||'';return m||(S.data&&S.data.aiKey?'gemini':'claude');};
+const aiFallback=()=>!!(S.data&&S.data.settings&&S.data.settings.aiFallback);
+const geminiPrimary=()=>aiMain()==='gemini'&&hasAI();
+const claudeOn=()=>aiMain()==='claude'||aiFallback()||!hasAI();
+const geminiFallback=()=>aiMain()==='claude'&&aiFallback()&&hasAI();
+/* Google setzt das Tageslimit um Mitternacht kalifornischer Zeit zurück */
+function geminiReset(){try{const now=new Date(),la=new Date(now.toLocaleString('en-US',{timeZone:'America/Los_Angeles'})),ms=(24*3600-(la.getHours()*3600+la.getMinutes()*60+la.getSeconds()))*1000;
+  const r=new Date(now.getTime()+ms);return (r.toDateString()===now.toDateString()?'heute':'morgen')+' ab ca. '+String(r.getHours()).padStart(2,'0')+':00 Uhr';}catch(e){return 'morgen';}}
+function aiSetHtml(){
+  const m=aiMain();
+  return `<p class="sub" style="margin-top:0">Wer soll Freitext und Fotos eintragen? Die App selbst (suchen, scannen, Rezepte) geht immer, auch ganz ohne KI.</p>
+    <div class="seg2"><button class="${m==='claude'?'on':''}" data-act="aiMainSet" data-v="claude">Claude</button><button class="${m==='gemini'?'on':''}" data-act="aiMainSet" data-v="gemini">Gemini</button></div>
+    ${m==='gemini'?geminiKeyHtml():'<p class="small muted">Claude läuft in der Claude-App mit Skill und deiner Tabelle (siehe „Claude einrichten“). Einträge für Claude landen im Eingang.</p>'}
+    <label class="sw"><div><b>${m==='claude'?'Gemini':'Claude'} als Ausweich</b><span>${m==='claude'?'Ist Claude ausgelastet, kannst du den Eingang mit Gemini abarbeiten (braucht einen Gemini-Schlüssel).':'Ist Gemini ausgelastet, fragt die App, ob es an Claude gehen soll (Claude muss eingerichtet sein).'}</span></div><span class="tg"><input type="checkbox" data-ai-fb="1" ${aiFallback()?'checked':''}><i></i></span></label>
+    ${m==='claude'&&aiFallback()?geminiKeyHtml():''}`;
+}
+function geminiKeyHtml(){
+  if(S.data.aiKey)return `<p class="small" style="margin:10px 0 6px"><b>✓ Gemini-Schlüssel eingerichtet.</b> Ist dein Tageskontingent aufgebraucht, fragt die App, was passieren soll.</p>
+    <button class="btn ghost" data-act="aiKeyDel">Schlüssel entfernen</button>`;
+  return `<p class="small" style="margin:10px 0 6px">Für Gemini brauchst du einen eigenen, kostenlosen Schlüssel von Google (etwa 2 Minuten):</p>
+    <ol class="aisteps"><li>Unten auf <b>Schlüssel bei Google holen</b> tippen und mit deinem Google-Konto anmelden.</li><li>Dort <b>API-Schlüssel erstellen</b> (englisch: <i>Create API key</i>) tippen und den Schlüssel kopieren.</li><li>Hier einfügen und speichern.</li></ol>
+    <a class="btn ghost" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">Schlüssel bei Google holen</a>
+    <label class="f" style="margin-top:12px"><span>Dein Schlüssel</span><input class="in-t" id="aiKey" autocomplete="off" placeholder="AIza…" spellcheck="false"></label>
+    <button class="btn" data-act="aiKeySave">Speichern</button>
+    <p class="hint">Gut zu wissen: Beim kostenlosen Zugang hat Google ein Tageslimit und darf die Eingaben zum Verbessern nutzen. Der Schlüssel bleibt in deinem Script und wird nie angezeigt.</p>`;
+}
+const aiSub=()=>(aiMain()==='gemini'?'Gemini':'Claude')+(aiFallback()?(aiMain()==='gemini'?' · Claude als Ausweich':' · Gemini als Ausweich'):'')+(aiMain()==='gemini'&&!S.data.aiKey?' · Schlüssel fehlt':'');
+function aiCands(text){
+  if(!S.foods)return [];
+  const parts=String(text||'').split(/,|;|\n|\+|\bund\b|\bmit\b|\bdazu\b/i).map(x=>x.trim()).filter(x=>x.length>1);
+  const seen=new Set(),out=[];
+  for(const p of parts.slice(0,12))for(const f of searchFoods(p).slice(0,5)){const kk=f[0]+'|'+f[1];if(seen.has(kk))continue;seen.add(kk);out.push(f);}
+  return out.slice(0,50).map(f=>[f[0],f[1],f[2],f[3],f[4],f[5],f[6],f[7],f[8],f[9],f[11],f[12],f[13],f[14]]);
+}
+function aiHtml(){
+  const A=S.add,P=A.aiImg;
+  return `<button class="back" data-act="addback">${ICON.back}Zurück</button><h2>Mit KI eintragen</h2>
+    <p class="sub">Schreib einfach, was du gegessen hast, gern mit Mengen. Oder wähl ein Foto. Die KI sucht zuerst in deinen Lebensmitteln.</p>
+    <label class="f"><span>Was hast du gegessen?</span><textarea class="in-t" id="aiText" rows="3" placeholder="z. B. 2 Scheiben Vollkornbrot mit Butter und Gouda, 1 Kaffee mit Milch">${esc(A.aiText!==undefined?A.aiText:A.q)}</textarea></label>
+    ${P?`<div class="ph-prev" style="background-image:url('${P}');height:160px"></div><button class="linkbtn" data-act="aiImgDel">Foto entfernen</button>`:`<label class="ph-pick" style="padding:12px">${ICON.camera}<span>Foto dazu (optional)</span><input type="file" accept="image/*" id="aiFile" hidden></label>`}
+    ${mealPick(A.meal)}${whenFields(A.date,A.time,'ai')}
+    <button class="btn" data-act="aiGo" id="aiGo">✨ Eintragen lassen</button>`;
+}
+async function aiGo(btn){
+  const A=S.add,text=val('aiText').trim();A.aiText=text;
+  if(!text&&!A.aiImg){toast('Bitte schreiben, was du gegessen hast, oder ein Foto wählen.',true);return;}
+  btn.disabled=true;btn.innerHTML='<span class="sp"></span> KI rechnet …';
+  try{await loadFoods().catch(()=>{});}catch(e){}
+  const req={text,meal:pickedMeal(),date:val('aiDate')||A.date,time:val('aiTime')||A.time,cands:aiCands(text)};
+  if(A.aiImg){const m=A.aiImg.match(/^data:([^;]+);base64,(.*)$/);if(m)req.img={mime:m[1],b64:m[2]};}
+  call('aiEntry',req).then(r=>{
+    closeSheet();vibe();
+    if(r.limit){aiLimitAsk(req);return;}
+    if(r.queued){toast('Liegt im Eingang.');if(LIVE)resync();return;}
+    const items=(r.added||[]).map((row,i)=>({row,date:r.rows[i][0],name:r.rows[i][3]}));
+    const fin=()=>{if(S.view!=='heute'||S.day!==req.date){S.day=req.date;go('heute');}
+      toast('Eingetragen: '+items.length+(items.length===1?' Zeile':' Zeilen')+', '+k(r.kcal)+' kcal',false,{label:'Rückgängig',fn:()=>{commit('deleteRows',[items]);toast('Wieder entfernt.');}});};
+    if(LIVE)resync().then(fin);else{S.data.diary=S.data.diary.concat(r.rows.map((x,i)=>[r.added[i]].concat(x)));index();render();fin();}
+  }).catch(e=>{btn.disabled=false;btn.textContent='✨ Eintragen lassen';toast(e.message||String(e),true);});
+}
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='aiKeySave'){const k2=val('aiKey').trim();if(!k2){toast('Bitte den Schlüssel einfügen.',true);return;}
+    el.disabled=true;el.textContent='Wird geprüft …';
+    call('setGeminiKey',k2).then(r=>{S.data.aiKey=r.aiKey;vibe();toast('Gespeichert. „Mit KI eintragen“ ist jetzt im Plus-Menü.');const b=document.querySelector('[data-sec=ai] .sec-b');if(b)b.innerHTML=aiSetHtml();const sm=document.querySelector('[data-sec=ai] summary small');if(sm)sm.textContent=aiSub();})
+      .catch(e=>{el.disabled=false;el.textContent='Speichern';toast(e.message||String(e),true);});return;}
+  if(a==='aiKeyDel'){call('setGeminiKey','').then(r=>{S.data.aiKey=r.aiKey;toast('Schlüssel entfernt.');const b=document.querySelector('[data-sec=ai] .sec-b');if(b)b.innerHTML=aiSetHtml();const sm=document.querySelector('[data-sec=ai] summary small');if(sm)sm.textContent=aiSub();}).catch(e=>toast(e.message,true));return;}
+  if(a==='aiGo'){aiGo(el);return;}
+  if(a==='aiImgDel'){S.add.aiText=val('aiText');S.add.aiImg=null;openSheet(aiHtml());return;}
+});
+document.addEventListener('change',ev=>{const t=ev.target;if(t.id!=='aiFile'||!t.files||!t.files[0])return;
+  S.add.aiText=val('aiText');shrinkImage(t.files[0],1024,0.82).then(u=>{S.add.aiImg=u;openSheet(aiHtml());}).catch(()=>toast('Das Bild ließ sich nicht öffnen.',true));});
+
+document.addEventListener('click',ev=>{if(!ev.target.closest('#btnUndo'))return;const u=S.lastUndo;if(!u)return;setUndo(null);const t=$('#toast');t.className='toast';u.fn();vibe(12);});
+document.addEventListener('input',ev=>{const t=ev.target;if(!t.dataset||!t.dataset.optUndo)return;const l=$('#undoL');if(l)l.textContent=t.value+' Sekunden lang, danach bleibt es oben über das ↶-Symbol erreichbar';});
+document.addEventListener('change',ev=>{const t=ev.target;if(!t.dataset||!t.dataset.optUndo)return;const s=JSON.parse(JSON.stringify(S.data.settings));s.undoSec=+t.value;commit('saveSettings',[s]);toast('Rückgängig wird '+t.value+' Sekunden angezeigt.');});
+
+/* Mit Gemini-Schlüssel: der runde Knopf neben dem Plus öffnet „Mit KI eintragen“ statt Claude */
+function renderAiBtn(){const c=$('#cbtn');if(!c||!S.data)return;const ai=geminiPrimary();
+  if(ai&&c.dataset.ai!=='1'){c.dataset.ai='1';c.innerHTML='<span class="aistar">✨</span>';c.setAttribute('aria-label','Mit KI eintragen');c.title='Mit KI eintragen';}
+  else if(!ai&&c.dataset.ai==='1'){c.dataset.ai='';c.innerHTML=ICON.claude;c.setAttribute('aria-label','Mit Claude eintragen');c.title='';}}
+document.addEventListener('click',ev=>{const c=ev.target.closest('#cbtn,.sl-ai');if(!c||!geminiPrimary())return;if(c.id==='cbtn'&&c.dataset.ai!=='1')return;ev.preventDefault();ev.stopPropagation();openAdd(null);S.add.step='ai';drawAdd();},true);
+
+/* ---------- Gemini ausgelastet: Wahl anbieten ---------- */
+function aiLimitAsk(req){
+  S.aiLimitReq=req;const cl=aiFallback()&&aiMain()==='gemini';
+  openSheet(`<h2>Gemini ist heute ausgelastet</h2><p class="sub">Dein kostenloses Tageskontingent ist aufgebraucht. Wieder verfügbar ${geminiReset()}.</p>
+    ${cl?`<button class="btn" data-act="aiLimClaude">An Claude geben</button><p class="hint" style="margin-top:4px">Landet im Eingang und Claude öffnet sich gleich.</p>`:''}
+    ${req.text?`<button class="btn ${cl?'ghost':''}" data-act="aiLimQueue" style="margin-top:8px">In den Eingang, später mit Gemini</button>`:'<p class="note">Fotos können nicht in den Eingang. Beschreib es kurz in Worten, dann geht es.</p>'}
+    <button class="linkbtn" data-act="aiLimNo" style="display:block;margin:10px auto 0">Abbrechen</button>`);
+}
+/* ---------- Eingang mit Gemini abarbeiten (bei Gemini als Haupt-KI oder als Ausweich für Claude) ---------- */
+async function aiInbox(){
+  const items=(S.data.inbox||[]).filter(i=>!/^Auftrag/.test(i.what));
+  if(!items.length){toast(S.data.inbox&&S.data.inbox.length?'Im Eingang liegen nur Aufträge (Bilder, Rezepte) – die kann nur Claude.':'Im Eingang liegt nichts.');return;}
+  await loadFoods().catch(()=>{});
+  let done=0,kc=0;toast('Gemini arbeitet '+items.length+(items.length===1?' Eintrag':' Einträge')+' ab …');
+  for(const i of items){
+    const text=(i.what+(i.amount?', '+i.amount:'')).trim();
+    try{const r=await call('aiEntry',{text,meal:i.meal||mealByTime(i.time||nowHM()),date:i.date||today(),time:i.time||nowHM(),cands:aiCands(text)});
+      if(r.limit){toast((done?done+' erledigt. ':'')+'Gemini ist ausgelastet, wieder '+geminiReset()+'.',true);break;}
+      await call('deleteInbox',i.row);done++;kc+=r.kcal||0;}
+    catch(e){toast('„'+i.what+'“: '+(e.message||e),true);break;}
+  }
+  if(done){if(LIVE)await resync();else render();toast(done+(done===1?' Eintrag':' Einträge')+' mit Gemini eingetragen, '+k(kc)+' kcal.');}
+}
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='aiMainSet'){const s=JSON.parse(JSON.stringify(S.data.settings));s.aiMain=el.dataset.v;commit('saveSettings',[s]);openSettings();setTimeout(()=>{const d=document.querySelector('[data-sec=ai]');if(d)d.open=true;},30);return;}
+  if(a==='aiLimClaude'){const q=S.aiLimitReq;call('aiEntry',Object.assign({},q,{queue:true})).then(()=>{closeSheet();if(LIVE)resync().then(claudeGo);else claudeGo();}).catch(e=>toast(e.message,true));return;}
+  if(a==='aiLimQueue'){const q=S.aiLimitReq;call('aiEntry',Object.assign({},q,{queue:true})).then(()=>{closeSheet();toast('Liegt im Eingang. Später auf „Mit Gemini erledigen“ tippen.');if(LIVE)resync();}).catch(e=>toast(e.message,true));return;}
+  if(a==='aiLimNo'){closeSheet();return;}
+  if(a==='aiInbox'){ev.stopPropagation();aiInbox();return;}
+});
+document.addEventListener('change',ev=>{const t=ev.target;if(!t.dataset||!t.dataset.aiFb)return;const s=JSON.parse(JSON.stringify(S.data.settings));s.aiFallback=t.checked;commit('saveSettings',[s]);
+  const b=document.querySelector('[data-sec=ai] .sec-b');if(b)b.innerHTML=aiSetHtml();const sm=document.querySelector('[data-sec=ai] summary small');if(sm)sm.textContent=aiSub();});
+/* ---------- Barcode per Foto (iPhone: Safari kann keine Barcodes live lesen) ---------- */
+document.addEventListener('change',ev=>{const t=ev.target;if(t.id!=='eanFoto'||!t.files||!t.files[0])return;
+  toast('Gemini liest die Nummer …');shrinkImage(t.files[0],1200,0.85).then(u=>{const m=u.match(/^data:([^;]+);base64,(.*)$/);return call('aiBarcode',{mime:m[1],b64:m[2]});})
+    .then(r=>{if(r.limit){toast('Gemini ist ausgelastet, wieder '+geminiReset()+'. Bitte die Nummer eintippen.',true);return;}const i=$('#eanIn');if(i)i.value=r.ean;lookupEan(r.ean);})
+    .catch(e=>toast(e.message||String(e),true));});
+
+/* iPhone: Hinweis, die App auf den Home-Bildschirm zu legen (Safari hat keinen Installieren-Knopf) */
+function iosHint(){
+  if(!IS_IOS||navigator.standalone||matchMedia('(display-mode: standalone)').matches)return '';
+  let h='';try{h=localStorage.getItem('et-ios-hint')||'';}catch(e){}if(h)return '';
+  return `<div class="clban"><button class="clban-m" data-act="iosHow"><span style="font-size:18px">📲</span><span><b>Als App nutzen:</b> Teilen ⬆︎ → „Zum Home-Bildschirm“</span></button><button class="clban-x" data-act="iosHide" aria-label="Ausblenden">×</button></div>`;
+}
+document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act=iosHide],[data-act=iosHow]');if(!el)return;
+  if(el.dataset.act==='iosHide'){try{localStorage.setItem('et-ios-hint','1');}catch(e){}render();return;}
+  openSheet(`<h2>Auf dem iPhone als App</h2><ol class="aisteps"><li>Unten in Safari auf <b>Teilen</b> tippen (Quadrat mit Pfeil nach oben).</li><li><b>„Zum Home-Bildschirm“</b> wählen, dann <b>Hinzufügen</b>.</li><li>Ab jetzt die App über das neue Symbol öffnen.</li></ol>
+    <p class="hint">Fragt die App nach dem Öffnen nach einer Verbindung: den Verbindungslink, den du bekommen hast, lange drücken → „Link kopieren“ und dort einfügen. Das ist nur einmal nötig.</p>`);});
+/* ================= Training (v27, Script ab 25) =================
+   Pläne frei anlegen, auf-/zuklappen, sortieren (Griff ⋮⋮ ziehen), per Wischen löschen.
+   Geräte kommen aus der gemeinsamen Datenbank (für alle an deinem Script), mit Foto und eigenen Polster-Namen.
+   Werte vom letzten Mal sind vorausgefüllt; Änderungen werden nach kurzer Pause EINMAL gespeichert (pro Tag eine Zeile). */
+ICON.training='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>';
+const TR_MINI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></svg>';
+const canTR=()=>S.data&&(DEMO||(LIVE&&(+S.data.scriptVersion||0)>=25));
+const TRD=()=>S.data.training||(S.data.training={devices:[],plans:[],log:[]});
+const trOpt=()=>Object.assign({step:0.5,timer:false,timerSec:90,trainedBtn:true,cal:true},(S.data.settings||{}).training||{});
+const trDev=id=>(TRD().devices||[]).find(d=>d.id===id);
+const TRS=()=>S.tr||(S.tr={open:{},ex:null,pend:{},t:null});
+function trLast(devId){let best=null;for(const r of TRD().log)if(r[2]===devId&&(!best||r[0]>=best[0]))best=r;
+  return best?{date:best[0],kg:best[3],sets:best[4],reps:best[5],pads:[best[6],best[7],best[8]],level:best[9],dur:best[10]}:null;}
+function trDays(){const s=new Set();for(const r of TRD().log)s.add(r[0]);return s;}
+const trainedOn=d=>mods().training&&trOpt().cal!==false&&trDays().has(d);
+function planLast(name){let d='';for(const r of TRD().log)if(r[1]===name&&r[0]>d)d=r[0];return d;}
+function agoTxt(d){if(!d)return 'noch nie';const n=Math.round((parse(today())-parse(d))/864e5);return n===0?'heute':n===1?'gestern':'vor '+n+' Tagen';}
+const devThumb=(d,cls)=>d&&d.img?`<div class="dimg ${cls||''}" data-dimg="${esc(d.img)}" style="${imgCache(d.img)?`background-image:url('${imgCache(d.img)}')`:''}"></div>`:`<div class="dimg none ${cls||''}">${d&&d.kind==='cardio'?'🏃':ICON.training}</div>`;
+function loadDevImages(){
+  document.querySelectorAll('.dimg[data-dimg]').forEach(el=>{const id=el.dataset.dimg;if(imgCache(id)||el.dataset.loading||!LIVE)return;el.dataset.loading='1';
+    api(CONN.url,CONN.key,'getDeviceImage',[id]).then(r=>shrinkDataUrl('data:'+r.mime+';base64,'+r.b64,400,0.8)).then(u=>{if(!u)return;imgStore(id,u);
+      document.querySelectorAll('.dimg[data-dimg="'+id+'"]').forEach(x=>x.style.backgroundImage="url('"+u+"')");}).catch(()=>{});});
+}
+function trVals(planName,devId){const k2=planName+'|'+devId,T=TRS();if(T.pend[k2])return T.pend[k2].v;const l=trLast(devId);
+  return l?{kg:l.kg,sets:l.sets,reps:l.reps,pads:l.pads.slice(),level:l.level,dur:l.dur}:{kg:null,sets:3,reps:10,pads:['','',''],level:null,dur:null};}
+function trSum(d,v){
+  if(!d)return 'Gerät gelöscht';
+  if(d.kind==='cardio')return [v.level!=null&&v.level!==''?esc(d.intLabel||'Stufe')+' '+fmtN(v.level):'',v.dur?fmtN(v.dur)+' min':''].filter(Boolean).join(' · ')||'noch nichts eingetragen';
+  const pads=(d.pads||[]).map((p,i)=>v.pads&&v.pads[i]?esc(p)+' '+esc(v.pads[i]):'').filter(Boolean).join(', ');
+  return [v.kg!=null&&v.kg!==''?fmtN(v.kg)+' kg':'',v.sets&&v.reps?v.sets+'×'+v.reps:'',pads].filter(Boolean).join(' · ')||'noch nichts eingetragen';
+}
+/* ---------- Ansicht ---------- */
+function vTraining(){
+  if(!canTR())return '<div class="card faint">Für das Training bitte das Script im Sheet auf Version 25 bringen.</div>';
+  const T=TRS(),plans=TRD().plans||[],days=trDays(),t=today();
+  let strip='';for(let i=27;i>=0;i--){const d=addDays(t,-i);strip+=`<i class="${days.has(d)?'on':''} ${d===t?'t':''}" title="${shortDate(d)}">${days.has(d)?TR_MINI:''}</i>`;}
+  const n28=[...days].filter(d=>d>addDays(t,-28)).length;
+  let h=`<div class="trstrip"><div class="trs-l"><b>${n28}×</b> trainiert in 4 Wochen</div><div class="trs-d">${strip}</div></div>`;
+  h+=`<div class="trplans" data-list="plans">${plans.map((p,pi)=>trPlanHtml(p,pi)).join('')}</div>`;
+  h+=`<button class="btn ghost trnew" data-act="trPlanNew">${ICON.plus} Neuer Plan</button>`;
+  if(!plans.length)h+=`<p class="hint">Lege einen Plan an, z. B. „Oberkörper“, und füge Übungen hinzu. Geräte, die du anlegst, stehen allen zur Verfügung, die mit deiner App verbunden sind.</p>`;
+  setTimeout(loadDevImages,30);
+  return h;
+}
+function trPlanHtml(p,pi){
+  const T=TRS(),o=!!T.open[p.id],last=planLast(p.name),tdy=last===today(),opt=trOpt();
+  let h=`<div class="card trp ${o?'open':''}" data-pi="${pi}"><div class="swr trh-w"><button class="swa swa-r" data-act="swTrDel" data-pi="${pi}" tabindex="-1"><span>Löschen?</span></button>
+    <div class="trh"><span class="drag-h" data-list="plans" data-i="${pi}" aria-label="Plan verschieben">⋮⋮</span>
+      <button class="trh-m" data-act="trToggle" data-id="${p.id}"><b>${esc(p.name)}</b><small>${p.items.length} ${p.items.length===1?'Übung':'Übungen'} · zuletzt ${agoTxt(last)}</small></button>
+      ${opt.trainedBtn?`<button class="trdone ${tdy?'on':''}" data-act="trDone" data-pi="${pi}" title="${tdy?'Heute trainiert – nochmal tippen nimmt es zurück':'Heute trainiert'}">${tdy?'✓ heute':'Heute trainiert'}</button>`:''}
+      <span class="trchev">${o?'▴':'▾'}</span></div></div>`;
+  if(o){
+    h+=`<div class="trbody"><label class="trname"><span>Name</span><input class="in-t" data-trname="${pi}" value="${esc(p.name)}" maxlength="60"></label><div class="trex" data-list="ex:${pi}">`;
+    p.items.forEach((it,xi)=>{const d=trDev(it.dev),v=trVals(p.name,it.dev),eo=T.ex===p.id+'|'+xi,supIn=xi>0&&p.items[xi-1].sup;
+      h+=`<div class="trx ${eo?'open':''} ${it.sup?'sup-a':''} ${supIn?'sup-b':''}" data-xi="${xi}">
+        <div class="trx-h"><span class="drag-h" data-list="ex:${pi}" data-i="${xi}" aria-label="Übung verschieben">⋮⋮</span>
+        <button class="trx-m" data-act="trEx" data-pi="${pi}" data-xi="${xi}">${devThumb(d,'sm')}<span><b>${esc(d?d.name:'Gerät gelöscht')}</b><small>${trSum(d,v)}</small></span></button></div>
+        ${it.sup?'<div class="supl">Supersatz ↓</div>':''}${eo&&d?trEditor(p,pi,xi,d,v):''}</div>`;});
+    h+=`</div><button class="linkbtn" data-act="trAddEx" data-pi="${pi}">+ Übung hinzufügen</button></div>`;
+  }
+  return h+'</div>';
+}
+function stepper(key,val,step,lbl,unit){
+  return `<div class="trst"><span class="trst-l">${lbl}</span><div class="trst-c"><button data-act="trStep" data-k="${key}" data-d="-${step}" aria-label="weniger">−</button>
+    <input class="in-t num" inputmode="decimal" data-trin="${key}" value="${val===null||val===undefined||val===''?'':String(val).replace('.',',')}">${unit?`<em>${unit}</em>`:''}<button data-act="trStep" data-k="${key}" data-d="${step}" aria-label="mehr">+</button></div></div>`;
+}
+function trEditor(p,pi,xi,d,v){
+  const opt=trOpt(),it=p.items[xi];let h='<div class="tred">';
+  if(d.kind==='cardio')h+=stepper('level',v.level,0.5,esc(d.intLabel||'Stufe'),'')+stepper('dur',v.dur,1,'Dauer','min');
+  else{h+=stepper('kg',v.kg,opt.step,'Gewicht','kg')+stepper('sets',v.sets,1,'Sätze','')+stepper('reps',v.reps,1,'Wiederholungen','');
+    (d.pads||[]).forEach((pd,i)=>{h+=`<div class="trst"><span class="trst-l">${esc(pd)}</span><div class="trst-c"><input class="in-t" data-trin="pad${i}" value="${esc(v.pads&&v.pads[i]||'')}" placeholder="z. B. 3"></div></div>`;});}
+  h+=`<div class="trsave" id="trSave">${TRS().pend[p.name+'|'+it.dev]?'wird gleich gespeichert …':'Änderungen werden automatisch gespeichert'}</div>`;
+  h+=trChart(d,it.dev);
+  h+=`<div class="tracts">${opt.timer?`<button class="pbtn" data-act="trTimer">⏱ Pause ${opt.timerSec} s</button>`:''}
+    ${xi<p.items.length-1?`<button class="linkbtn" data-act="trSup" data-pi="${pi}" data-xi="${xi}">${it.sup?'Supersatz lösen':'Supersatz mit nächster'}</button>`:''}
+    <button class="linkbtn" data-act="trDevEdit" data-id="${d.id}">Gerät bearbeiten</button>
+    <button class="linkbtn" style="color:var(--bad)" data-act="trExDel" data-pi="${pi}" data-xi="${xi}">Aus Plan entfernen</button></div>`;
+  return h+'</div>';
+}
+/* Verlauf als kleine Linie: Gewicht (Kraft) bzw. Stufe (Cardio) je Trainingstag */
+function trChart(d,devId){
+  const f=d.kind==='cardio'?9:3,pts=TRD().log.filter(r=>r[2]===devId&&r[f]!=null).sort((a,b)=>a[0].localeCompare(b[0])).slice(-20);
+  if(pts.length<2)return `<div class="trch empty">Verlauf erscheint ab dem zweiten Trainingstag.</div>`;
+  const W=300,H=70,vs=pts.map(r=>r[f]),mn=Math.min(...vs),mx=Math.max(...vs),rg=mx-mn||1;
+  const xy=pts.map((r,i)=>[8+i*(W-16)/(pts.length-1),H-10-(r[f]-mn)/rg*(H-24)]);
+  return `<div class="trch"><div class="trch-h"><span>${d.kind==='cardio'?esc(d.intLabel||'Stufe'):'Gewicht'} · Verlauf</span><b class="num">${fmtN(vs[0])} → ${fmtN(vs[vs.length-1])}${d.kind==='cardio'?'':' kg'}</b></div>
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><polyline points="${xy.map(p=>p.join(',')).join(' ')}" fill="none" stroke="var(--brand)" stroke-width="2.2" stroke-linejoin="round"/>${xy.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="var(--brand)"><title>${shortDate(pts[i][0])}: ${fmtN(vs[i])}</title></circle>`).join('')}</svg>
+    <div class="trch-x"><span>${shortDate(pts[0][0])}</span><span>${shortDate(pts[pts.length-1][0])}</span></div></div>`;
+}
+/* ---------- Speichern: erst nach 2,5 s Ruhe, eine Änderung pro Tag ---------- */
+function trChanged(pi,xi,patch){
+  const p=TRD().plans[pi],it=p.items[xi],d=trDev(it.dev),k2=p.name+'|'+it.dev,T=TRS();
+  const v=Object.assign({},trVals(p.name,it.dev),patch);if(patch.pads)v.pads=patch.pads;
+  T.pend[k2]={pi,xi,v};const el=$('#trSave');if(el)el.textContent='wird gleich gespeichert …';
+  clearTimeout(T.t);T.t=setTimeout(trFlush,2500);
+  const sm=document.querySelector(`.trx[data-xi="${xi}"] .trx-m small`);if(sm&&d)sm.innerHTML=trSum(d,v);
+}
+function trFlush(){
+  const T=TRS(),ks=Object.keys(T.pend);if(!ks.length)return;
+  ks.forEach(k2=>{const {pi,xi,v}=T.pend[k2],p=TRD().plans[pi];if(!p)return;const it=p.items[xi],d=trDev(it&&it.dev);if(!d)return;
+    commit('logTraining',[{date:today(),plan:p.name,dev:d.id,devName:d.name,kg:v.kg,sets:v.sets,reps:v.reps,pads:v.pads,level:v.level,dur:v.dur}]);});
+  T.pend={};const el=$('#trSave');if(el)el.textContent='✓ gespeichert';
+}
+window.addEventListener('pagehide',()=>{try{trFlush();}catch(e){}});
+function trSavePlans(){commit('savePlans',[TRD().plans]);}
+/* ---------- Geräte auswählen / anlegen ---------- */
+function trPickHtml(){
+  const P=S.trPick,q=norm(P.q||''),ds=(TRD().devices||[]).filter(d=>!q||norm(d.name).includes(q)).sort((a,b)=>a.name.localeCompare(b.name,'de'));
+  return `<h2>Übung hinzufügen</h2><p class="sub">Geräte aus der gemeinsamen Datenbank. Neue Geräte sehen alle, die mit deiner App verbunden sind.</p>
+    <div class="search" style="box-shadow:none;background:var(--soft);margin:8px 0 10px">${ICON.search}<input id="trPickQ" placeholder="Gerät suchen" value="${esc(P.q||'')}" autocomplete="off"></div>
+    <button class="aibtn" data-act="trDevNew" style="font-size:20px">＋<span><b>Neues Gerät anlegen</b><small>Mit Foto, Polstern und Art (Kraft oder Cardio)</small></span></button>
+    <div class="res" id="trPickList">${ds.map(d=>`<button class="item" data-act="trPickDev" data-id="${d.id}">${devThumb(d,'sm')}<div class="it-main"><div class="it-name">${esc(d.name)}</div><div class="it-sub">${d.kind==='cardio'?'Cardio · '+esc(d.intLabel||'Stufe'):'Kraft'+(d.pads.length?' · '+d.pads.map(esc).join(', '):'')}${d.by?' · von '+esc(d.by):''}</div></div></button>`).join('')||'<div class="empty">Noch keine Geräte. Leg das erste an.</div>'}</div>`;
+}
+function trDevHtml(){
+  const D=S.trDev;
+  return `<button class="back" data-act="trDevBack">${ICON.back}Zurück</button><h2>${D.id?'Gerät bearbeiten':'Neues Gerät'}</h2>
+    <label class="f"><span>Name</span><input class="in-t" id="tdName" value="${esc(D.name||'')}" placeholder="z. B. Beinpresse, Latzug, Laufband" maxlength="60"></label>
+    <div class="seg2"><button class="${D.kind!=='cardio'?'on':''}" data-act="tdKind" data-v="kraft">🏋 Kraft</button><button class="${D.kind==='cardio'?'on':''}" data-act="tdKind" data-v="cardio">🏃 Cardio</button></div>
+    ${D.kind==='cardio'?`<label class="f"><span>Was stellst du ein?</span><input class="in-t" id="tdInt" value="${esc(D.intLabel||'Stufe')}" placeholder="z. B. Geschwindigkeit, Stufe, Steigung"></label>`
+      :`<div class="rfh">Polster und Einstellungen (bis zu 3)</div>${[0,1,2].map(i=>`<input class="in-t" id="tdPad${i}" value="${esc((D.pads||[])[i]||'')}" placeholder="${['z. B. Rückenlehne','z. B. Sitzhöhe','z. B. Fußplatte'][i]}" style="margin-bottom:6px">`).join('')}`}
+    <div class="rfh">Foto</div>
+    ${D.imgUrl?`<div class="ph-prev" style="background-image:url('${D.imgUrl}');height:150px"></div><button class="linkbtn" data-act="tdImgDel">Foto entfernen</button>`
+      :`<label class="ph-pick" style="padding:12px">${ICON.camera}<span>Foto aufnehmen oder auswählen (optional)</span><input type="file" accept="image/*" id="tdFile" hidden></label>`}
+    <button class="btn" data-act="tdSave" style="margin-top:12px">${D.id?'Speichern':'Anlegen und hinzufügen'}</button>
+    ${D.id?`<button class="linkbtn" style="color:var(--bad);display:block;margin:10px auto 0" data-act="tdDel">Gerät für alle löschen</button>`:''}`;
+}
+function tdRead(){const D=S.trDev;D.name=val('tdName');if($('#tdInt'))D.intLabel=val('tdInt');if($('#tdPad0'))D.pads=[0,1,2].map(i=>val('tdPad'+i));}
+/* ---------- Pausen-Timer ---------- */
+function trTimerStart(){
+  const sec=trOpt().timerSec||90;let el=$('#trtimer');if(!el){el=document.createElement('button');el.id='trtimer';el.className='trtimer';document.body.appendChild(el);el.onclick=()=>{clearInterval(el._i);el.remove();};}
+  const end=Date.now()+sec*1000;clearInterval(el._i);
+  const tick=()=>{const r=Math.max(0,Math.round((end-Date.now())/1000));el.innerHTML=`⏱ <b class="num">${Math.floor(r/60)}:${String(r%60).padStart(2,'0')}</b><small>tippen zum Beenden</small>`;
+    if(r<=0){clearInterval(el._i);vibe([200,100,200]);el.classList.add('done');el.innerHTML='⏱ <b>Weiter geht’s!</b>';setTimeout(()=>el.remove(),4000);}};
+  tick();el._i=setInterval(tick,500);
+}
+/* ---------- Sortieren per Griff (Maus und Finger) ---------- */
+(function(){
+  let D=null;
+  document.addEventListener('pointerdown',e=>{
+    const h=e.target.closest('.drag-h');if(!h)return;e.preventDefault();
+    const list=h.closest('[data-list]'),item=h.closest(list.dataset.list==='plans'?'.trp':'.trx');if(!list||!item)return;
+    const items=[...list.children];D={list,item,items,from:items.indexOf(item),y0:e.clientY,key:h.dataset.list,id:e.pointerId,to:items.indexOf(item)};
+    item.classList.add('dragging');try{h.setPointerCapture(e.pointerId);}catch(_){}
+  });
+  document.addEventListener('pointermove',e=>{
+    if(!D||e.pointerId!==D.id)return;const dy=e.clientY-D.y0;D.item.style.transform=`translateY(${dy}px)`;
+    const mid=D.item.getBoundingClientRect().top+D.item.offsetHeight/2;let to=0;
+    D.items.forEach((x,i)=>{if(x===D.item)return;const r=x.getBoundingClientRect();if(mid>r.top+r.height/2)to=i+(i<D.from?1:0);});
+    if(dy<0)to=Math.min(to,D.from);D.to=Math.max(0,Math.min(D.items.length-1,to));
+    D.items.forEach((x,i)=>x.classList.toggle('drop-b',x!==D.item&&i===D.to&&D.to!==D.from));
+  });
+  const end=()=>{if(!D)return;const d=D;D=null;d.item.style.transform='';d.item.classList.remove('dragging');d.items.forEach(x=>x.classList.remove('drop-b'));
+    if(d.to===d.from)return;const plans=TRD().plans;
+    if(d.key==='plans'){const [x]=plans.splice(d.from,1);plans.splice(d.to,0,x);}
+    else{const pi=+d.key.split(':')[1],arr=plans[pi].items;const [x]=arr.splice(d.from,1);x.sup=false;arr.splice(d.to,0,x);TRS().ex=null;}
+    vibe(10);trSavePlans();};
+  document.addEventListener('pointerup',end);document.addEventListener('pointercancel',end);
+})();
+/* ---------- Aktionen ---------- */
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act,T=TRS(),plans=()=>TRD().plans;
+  switch(a){
+  case 'trToggle':{trFlush();T.open[el.dataset.id]=!T.open[el.dataset.id];T.ex=null;render();break;}
+  case 'trPlanNew':{const p={id:'p'+Date.now().toString(36),name:'Neuer Plan',items:[]};plans().push(p);T.open[p.id]=true;trSavePlans();
+    setTimeout(()=>{const i=document.querySelector(`[data-trname="${plans().length-1}"]`);if(i){i.focus();i.select();}},80);break;}
+  case 'trDone':{const p=plans()[+el.dataset.pi],tdy=planLast(p.name)===today()&&TRD().log.some(r=>r[0]===today()&&r[1]===p.name&&!r[2]);
+    if(planLast(p.name)===today()&&!tdy){toast('Heute schon trainiert (durch Änderungen an Gewichten).');break;}
+    commit('logTraining',[{date:today(),plan:p.name,remove:tdy}]);vibe(12);if(!tdy)toast('„'+p.name+'“: heute trainiert ✓');break;}
+  case 'trEx':{trFlush();const k2=plans()[+el.dataset.pi].id+'|'+el.dataset.xi;T.ex=T.ex===k2?null:k2;render();break;}
+  case 'trStep':{const tx=el.closest('.trx'),pi=+el.closest('.trp').dataset.pi,xi=+tx.dataset.xi,inp=tx.querySelector(`[data-trin="${el.dataset.k}"]`);
+    const cur=parseFloat(String(inp.value).replace(',','.'))||0,nv=Math.max(0,Math.round((cur+ +el.dataset.d)*100)/100);inp.value=String(nv).replace('.',',');
+    trChanged(pi,xi,{[el.dataset.k]:nv});vibe(5);break;}
+  case 'trAddEx':{S.trPick={pi:+el.dataset.pi,q:''};openSheet(trPickHtml());break;}
+  case 'trPickDev':{const pi=S.trPick.pi;plans()[pi].items.push({dev:el.dataset.id,sup:false});trSavePlans();closeSheet();T.ex=plans()[pi].id+'|'+(plans()[pi].items.length-1);render();break;}
+  case 'trDevNew':{S.trDev={kind:'kraft',pads:[],intLabel:'Stufe',back:'pick'};openSheet(trDevHtml());break;}
+  case 'trDevEdit':{const d=trDev(el.dataset.id);if(!d)break;S.trDev={id:d.id,name:d.name,kind:d.kind,pads:d.pads.slice(),intLabel:d.intLabel,imgUrl:d.img?imgCache(d.img):null,back:'close'};openSheet(trDevHtml());break;}
+  case 'trDevBack':{if(S.trDev&&S.trDev.back==='pick'&&S.trPick)openSheet(trPickHtml());else closeSheet();break;}
+  case 'tdKind':{tdRead();S.trDev.kind=el.dataset.v;openSheet(trDevHtml());break;}
+  case 'tdImgDel':{tdRead();S.trDev.imgUrl=null;S.trDev.file=null;S.trDev.dropImg=true;openSheet(trDevHtml());break;}
+  case 'tdSave':{tdRead();const D=S.trDev;if(!D.name.trim()){toast('Bitte einen Namen eingeben.',true);break;}
+    const req={id:D.id,name:D.name,kind:D.kind,pads:D.kind==='cardio'?[]:(D.pads||[]),intLabel:D.kind==='cardio'?(D.intLabel||'Stufe'):'',dropImg:!!D.dropImg};
+    if(D.file){const m=D.file.match(/^data:([^;]+);base64,(.*)$/);if(m)req.img={mime:m[1],b64:m[2]};}
+    el.disabled=true;el.textContent='Wird gespeichert …';
+    call('saveDevice',req).then(r=>{TRD().devices=r.devices;const nd=TRD().devices.find(x=>x.id===r.id);if(nd&&nd.img&&D.file)imgStore(nd.img,D.file);
+      if(!D.id&&S.trPick){const pi=S.trPick.pi;plans()[pi].items.push({dev:r.id,sup:false});trSavePlans();T.ex=plans()[pi].id+'|'+(plans()[pi].items.length-1);}
+      closeSheet();vibe();toast(D.id?'Gerät gespeichert.':'„'+D.name+'“ angelegt – für alle verfügbar.');render();})
+      .catch(e=>{el.disabled=false;el.textContent='Speichern';toast(e.message||String(e),true);});break;}
+  case 'tdDel':{if(!S.trDev.delArm){S.trDev.delArm=true;el.textContent='Wirklich für alle löschen?';break;}
+    call('deleteDevice',S.trDev.id).then(r=>{TRD().devices=r.devices;closeSheet();toast('Gerät gelöscht.');render();}).catch(e=>toast(e.message,true));break;}
+  case 'trSup':{const it=plans()[+el.dataset.pi].items[+el.dataset.xi];it.sup=!it.sup;trSavePlans();break;}
+  case 'trExDel':{const pi=+el.dataset.pi,xi=+el.dataset.xi,before=JSON.parse(JSON.stringify(plans()));plans()[pi].items.splice(xi,1);if(xi>0)plans()[pi].items[xi-1].sup=plans()[pi].items[xi-1].sup&&xi<plans()[pi].items.length;T.ex=null;trSavePlans();
+    toast('Übung entfernt.',false,{label:'Rückgängig',fn:()=>{TRD().plans=before;trSavePlans();}});break;}
+  case 'swTrDel':{const pi=+el.dataset.pi,before=JSON.parse(JSON.stringify(plans())),name=plans()[pi].name;plans().splice(pi,1);trSavePlans();vibe(15);
+    toast('Plan „'+name+'“ gelöscht.',false,{label:'Rückgängig',fn:()=>{TRD().plans=before;trSavePlans();}});break;}
+  case 'trTimer':trTimerStart();break;
+  }
+});
+document.addEventListener('input',ev=>{
+  const t=ev.target;
+  if(t.id==='trPickQ'){S.trPick.q=t.value;const l=$('#trPickList');if(l){const tmp=document.createElement('div');tmp.innerHTML=trPickHtml();l.innerHTML=tmp.querySelector('#trPickList').innerHTML;loadDevImages();}return;}
+  if(t.dataset&&t.dataset.trin){const tx=t.closest('.trx'),pi=+t.closest('.trp').dataset.pi,xi=+tx.dataset.xi,k2=t.dataset.trin;
+    if(/^pad/.test(k2)){const v=trVals(TRD().plans[pi].name,TRD().plans[pi].items[xi].dev),pads=(v.pads||['','','']).slice();pads[+k2.slice(3)]=t.value;trChanged(pi,xi,{pads});}
+    else{const n=parseFloat(String(t.value).replace(',','.'));trChanged(pi,xi,{[k2]:isNaN(n)?null:n});}return;}
+});
+document.addEventListener('change',ev=>{
+  const t=ev.target;
+  if(t.dataset&&t.dataset.trname!==undefined){const p=TRD().plans[+t.dataset.trname],nv=t.value.trim()||'Plan';if(p&&p.name!==nv){p.name=nv;trSavePlans();render();}return;}
+  if(t.id==='tdFile'&&t.files&&t.files[0]){tdRead();shrinkImage(t.files[0],900,0.82).then(u=>{S.trDev.file=u;S.trDev.imgUrl=u;S.trDev.dropImg=false;openSheet(trDevHtml());}).catch(()=>toast('Das Bild ließ sich nicht öffnen.',true));}
+  if(t.dataset&&t.dataset.trOpt){const s=JSON.parse(JSON.stringify(S.data.settings)),o=Object.assign({},trOpt());const k2=t.dataset.trOpt;
+    o[k2]=t.type==='checkbox'?t.checked:(k2==='step'||k2==='timerSec'?+t.value:t.value);s.training=o;commit('saveSettings',[s]);
+    const b=document.querySelector('[data-sec=train] .sec-b');if(b)b.innerHTML=trSetHtml();}
+});
+/* ---------- Einstellungen ---------- */
+function trSetHtml(){
+  const o=trOpt();
+  return `<div class="sw"><div><b>Gewicht pro Plus/Minus</b><span>Eintippen geht immer</span></div><select class="in-t" style="width:96px" data-tr-opt="step">${[0.5,1,1.25,2.5,5].map(v=>`<option value="${v}" ${o.step===v?'selected':''}>${String(v).replace('.',',')} kg</option>`).join('')}</select></div>
+  <label class="sw"><div><b>„Heute trainiert“-Knopf</b><span>Pro Plan ein Tipp, ohne etwas einzutragen</span></div><span class="tg"><input type="checkbox" data-tr-opt="trainedBtn" ${o.trainedBtn?'checked':''}><i></i></span></label>
+  <label class="sw"><div><b>Pausen-Timer</b><span>Knopf „Pause“ bei jeder Übung, vibriert am Ende</span></div><span class="tg"><input type="checkbox" data-tr-opt="timer" ${o.timer?'checked':''}><i></i></span></label>
+  ${o.timer?`<div class="sw"><div><b>Pausenlänge</b></div><select class="in-t" style="width:96px" data-tr-opt="timerSec">${[45,60,90,120,180].map(v=>`<option value="${v}" ${o.timerSec===v?'selected':''}>${v} s</option>`).join('')}</select></div>`:''}
+  <label class="sw"><div><b>Hantel in Woche und Monat</b><span>Kleines Symbol an Trainingstagen</span></div><span class="tg"><input type="checkbox" data-tr-opt="cal" ${o.cal!==false?'checked':''}><i></i></span></label>`;
+}
 
 /* ================= Sheets (Overlays) ================= */
 function openSheet(html,o){
@@ -3391,12 +4111,13 @@ function drawAdd(){
   if(A.seg==='gewicht'){openSheet(segHtml()+`<h2>Gewicht eintragen</h2><p class="sub">Mit Plus und Minus in 0,1-kg-Schritten vom letzten Wert aus.</p>`+weightForm('aKg'));return;}
   if(A.step==='search'){
     openSheet(segHtml()+`<div class="addh"><h2>Was hast du gegessen?</h2>${(S.data.recipes||[]).length?`<button class="minibtn" data-act="addstep" data-step="recipes">${ICON.rezepte}Aus Rezept</button>`:''}</div>
-      <div class="search" style="box-shadow:none;background:var(--soft);margin:8px 0 0">${ICON.search}<input id="fq" type="search" placeholder="z. B. Magerquark, Banane, Ehrmann" value="${esc(A.q)}" autocomplete="off"><button class="scanbtn" data-act="addstep" data-step="copy" aria-label="Von einer anderen Mahlzeit kopieren" title="Kopieren von …">${ICON.copy}</button><button class="scanbtn" data-act="addstep" data-step="photo" aria-label="Foto an Claude">${ICON.camera}</button><button class="scanbtn" data-act="scan" aria-label="Barcode scannen">${ICON.barcode}</button></div>
+      <div class="search" style="box-shadow:none;background:var(--soft);margin:8px 0 0">${ICON.search}<input id="fq" type="search" placeholder="z. B. Magerquark, Banane, Ehrmann" value="${esc(A.q)}" autocomplete="off"><button class="scanbtn" data-act="addstep" data-step="copy" aria-label="Von einer anderen Mahlzeit kopieren" title="Kopieren von …">${ICON.copy}</button><button class="scanbtn" data-act="addstep" data-step="${geminiPrimary()?'ai':'photo'}" aria-label="${geminiPrimary()?'Foto an die KI':'Foto an Claude'}">${ICON.camera}</button><button class="scanbtn" data-act="scan" aria-label="Barcode scannen">${ICON.barcode}</button></div>
       <div id="fres">${resultsHtml()}</div>`);
   } else if(A.step==='copy'){openSheet(copyStep());
   } else if(A.step==='photo'){openSheet(photoHtml());
   } else if(A.step==='recipe'){openSheet(recipeStep());
   } else if(A.step==='recipes'){openSheet(recipePickStep());
+  } else if(A.step==='ai'){openSheet(aiHtml());
   } else if(A.step==='tpl'){openSheet(tplStep());
   } else if(A.step==='scan'){
     openSheet(scanHtml());setTimeout(startScan,120);
@@ -3446,22 +4167,23 @@ function resultsHtml(){
   const q=S.add.q.trim();
   const qw=norm(q).split(/[^a-z0-9]+/).filter(w=>w&&!/^(s|m|l|xl)$/.test(w));
   let rec=recentList().filter(x=>{if(!qw.length)return true;const ws=norm((x.recipe||x.name)+' '+x.amount).split(/[^a-z0-9]+/);return qw.every(w=>ws.some(v=>v.startsWith(w)));});
+  if(!q&&S.add.mealOnly)rec=recentList().filter(x=>x.meal===S.add.mealOnly).slice(0,S.data.settings.recentN||20);
   if(q){const by=new Map();for(const x of rec){const kk=norm(x.recipe||x.name),o=by.get(kk);if(!o)by.set(kk,Object.assign({},x,{total:x.count}));else o.total+=x.count;}
     rec=[...by.values()].sort((a,b)=>b.total-a.total||(b.last+b.time).localeCompare(a.last+a.time));}
   rec=rec.slice(0,q?8:(S.data.settings.recentN||20));
   S.add.recList=rec;
   let h='';
   h+=tplChips(q)+(q?recipeChips(q):'');
-  if(!q&&mods().haeufig){const fq=frequent();if(fq.length)h+=`<div class="res-h">Häufig</div><div class="fchips">${fq.map((x,i)=>`<button class="fchip" data-act="pickFreq" data-i="${i}" style="--mc:${MEAL_COLOR[x.meal]||'var(--m4)'}"><i></i><span>${esc(x.recipe||x.name)}</span><small class="num">${k(x.kcal)}</small></button>`).join('')}</div>`;}
-  if(rec.length)h+=`<div class="res-h">${q?'Schon gegessen':'Zuletzt gegessen'}</div><div class="res">${rec.map((x,i)=>`<button class="item" data-act="pickRecent" data-i="${i}"><div class="it-main"><div class="it-name">${x.recipe?'<span class="tag">Rezept</span>'+esc(x.recipe):esc(x.name)}</div><div class="it-sub">${esc(x.amount)} · ${relDay(x.last)||shortDate(x.last)}</div></div><div class="it-val"><b class="num">${k(x.kcal)}</b><small class="num">${g1(x.p)} g E</small></div></button>`).join('')}</div>`;
+  if(!q&&mods().haeufig&&!S.add.mealOnly){const mm=S.add.meal,fq=frequent().slice().sort((a,b)=>(b.meal===mm)-(a.meal===mm));if(fq.length)h+=`<div class="res-h">Häufig${fq[0].meal===mm?' · '+MEAL_SHORT[mm]+' zuerst':''}</div><div class="fchips">${fq.map((x,i)=>`<button class="fchip" data-act="pickFreq" data-i="${i}" style="--mc:${MEAL_COLOR[x.meal]||'var(--m4)'}"><i></i><span>${esc(x.recipe||x.name)}</span><small class="num">${k(x.kcal)}</small></button>`).join('')}</div>`;}
+  if(rec.length||S.add.mealOnly)h+=`<div class="res-h">${q?'Schon gegessen':S.add.mealOnly?'Zuletzt zum '+MEAL_SHORT[S.add.mealOnly]+' <button class="linkbtn" data-act="mealOnlyOff" style="float:right;margin:0">alle zeigen</button>':'Zuletzt gegessen'}</div>`+(S.add.mealOnly&&!rec.length?'<div class="empty">Dazu gibt es noch nichts.</div>':'')+`<div class="res">${rec.map((x,i)=>`<button class="item" data-act="pickRecent" data-i="${i}"><div class="it-main"><div class="it-name">${x.recipe?'<span class="tag">Rezept</span>'+esc(x.recipe):esc(x.name)}</div><div class="it-sub">${esc(x.amount)} · ${relDay(x.last)||shortDate(x.last)}</div></div><div class="it-val"><b class="num">${k(x.kcal)}</b><small class="num">${g1(x.p)} g E</small></div></button>`).join('')}</div>`;
   if(q){
     if(!S.foods)h+=`<div class="res-h">Lebensmittel</div><div class="empty" style="padding:10px 2px">Lade Lebensmittel-Datenbank …</div>`;
     else{
       const fs=searchFoods(q);S.add.foodList=fs;
       h+=`<div class="res-h">Lebensmittel (pro 100 g)</div>`+(fs.length?`<div class="res">${fs.map((f,i)=>`<button class="item" data-act="pickFood" data-i="${i}"><div class="it-main"><div class="it-name">${esc(f[0])}</div><div class="it-sub">${f[1]?esc(f[1])+' · ':''}${g1(f[3])} g E · ${g1(f[4])} g KH · ${g1(f[6])} g F</div></div><div class="it-val"><b class="num">${k(f[2])}</b><small class="faint">kcal</small></div></button>`).join('')}</div>`:'<div class="empty" style="padding:10px 2px">Nichts in der Datenbank gefunden.</div>');
     }
-    h+=`<div class="fallback"><button data-act="addstep" data-step="claude">An Claude übergeben<small>Claude sucht die Werte</small></button><button data-act="addstep" data-step="manual">Selbst eintragen<small>Werte bekannt</small></button><button class="wide" data-act="addstep" data-step="photo">Foto an Claude<small>Teller oder Packung</small></button></div>`;
-  } else h+=`<p class="hint">Tippe oben, um in deinen ${S.foods?k(S.foods.length)+' ':''}Lebensmitteln zu suchen.</p>`;
+    h+=`${hasAI()&&(geminiPrimary()||geminiFallback())?`<button class="aibtn ${geminiPrimary()?'':'sec'}" data-act="addstep" data-step="ai">✨<span><b>„${esc(q)}“ mit ${geminiPrimary()?'KI':'Gemini'} eintragen</b><small>Sucht in deinen Lebensmitteln, rechnet die Menge aus</small></span></button>`:''}<div class="fallback">${claudeOn()&&!geminiPrimary()?`<button data-act="addstep" data-step="claude">An Claude übergeben<small>Claude sucht die Werte</small></button>`:''}<button data-act="addstep" data-step="manual" ${claudeOn()&&!geminiPrimary()?'':'class="wide"'}>Selbst eintragen<small>Werte bekannt</small></button>${claudeOn()&&!geminiPrimary()?`<button class="wide" data-act="addstep" data-step="photo">Foto an Claude<small>Teller oder Packung</small></button>`:''}</div>`;
+  } else h+=`${geminiPrimary()?`<button class="aibtn" data-act="addstep" data-step="ai">✨<span><b>Mit KI eintragen</b><small>Einfach hinschreiben oder Foto wählen</small></span></button>`:''}<p class="hint">Tippe oben, um in deinen ${S.foods?k(S.foods.length)+' ':''}Lebensmitteln zu suchen.</p>`;
   return h;
 }
 
@@ -3522,10 +4244,13 @@ function complaintForm(){
   <button class="btn" data-act="saveComplaint">Speichern</button>`;
 }
 function openSettings(){
-  const g=S.data.goals,m=mods(),op=S.setOpen||(S.setOpen={ziele:true});
-  const sec=(id,title,sub,body)=>`<details class="sec" ${op[id]?'open':''} data-sec="${id}"><summary><span><b>${title}</b><small>${sub}</small></span><i>›</i></summary><div class="sec-b">${body}</div></details>`;
+  const g=S.data.goals,m=mods(),op=S.setOpen||(S.setOpen={});
+  const sec=(id,title,sub,body,ico)=>`<details class="sec" ${op[id]?'open':''} data-sec="${id}"><summary>${ico?`<span class="secico">${ico}</span>`:''}<span><b>${title}</b><small>${sub}</small></span><i>›</i></summary><div class="sec-b">${body}</div></details>`;
+  const grp=t=>`<div class="sgrp">${t}</div>`;
   openSheet(`<h2>Einstellungen</h2>
+  ${grp('Ich')}
   ${sec('ziele','Ziele',k(g.kcalDay)+' kcal · '+k(g.proteinDay)+' g Eiweiß pro Tag',`<p class="sub" style="margin-top:0">kcal- und Eiweißziele gelten auch für Claude (Tab Status). KH, Fett und Zielgewicht nur für die App.</p>
+  <button class="calcbtn" data-act="calcOpen">${ICON.spark||''}<span><b>Ziele ausrechnen lassen</b><small>Aus Gewicht, Größe, Alter, Bewegung und Abnehm-Tempo</small></span>${ICON.right}</button>
   <div class="row2"><label class="f"><span>kcal pro Tag (max.)</span><input class="in-t num" inputmode="numeric" id="gK" value="${g.kcalDay}"></label>
   <label class="f"><span>Eiweiß pro Tag (min., g)</span><input class="in-t num" inputmode="numeric" id="gP" value="${g.proteinDay}"></label></div>
   <label class="f"><span>kcal pro Woche (max.)</span><input class="in-t num" inputmode="numeric" id="gW" value="${g.kcalWeek}"></label>
@@ -3533,6 +4258,11 @@ function openSettings(){
   <label class="f"><span>Fett pro Tag (g)</span><input class="in-t num" inputmode="numeric" id="gF" value="${g2().fat||''}" placeholder="kein Ziel"></label></div>
   ${m.gewicht?`<label class="f"><span>Zielgewicht (kg, optional)</span><input class="in-t num" inputmode="decimal" id="gWt" value="${g2().weight?String(g2().weight).replace('.',','):''}" placeholder="kein Ziel"></label>`:''}
   <button class="btn" data-act="saveGoals">Ziele speichern</button>`)}
+  ${tabOn('gewicht',S.data.settings)?sec('wtr','Gewicht-Trends',wCfg().trends.length+' Trends ausgewählt',wTrendSettings()):''}
+  ${canAIset()?sec('ai','KI-Helfer',aiSub(),aiSetHtml()):''}
+  ${grp('App')}
+  ${sec('tabs','Leisten & Bereiche','Was unten, oben oder gar nicht angezeigt wird',tabsHtml())}
+  ${mods().training?sec('train','Training','Gewicht-Schritte, Pausen-Timer, Hantel im Kalender',trSetHtml()):''}
   ${sec('look','Aussehen','Design „'+THEMES.find(x=>x[0]===curTheme())[1]+'“, Schriftgröße, Animationen',`
   <div class="sw"><div><b>Schriftgröße</b><span>Für alle Texte der App</span></div><div class="seg" style="margin:0;width:170px">${[[1,'A'],[1.12,'A+'],[1.25,'A++']].map(([z,l])=>`<button data-act="zoom" data-z="${z}" class="${(+S.data.settings.zoom||1)===z?'on':''}">${l}</button>`).join('')}</div></div>
   <div class="sw"><div><b>Animationen</b><span>Ring füllt sich, kleine Feier beim Eiweiß-Ziel</span></div><label class="tg"><input type="checkbox" data-opt="anim" ${S.data.settings.anim!==false?'checked':''}><i></i></label></div>
@@ -3541,13 +4271,14 @@ function openSettings(){
   ${sec('bed','Bedienung','Wischen, Anzahl „Zuletzt gegessen“, Einführung',`
   <div class="sw"><div><b>Zwischen Reitern wischen</b><span>Links/rechts wischen wechselt Heute, Woche, Monat …</span></div><label class="tg"><input type="checkbox" data-opt="swipe" ${S.data.settings.swipe!==false?'checked':''}><i></i></label></div>
   <div class="sw"><div><b>Zuletzt gegessen</b><span>So viele Einträge im Plus-Menü</span></div><select class="in-t" style="width:84px" data-opt="recentN">${[10,20,30,50].map(n=>`<option ${(S.data.settings.recentN||20)===n?'selected':''}>${n}</option>`).join('')}</select></div>
+  <div class="sw"><div><b>„Rückgängig“ anzeigen</b><span id="undoL">${undoSec()} Sekunden lang, danach bleibt es oben über das ↶-Symbol erreichbar</span></div></div>
+  <input type="range" class="crange" min="2" max="12" step="1" value="${undoSec()}" data-opt-undo="1" aria-label="Sekunden">
   <button class="btn ghost" data-act="introShow" style="margin-top:12px">Einführung nochmal zeigen</button>`)}
-  ${sec('tabs','Reiter','Was unten bzw. links in der Leiste steht, und in welcher Reihenfolge',tabsHtml())}
-  ${sec('ber','Weitere Bereiche',MODULES.filter(x=>!x.nav&&m[x.key]).map(x=>x.title).join(', ')||'keine zusätzlichen',MODULES.filter(x=>!x.nav).map(x=>`<div class="sw"><div><b>${x.title}</b><span>${x.desc}</span></div><label class="tg"><input type="checkbox" data-mod="${x.key}" ${m[x.key]?'checked':''}><i></i></label></div>`).join(''))}
-  ${tabOn('gewicht',S.data.settings)?sec('wtr','Gewicht-Trends',wCfg().trends.length+' Trends ausgewählt',wTrendSettings()):''}
-  ${sec('rem','Erinnerung',remSub(),remHtml())}
-  ${S.data.isOwner?'':sec('cl','Claude einrichten',clSub(),clHtml())}
+  ${grp('Familie & Claude')}
+  ${S.data.isOwner||!claudeOn()?'':sec('cl','Claude einrichten',clSub(),clHtml())}
+  ${S.data.isOwner&&canFB()?sec('fb','Rückmeldungen',fbSub(),fbAdminHtml()):''}
   ${canPersons()?sec('pers','Personen',(S.data.persons||[]).length?(S.data.persons||[]).map(p=>p.name).join(', '):'Familie oder Freunde dazuholen',personsHtml()):''}
+  ${grp('Geräte & Info')}
   ${sec('ger','PC, Tablet und weitere Geräte','App auch am Computer nutzen',deviceHtml())}
   ${LIVE?sec('con','Verbindung','Mit deinem Google Sheet verbunden',`<button class="btn ghost" data-act="disconnect">Verbindung trennen</button>`):''}
   <p class="hint">${LIVE?'Daten kommen live aus deinem Google Sheet.':'Vorschau: Änderungen werden nicht gespeichert.'}<br>App-Version ${APP_VERSION}${LIVE?' · Script-Version '+(S.data.scriptVersion||'alt'):''}</p>
@@ -3590,14 +4321,17 @@ function openMore(){
 }
 
 /* ================= Aktionen ================= */
+const undoSec=()=>Math.max(2,Math.min(12,+((S.data&&S.data.settings&&S.data.settings.undoSec)||4)));
+function setUndo(action){S.lastUndo=action?{label:action.label,fn:action.fn,until:Date.now()+5*60000}:null;const b=$('#btnUndo');if(b)b.hidden=!S.lastUndo;clearTimeout(S.undoT);if(S.lastUndo)S.undoT=setTimeout(()=>setUndo(null),5*60000);}
 function toast(msg,err,action){
+  if(action&&/rückgängig/i.test(action.label))setUndo(action);
   const t=$('#toast');t.innerHTML=esc(msg)+(action?`<button id="tAct">${esc(action.label)}</button>`:'');
   t.className='toast on'+(err?' err':'')+(action?' act':'');
-  if(action)$('#tAct').onclick=()=>{t.className='toast';action.fn();};
-  clearTimeout(t._h);t._h=setTimeout(()=>t.className='toast',action?6000:err?4500:2600);
+  if(action)$('#tAct').onclick=()=>{t.className='toast';setUndo(null);action.fn();};
+  clearTimeout(t._h);t._h=setTimeout(()=>t.className='toast',action?undoSec()*1000:err?4500:2600);
 }
 function busy(on){$('#btnReload').classList.toggle('spin',on);}
-function apply(data,fromCache){if(isTyping()){S.pendingData=[data,fromCache];return;}S.data=data;migrateLook(data.settings);applyTheme(data.settings.theme,data.settings.looks);applyZoom(+data.settings.zoom||1);if(!fromCache&&LIVE)store.set(CACHE,{t:Date.now(),d:data});index();render();}
+function apply(data,fromCache){if(isTyping()){S.pendingData=[data,fromCache];return;}fixRecipePer(data);S.data=data;migrateLook(data.settings);applyTheme(data.settings.theme,data.settings.looks);applyZoom(+data.settings.zoom||1);if(!fromCache&&LIVE)store.set(CACHE,{t:Date.now(),d:data});index();render();}
 function run(fn,args,ok,keepOpen){
   busy(true);
   const btn=document.activeElement&&document.activeElement.classList.contains('btn')?document.activeElement:null;if(btn)btn.disabled=true;
@@ -3680,6 +4414,8 @@ function mergeOlder(){if(!S.older||!S.older.length)return;const have=new Set(S.d
     const d=Math.min(dy,120);ind.style.transform='translate(-50%,'+(d*0.6)+'px)';ind.classList.toggle('ready',dy>90);},{passive:true});
   document.addEventListener('touchend',()=>{if(y0===null)return;const go=dy>90;y0=null;ind.style.transform='';ind.classList.remove('ready');
     if(go){if(LIVE){vibe();resync(true);}else toast('Vorschau: nichts zu aktualisieren.');}},{passive:true});
+  /* übernimmt der Browser die Geste (touchcancel), Anzeige zurücksetzen, sonst bleibt sie hängen */
+  document.addEventListener('touchcancel',()=>{y0=null;dy=0;ind.style.transform='';ind.classList.remove('ready');},{passive:true});
 })();
 
 document.addEventListener('click',ev=>{
@@ -3722,6 +4458,7 @@ document.addEventListener('click',ev=>{
     break;}
   case 'add':openAdd(el.dataset.meal);break;
   case 'seg':A.seg=el.dataset.seg;drawAdd();break;
+  case 'mealOnlyOff':A.mealOnly=null;$('#fres').innerHTML=resultsHtml();break;
   case 'addback':A.step=A.step==='recipe'&&A.recBack?'recipes':'search';drawAdd();break;
   case 'addstep':A.step=el.dataset.step;drawAdd();break;
   case 'pickFreq':A.recent=frequent()[+el.dataset.i];A.factor=1;A.step='recent';drawAdd();break;
@@ -3732,9 +4469,6 @@ document.addEventListener('click',ev=>{
   case 'expPdf':printReport();break;
   case 'expCsv':exportCsv();break;
   case 'wTrendCfg':S.setOpen={wtr:true};openSettings();setTimeout(()=>{const d=document.querySelector('[data-sec=wtr]'),sh=$('#sheet');if(d&&sh)sh.scrollTop=d.offsetTop-70;},80);break;
-  case 'remTest':remTest();break;
-  case 'remCopy':remCopy();break;
-  case 'remSub':break;
   case 'phShare':photoShare();break;
   case 'phReset':S.photo=null;openSheet(photoHtml());break;
   case 'rimgDel':removeRecipeImage(el.dataset.n);break;
@@ -3787,7 +4521,7 @@ document.addEventListener('click',ev=>{
     toast('Gelöscht.',false,{label:'Rückgängig',fn:()=>{commit('addWeight',[{date:w.date,time:w.time,kg:w.kg,note:w.note||''}]);}});break;}
   case 'nachpflegen':openNachpflegen();break;
   case 'askClaude':{
-    const txt='Nachpflegen';try{navigator.clipboard&&navigator.clipboard.writeText(txt);}catch(e){}
+    const txt='Nachpflegen';try{navigator.clipboard&&navigator.clipboard.writeText(txt).catch(()=>{});}catch(e){}
     queueAuftrag();setTimeout(closeSheet,300);break;}
   case 'auftragOnly':queueAuftrag();done('Auftrag liegt im Eingang. Claude erledigt ihn beim nächsten Gespräch.');break;
   case 'older':{
@@ -3803,6 +4537,9 @@ document.addEventListener('click',ev=>{
   case 'disconnect':
     if(!S.delArm){S.delArm=true;el.textContent='Wirklich trennen?';el.style.color='var(--bad)';break;}
     store.del('et-conn');store.del(CACHE);location.reload();break;
+  case 'connectLink':{const m=(val('cLink')||'').match(/#verbinden=([^\s]+)/);if(!m){toast('Das ist kein Verbindungslink (er enthält „#verbinden=“).',true);break;}
+    try{const c=JSON.parse(decodeURIComponent(escape(atob(m[1]))));if(!(c&&c.key&&/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(c.url)))throw 0;
+      localStorage.setItem('et-conn',JSON.stringify({url:c.url,key:String(c.key)}));localStorage.setItem('et-cl-open','1');location.reload();}catch(e){toast('Der Link ist nicht vollständig. Bitte nochmal kopieren.',true);}break;}
   case 'connect':{
     const url=val('cUrl'),key=val('cKey');
     if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(url)){toast('Bitte die Web-App-URL einfügen (endet auf /exec).',true);return;}
@@ -3863,7 +4600,11 @@ document.addEventListener('click',ev=>{
     commit('saveGoals',[g]);done('Ziele gespeichert.');break;}
   }
 });
-document.addEventListener('toggle',ev=>{const d=ev.target;if(d.dataset&&d.dataset.sec){S.setOpen=S.setOpen||{};S.setOpen[d.dataset.sec]=d.open;}},true);
+document.addEventListener('toggle',ev=>{const d=ev.target;if(!(d.dataset&&d.dataset.sec))return;
+  /* immer nur ein Abschnitt offen: die anderen zuklappen, den geöffneten nach oben holen */
+  if(d.open){S.setOpen={[d.dataset.sec]:true};document.querySelectorAll('details.sec[open]').forEach(x=>{if(x!==d)x.open=false;});
+    const sh=$('#sheet');if(sh)setTimeout(()=>{const top=d.offsetTop-(sh.querySelector('.shead')?60:8);if(Math.abs(sh.scrollTop-top)>4)sh.scrollTo({top,behavior:'smooth'});},30);}
+  else if(S.setOpen)delete S.setOpen[d.dataset.sec];},true);
 document.addEventListener('change',ev=>{
   const t=ev.target;
   if(t.id==='pickDay'&&t.value){S.day=t.value;render();}
@@ -3871,8 +4612,6 @@ document.addEventListener('change',ev=>{
   if(t.dataset&&t.dataset.look&&t.dataset.look!=='radius'){setLook(t.dataset.look,t.value,false);return;}
   if(t.dataset&&t.dataset.wtr){const c=wCfg(),k2=t.dataset.wtr;const tr=t.checked?W_TRENDS.map(x=>x[0]).filter(x=>x===k2||c.trends.includes(x)):c.trends.filter(x=>x!==k2);wCfgSave({trends:tr});const sm=document.querySelector('[data-sec=wtr] summary small');if(sm)sm.textContent=tr.length+' Trends ausgewählt';return;}
   if(t.dataset&&t.dataset.wcfg){wCfgSave({[t.dataset.wcfg]:Number(t.value)});return;}
-  if(t.dataset&&t.dataset.rem){remSave({[t.dataset.rem]:t.checked});return;}
-  if(t.id==='remTime'&&t.value){remSave({time:t.value});return;}
   if(t.id==='phFile'&&t.files){photoPick(t.files[0]);return;}
   if(t.dataset&&t.dataset.rimg!==undefined&&t.files){pickRecipeImage(t.dataset.rimg,t.files[0]);t.value='';return;}
   if((t.id==='expFrom'||t.id==='expTo')&&S.exp){S.exp.range='eigen';S.exp[t.id==='expFrom'?'from':'to']=t.value;document.querySelectorAll('[data-act=expRange]').forEach(b=>b.classList.toggle('on',b.dataset.r==='eigen'));}
@@ -3912,7 +4651,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState!==
 (function(){
   let s=null;
   document.addEventListener('touchstart',e=>{
-    if(S.sheetOpen||S.selMode||!S.data||S.data.settings.swipe===false||e.target.closest('.tabs,.top,.sheet,.ov,.fab,.cbtn,#intro,input,select,textarea,.fchips,.qs,.wt-chart')){s=null;return;}
+    if(S.sheetOpen||S.selMode||!S.data||S.data.settings.swipe===false||e.target.closest('.tabs,.top,.sheet,.ov,.fab,.cbtn,#intro,input,select,textarea,.fchips,.qs,.wt-chart,.swr,.rbar,.stars,.trp,.trstrip')){s=null;return;}
     s={x:e.touches[0].clientX,y:e.touches[0].clientY,t:Date.now()};},{passive:true});
   document.addEventListener('touchend',e=>{
     if(!s)return;const t=e.changedTouches[0],dx=t.clientX-s.x,dy=t.clientY-s.y;const ok=Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.6&&Date.now()-s.t<700;s=null;
@@ -3999,7 +4738,16 @@ const Demo=(()=>{
     [[0,'Abendessen','Protein-Pancakes'],[1,'Mittagessen','Hähnchen-Reis-Bowl'],[2,'Abendessen','Linsen-Curry'],[3,'Mittagessen','Lachs mit Ofenkartoffeln'],[4,'Abendessen','Vollkornnudeln Bolognese'],[5,'Frühstück','Gemüse-Omelett']].forEach(([i,m,n])=>{const d=addDays(mon,i-7);(P[d]=P[d]||[]).push({id:'v'+i,meal:m,type:'recipe',name:n,portions:1,done:true});});
     data.recipes.push({name:'Lachs-Erbsen-Pfanne',portions:2,per:{kcal:263,p:5.5,c:58.5,f:0.5},items:[I('Basmatireis','150 g',525,11,117,1),Object.assign(I('TK Lachs','1 Pack',0,0,0,0),{open:true}),Object.assign(I('Erbsen tk','3 EL',0,0,0,0),{open:true})]});
     data.inbox=[{row:5,date:t,meal:'',time:'',what:'Auftrag: Rezept vervollständigen „Lachs-Erbsen-Pfanne“ (Zutaten mit „offen“ in Spalte B: Produkt wählen, Gramm und Werte eintragen, „offen“ löschen)',amount:''},{row:6,date:t,meal:'',time:'',what:'Auftrag: Bild suchen für Rezept „Gemüse-Omelett“ (echtes Foto aus dem Web, direkte Bildadresse in Tab Bilder, Spalte D)',amount:''}];
-    data.plan=P;data.isOwner=true;data.persons=[{id:'p1',name:'Mama',email:'mama@gmail.com',claude:'',sheetUrl:'https://docs.google.com/spreadsheets/d/VORSCHAU/edit'}];data.myName='Kevin';data.claudeOk='';data.contacts=[{id:'p1',name:'Mama'}];data.incoming=[{id:'demo1',from:'Mama',name:'Omas Linsensuppe',kcal:410,portions:4}];data.imgWanted={'Gemüse-Omelett':true};
+    data.plan=P;data.isOwner=true;data.persons=[{id:'p1',name:'Mama',email:'mama@gmail.com',claude:'',sheetUrl:'https://docs.google.com/spreadsheets/d/VORSCHAU/edit'}];data.myName='Kevin';data.claudeOk='';data.contacts=[{id:'p1',name:'Mama'}];data.incoming=[{id:'demo1',from:'Mama',name:'Omas Linsensuppe',kcal:410,portions:4}];
+    data.feedback=[{row:2,date:addDays(t,-1)+' 19:12',from:'Mama',mine:false,kind:'Wunsch',text:'Kann man beim Wochenplan auch Snacks einplanen?',where:'Plan · App 23 · Handy (Android)',done:false},{row:3,date:addDays(t,-3)+' 08:40',from:'Mama',mine:false,kind:'Bug',text:'Beim Scannen bleibt das Bild schwarz.',where:'Heute · App 22 · Handy (Android)',done:true}];
+    data.kochbuch=[{author:'Mama',mine:false,aid:'p1',name:'Omas Kartoffelsalat',portions:4,per:{kcal:320,p:7,c:38,f:15},items:[{name:'Kartoffeln',amount:'1 kg',kcal:710,p:20,c:150,f:1},{name:'Gurken',amount:'1 Glas',kcal:60,p:2,c:12,f:0},{name:'Mayonnaise',amount:'100 g',kcal:510,p:1,c:1,f:55}],ins:{steps:['Kartoffeln kochen, pellen, in Scheiben schneiden.','Mit Gurken und Mayo mischen, ziehen lassen.'],notes:[]}}];
+    {const D=(n)=>addDays(t,-n);data.training={devices:[{id:'g1',name:'Beinpresse',kind:'kraft',pads:['Rückenlehne','Fußplatte'],intLabel:'',img:'',by:'Kevin'},{id:'g2',name:'Latzug',kind:'kraft',pads:['Oberschenkelpolster'],intLabel:'',img:'',by:'Kevin'},{id:'g3',name:'Beinstrecker',kind:'kraft',pads:['Rücken','Schienbein'],intLabel:'',img:'',by:'Mama'},{id:'g4',name:'Beinbeuger',kind:'kraft',pads:['Sitz'],intLabel:'',img:'',by:'Kevin'},{id:'g5',name:'Laufband',kind:'cardio',pads:[],intLabel:'Geschwindigkeit',img:'',by:'Kevin'}],
+      plans:[{id:'p1',name:'Beine',items:[{dev:'g1',sup:false},{dev:'g3',sup:true},{dev:'g4',sup:false},{dev:'g5',sup:false}]},{id:'p2',name:'Oberkörper',items:[{dev:'g2',sup:false}]}],
+      log:[[D(24),'Beine','g1',80,3,12,'4','6','',null,null,''],[D(17),'Beine','g1',85,3,12,'4','6','',null,null,''],[D(10),'Beine','g1',85,3,12,'4','6','',null,null,''],[D(3),'Beine','g1',92.5,3,10,'4','6','',null,null,''],
+        [D(3),'Beine','g3',40,3,12,'2','3','',null,null,''],[D(3),'Beine','g4',35,3,12,'5','','',null,null,''],[D(3),'Beine','g5',null,null,null,'','','',8.5,20,''],[D(10),'Beine','g5',null,null,null,'','','',8,15,''],
+        [D(6),'Oberkörper','g2',50,3,10,'3','','',null,null,''],[D(13),'Oberkörper','g2',47.5,3,10,'3','','',null,null,''],[D(20),'Oberkörper','','',null,null,'','','',null,null,'']]};}
+    data.settings.modules.training=true;
+    data.recipeStats={'Linsen-Curry':{n:4,rating:9},'Protein-Pancakes':{n:6,rating:8},'Overnight Oats mit Beeren':{n:9,rating:7}};data.imgWanted={'Gemüse-Omelett':true};
     data.settings.modules.wochenplan=true;data.settings.modules.rezepte=true;
     for(let i=40;i>=0;i-=2)data.weights.push({row:i+2,date:addDays(t,-i),time:'07:10',kg:Math.round((84.6-i*0.06+Math.sin(i)*0.35)*10)/10,note:''});
     foods=[['Lachsfilet TK','Golden Seafood',190,20,0,0,12,0,'Packung',250,'Open Food Facts',0.2,'nein',0,0],['Erbsen TK','',81,5.4,11,4,0.4,5,'EL',15,'BLS',0,'nein',0,0],['Rote Linsen','',339,24,49,2,1.5,11,'','', 'BLS',0,'nein',0,0],['Hähnchenbrust roh','',110,23,0,0,1.5,0,'','', 'BLS',0.2,'nein',0,0],['Basmatireis roh','',349,7.1,77,0.2,0.8,1.4,'','', 'BLS',0,'nein',0,0],['Brokkoli roh','',34,2.8,2.7,1.7,0.4,3,'','', 'BLS',0,'nein',0,0],['Lachsfilet roh','',203,20,0,0,13.6,0,'','', 'BLS',0.1,'nein',0,0],['Kartoffeln roh','',71,2,15,0.8,0.1,2,'','', 'BLS',0,'nein',0,0],['Skyr','',63,11,4,4,0.2,0,'','', 'BLS',0.1,'nein',4,0],['Heidelbeeren','',57,0.6,11,10,0.6,4.9,'','', 'BLS',0,'nein',0,0],['Magerquark','',67,12,4,4,0.3,0,'','', 'BLS',0.1,'nein',4,0],['Banane roh','',95,1.2,20,17,0.2,2,'Stück',120,'BLS',0,'nein',0,0],['Haferflocken','',370,13,59,1,7,10,'','', 'BLS',0,'nein',0,0],['Hühnerei roh','',137,13,1.5,0.5,9,0,'Stück',54,'BLS',null,'',null,null]];
@@ -4028,6 +4776,18 @@ const Demo=(()=>{
     takeShare:(id,m)=>{const x=data.incoming.find(i=>i.id===id);data.incoming=data.incoming.filter(i=>i.id!==id);
       if(x&&!data.recipes.some(r=>r.name===x.name))data.recipes.push({name:x.name,portions:4,per:{kcal:410,p:24,c:58,f:7},items:[{name:'Rote Linsen',amount:'250 g',kcal:848,p:60,c:122,f:4},{name:'Möhren',amount:'3 Stück',kcal:90,p:2,c:18,f:0}]});
       return {name:x?x.name:'Rezept'};},
+    setOwnerName:n=>{data.myName=n||'Kevin';return {name:data.myName};},
+    sendFeedback:f=>{const it={row:(data.feedback||[]).length+2,date:today()+' '+nowHM(),from:data.myName||'Kevin',mine:true,kind:f.kind==='bug'?'Bug':'Wunsch',text:f.text,where:f.where,done:false};data.feedback=[it].concat(data.feedback||[]);return {ok:true,feedback:data.feedback};},
+    feedbackDone:(row,dn)=>{(data.feedback||[]).forEach(x=>{if(x.row===row)x.done=!!dn;});return {feedback:data.feedback};},
+    setRating:(n,v)=>({rating:v}),
+    saveDevice:dv=>{const T=data.training;let d=dv.id&&T.devices.find(x=>x.id===dv.id);if(!d){d={id:'g'+(T.devices.length+1)};T.devices.push(d);}Object.assign(d,{name:dv.name,kind:dv.kind,pads:dv.pads||[],intLabel:dv.intLabel||'Stufe',img:dv.img?'local-dev'+d.id:(dv.dropImg?'':d.img||''),by:'Kevin'});return {id:d.id,devices:T.devices};},
+    deleteDevice:id=>{data.training.devices=data.training.devices.filter(x=>x.id!==id);return {devices:data.training.devices};},
+    savePlans:pl=>({ok:true}),logTraining:e=>({ok:true}),
+    aiBarcode:img=>({ean:'4001234567890'}),
+    setGeminiKey:k=>{data.aiKey=!!k;return {aiKey:data.aiKey};},
+    aiEntry:req=>{const c=(req.cands||[])[0],g=c&&c[9]?c[9]:100,row=[req.date,req.time,req.meal,c?c[0]:(req.text||'Foto').slice(0,40),c?(c[8]?'1 '+c[8]+' ('+g+' g, KI)':g+' g, KI'):'1 Portion (300 g), KI-Schätzung vorläufig',c?Math.round(c[2]*g/100):450,c?r1(c[3]*g/100):20,c?r1(c[4]*g/100):40,c?r1(c[6]*g/100):18,'',0,0,0,'nein',0,0];
+      const id=Math.max(...data.diary.map(r=>r[0]))+1;data.diary.push([id].concat(row));return {added:[id],rows:[row],kcal:row[5],p:row[6]};},
+    takeKochbuch:(aid,name)=>{const x=(data.kochbuch||[]).find(y=>y.name===name);if(x&&!data.recipes.some(r=>r.name===name))data.recipes.push({name,portions:x.portions,per:x.per,items:x.items});return {name};},
     dropShare:id=>{data.incoming=data.incoming.filter(i=>i.id!==id);return {ok:true};},
     saveSettings:s=>{data.settings=s;return s;},
     saveGoals:g=>{data.goals={kcalDay:g.kcalDay,proteinDay:g.proteinDay,kcalWeek:g.kcalWeek};data.settings.goals2={carbs:g.carbs||0,fat:g.fat||0};return out();},
@@ -4048,6 +4808,10 @@ function connectScreen(){
   $('#tabs').innerHTML='';$('#fab').hidden=true;$('#cbtn').hidden=true;$('#btnMore').hidden=true;$('#btnReload').hidden=true;$('#btnSettings').hidden=true;
   $('#title').textContent='Ernährungstagebuch';
   $('#view').innerHTML=`<div class="card"><h3>App verbinden</h3><p class="small muted" style="margin-top:0">Einmalig: Web-App-URL und Schlüssel aus dem Apps-Script-Editor einfügen. Beides bleibt nur auf diesem Gerät gespeichert.</p>
+    <label class="f"><span>Verbindungslink einfügen</span><input class="in-t" id="cLink" placeholder="https://…#verbinden=…" autocomplete="off"></label>
+    <button class="btn" data-act="connectLink">Mit Link verbinden</button>
+    ${IS_IOS?'<p class="hint">iPhone: Den Link, den du bekommen hast, lange drücken → „Link kopieren“ und hier einfügen. Das ist nur einmal nötig.</p>':''}
+    <div class="rfh" style="margin-top:16px">Oder von Hand</div>
     <label class="f"><span>Web-App-URL</span><input class="in-t" id="cUrl" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off"></label>
     <label class="f"><span>Schlüssel</span><input class="in-t" id="cKey" placeholder="aus dem Ausführungsprotokoll" autocomplete="off"></label>
     <button class="btn" data-act="connect">Verbinden</button>
