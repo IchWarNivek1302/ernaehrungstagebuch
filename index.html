@@ -1236,8 +1236,8 @@ function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{}
 function topTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{},top=navTopOf(s);return tabOrder(s).filter(key=>tabOn(key,s)&&top.includes(key)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='28';
-const MIN_SCRIPT=26;   /* so neu muss Code.gs mindestens sein */
+const APP_VERSION='29';
+const MIN_SCRIPT=28;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf0=new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
@@ -1312,6 +1312,11 @@ function api(url,key,fn,args){
     .then(r=>{if(!r.ok){const er=new Error('Server antwortet nicht ('+r.status+').');er.net=true;throw er;}return r.json();},
           e=>{const er=new Error('Keine Verbindung zum Sheet. Internet an?');er.net=true;throw er;})
     .then(j=>{if(!j.ok)throw new Error(j.error||'Unbekannter Fehler');return j.result;});
+}
+/* wie call(), aber mit Zeitlimit (ms) */
+function callT(ms,fn,...args){
+  let t;const to=new Promise((_,rej)=>{t=setTimeout(()=>rej(new Error('Das Script antwortet nicht (nach '+Math.round(ms/1000)+' s). Bitte prüfen, ob die neue Code.gs bereitgestellt ist, und nochmal versuchen.')),ms);});
+  return Promise.race([call(fn,...args),to]).finally(()=>clearTimeout(t));
 }
 function call(fn,...args){
   if(!LIVE) return new Promise((res,rej)=>setTimeout(()=>{try{res(Demo[fn](...args));}catch(e){rej(e);}},120));
@@ -3727,7 +3732,7 @@ function geminiKeyHtml(){
   return `<p class="small" style="margin:10px 0 6px">Für Gemini brauchst du einen eigenen, kostenlosen Schlüssel von Google (etwa 2 Minuten):</p>
     <ol class="aisteps"><li>Unten auf <b>Schlüssel bei Google holen</b> tippen und mit deinem Google-Konto anmelden.</li><li>Dort <b>API-Schlüssel erstellen</b> (englisch: <i>Create API key</i>) tippen und den Schlüssel kopieren.</li><li>Hier einfügen und speichern.</li></ol>
     <a class="btn ghost" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">Schlüssel bei Google holen</a>
-    <label class="f" style="margin-top:12px"><span>Dein Schlüssel</span><input class="in-t" id="aiKey" autocomplete="off" placeholder="AIza…" spellcheck="false"></label>
+    <label class="f" style="margin-top:12px"><span>Dein Schlüssel</span><input class="in-t" id="aiKey" autocomplete="off" placeholder="AQ.… oder AIza…" spellcheck="false"></label>
     <button class="btn" data-act="aiKeySave">Speichern</button>
     <p class="hint">Gut zu wissen: Beim kostenlosen Zugang hat Google ein Tageslimit und darf die Eingaben zum Verbessern nutzen. Der Schlüssel bleibt in deinem Script und wird nie angezeigt.</p>`;
 }
@@ -3769,7 +3774,7 @@ document.addEventListener('click',ev=>{
   const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
   if(a==='aiKeySave'){const k2=val('aiKey').trim();if(!k2){toast('Bitte den Schlüssel einfügen.',true);return;}
     el.disabled=true;el.textContent='Wird geprüft …';
-    call('setGeminiKey',k2).then(r=>{S.data.aiKey=r.aiKey;vibe();toast('Gespeichert. „Mit KI eintragen“ ist jetzt im Plus-Menü.');const b=document.querySelector('[data-sec=ai] .sec-b');if(b)b.innerHTML=aiSetHtml();const sm=document.querySelector('[data-sec=ai] summary small');if(sm)sm.textContent=aiSub();})
+    callT(60000,'setGeminiKey',k2).then(r=>{S.data.aiKey=r.aiKey;vibe();toast(r.warn?'Gespeichert, aber der Test hat nicht geklappt: '+r.warn+' Probier „Mit KI eintragen“ einfach aus.':'Gespeichert. „Mit KI eintragen“ ist jetzt im Plus-Menü.',!!r.warn);const b=document.querySelector('[data-sec=ai] .sec-b');if(b)b.innerHTML=aiSetHtml();const sm=document.querySelector('[data-sec=ai] summary small');if(sm)sm.textContent=aiSub();})
       .catch(e=>{el.disabled=false;el.textContent='Speichern';toast(e.message||String(e),true);});return;}
   if(a==='aiKeyDel'){call('setGeminiKey','').then(r=>{S.data.aiKey=r.aiKey;toast('Schlüssel entfernt.');const b=document.querySelector('[data-sec=ai] .sec-b');if(b)b.innerHTML=aiSetHtml();const sm=document.querySelector('[data-sec=ai] summary small');if(sm)sm.textContent=aiSub();}).catch(e=>toast(e.message,true));return;}
   if(a==='aiGo'){aiGo(el);return;}
