@@ -1237,8 +1237,8 @@ function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{}
 function topTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{},top=navTopOf(s);return tabOrder(s).filter(key=>tabOn(key,s)&&top.includes(key)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='30';
-const MIN_SCRIPT=29;   /* so neu muss Code.gs mindestens sein */
+const APP_VERSION='31';
+const MIN_SCRIPT=32;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf0=new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
@@ -2794,7 +2794,7 @@ function openShop(){
 /* --- Rezepte: Liste, Bearbeiten, Neu --- */
 function vRezepte(){
   const rs=S.data.recipes||[];
-  let h=`<div class="rtools"><div class="search">${ICON.search}<input id="recQ" placeholder="Rezept oder Zutat suchen" value="${esc(S.recQ||'')}" autocomplete="off"></div><button class="btn rnew" data-act="recNew">${ICON.plus}<span class="l1">Neues Rezept</span><span class="l2">Neu</span></button></div>`;
+  let h=`<div class="rtools"><div class="search">${ICON.search}<input id="recQ" placeholder="Rezept oder Zutat suchen" value="${esc(S.recQ||'')}" autocomplete="off"></div><button class="btn rnew" data-act="recNew">${ICON.plus}<span class="l1">Neues Rezept</span><span class="l2">Neu</span></button>${typeof canAI32==='function'&&canAI32()?`<button class="btn ghost rnew" data-act="aiRecNew" title="Rezept mit KI anlegen">✨<span class="l1">Mit KI</span></button>`:''}</div>`;
   h+=incomingHtml('rinc');
   h+=rTabsHtml();
   if(S.rtab==='kb'&&canKB())return h+kbView();
@@ -3746,20 +3746,33 @@ function aiCands(text){
   return out.slice(0,50).map(f=>[f[0],f[1],f[2],f[3],f[4],f[5],f[6],f[7],f[8],f[9],f[11],f[12],f[13],f[14]]);
 }
 function aiHtml(){
-  const A=S.add,P=A.aiImg;
-  return `<button class="back" data-act="addback">${ICON.back}Zurück</button><h2>Mit KI eintragen</h2>
-    <p class="sub">Schreib einfach, was du gegessen hast, gern mit Mengen. Oder wähl ein Foto. Die KI sucht zuerst in deinen Lebensmitteln.</p>
-    <label class="f"><span>Was hast du gegessen?</span><textarea class="in-t" id="aiText" rows="3" placeholder="z. B. 2 Scheiben Vollkornbrot mit Butter und Gouda, 1 Kaffee mit Milch">${esc(A.aiText!==undefined?A.aiText:A.q)}</textarea></label>
+  const A=S.add,P=A.aiImg,rec=A.aiMode==='rec';
+  return `<button class="back" data-act="addback">${ICON.back}Zurück</button><h2>${rec?'Rezept mit KI anlegen':'Mit KI eintragen'}</h2>
+    <div class="seg2" style="margin:4px 0 10px"><button class="${rec?'':'on'}" data-act="aiMode" data-v="eat">Essen eintragen</button><button class="${rec?'on':''}" data-act="aiMode" data-v="rec">Rezept anlegen</button></div>
+    <p class="sub">${rec?'Zutaten mit Mengen und Portionen hinschreiben, oder ein Foto vom Rezept. Du siehst erst eine Vorschau, dann speicherst du.':'Schreib einfach, was du gegessen hast, gern mit Mengen. Oder wähl ein Foto. Die KI sucht zuerst in deinen Lebensmitteln und Rezepten.'}</p>
+    <label class="f"><span>${rec?'Rezept':'Was hast du gegessen?'}</span><textarea class="in-t" id="aiText" rows="${rec?5:3}" placeholder="${rec?'z. B. Chili, 6 Portionen: 500 g Rinderhack, 2 Dosen Kidneybohnen, 1 Dose Mais, 2 Paprika, 1 Zwiebel':'z. B. 2 Scheiben Vollkornbrot mit Butter und Gouda, 1 Kaffee mit Milch'}">${esc(A.aiText!==undefined?A.aiText:A.q)}</textarea></label>
     ${P?`<div class="ph-prev" style="background-image:url('${P}');height:160px"></div><button class="linkbtn" data-act="aiImgDel">Foto entfernen</button>`:`<label class="ph-pick" style="padding:12px">${ICON.camera}<span>Foto dazu (optional)</span><input type="file" accept="image/*" id="aiFile" hidden></label>`}
+    ${rec?`<label class="sw" style="margin-top:6px"><div><b>Gleich 1 Portion eintragen</b><span>Nach dem Speichern als gegessen ins Tagebuch</span></div><span class="tg"><input type="checkbox" id="aiEat" ${A.aiEat?'checked':''}><i></i></span></label>`:''}
     ${mealPick(A.meal)}${whenFields(A.date,A.time,'ai')}
-    <button class="btn" data-act="aiGo" id="aiGo">✨ Eintragen lassen</button>`;
+    <button class="btn" data-act="aiGo" id="aiGo">${rec?'✨ Rezept erstellen':'✨ Eintragen lassen'}</button>`;
 }
+/* passende eigene Rezepte für die KI (Name, Portionen, pro Portion) */
+function aiRecs(text){
+  const rs=(S.data.recipes||[]).filter(r=>r.items&&r.items.length);if(!rs.length)return [];
+  const w=norm(String(text||'')).split(/[^a-z0-9äöüß]+/).filter(x=>x.length>2);
+  let pick=w.length?rs.filter(r=>{const n=norm(r.name);return w.some(x=>n.includes(x)||n.includes(stem(x)));}):[];
+  if(!w.length||(S.add&&S.add.aiImg))pick=pick.concat(rs.filter(r=>!pick.includes(r)));   // Foto: alle Rezepte zur Auswahl
+  return pick.slice(0,40).map(r=>({name:r.name,portions:r.portions||1,kcal:r.per.kcal,p:r.per.p}));
+}
+const RE_REZ=/(leg|anleg|erstell|speicher|neu)\w*\s.*rezept|rezept\w*\s.*(an ?leg|erstell|speicher)|^\s*rezept\b/i;
 async function aiGo(btn){
   const A=S.add,text=val('aiText').trim();A.aiText=text;
   if(!text&&!A.aiImg){toast('Bitte schreiben, was du gegessen hast, oder ein Foto wählen.',true);return;}
+  if(A.aiMode!=='rec'&&RE_REZ.test(text)){A.aiMode='rec';A.aiEat=/eintrag|trag\w*\s+(es\s+|das\s+|mir\s+)?(gleich\s+)?ein|gegessen|hab\w*\s.*gegessen/i.test(text);}
+  if(A.aiMode==='rec'){const e=$('#aiEat');if(e)A.aiEat=e.checked;return aiRecipeGo(btn,text);}
   btn.disabled=true;btn.innerHTML='<span class="sp"></span> KI rechnet …';
   try{await loadFoods().catch(()=>{});}catch(e){}
-  const req={text,meal:pickedMeal(),date:val('aiDate')||A.date,time:val('aiTime')||A.time,cands:aiCands(text)};
+  const req={text,meal:pickedMeal(),date:val('aiDate')||A.date,time:val('aiTime')||A.time,cands:aiCands(text),recs:aiRecs(text)};
   if(A.aiImg){const m=A.aiImg.match(/^data:([^;]+);base64,(.*)$/);if(m)req.img={mime:m[1],b64:m[2]};}
   callT(100000,'aiEntry',req).then(r=>{
     closeSheet();vibe();
@@ -3845,6 +3858,129 @@ document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act=ios
   if(el.dataset.act==='iosHide'){try{localStorage.setItem('et-ios-hint','1');}catch(e){}render();return;}
   openSheet(`<h2>Auf dem iPhone als App</h2><ol class="aisteps"><li>Unten in Safari auf <b>Teilen</b> tippen (Quadrat mit Pfeil nach oben).</li><li><b>„Zum Home-Bildschirm“</b> wählen, dann <b>Hinzufügen</b>.</li><li>Ab jetzt die App über das neue Symbol öffnen.</li></ol>
     <p class="hint">Fragt die App nach dem Öffnen nach einer Verbindung: den Verbindungslink, den du bekommen hast, lange drücken → „Link kopieren“ und dort einfügen. Das ist nur einmal nötig.</p>`);});
+
+
+/* ================= v31: Rezept anlegen, Nachpflegen und Packungsfotos mit Gemini (Script ab 32) ================= */
+const canAI32=()=>hasAI()&&(DEMO||(+S.data.scriptVersion||0)>=32);
+const imgPart=u=>{const m=String(u||'').match(/^data:([^;]+);base64,(.*)$/);return m?{mime:m[1],b64:m[2]}:null;};
+const aiLimitMsg=()=>toast('Gemini ist heute ausgelastet. Wieder verfügbar '+geminiReset()+'.',true);
+async function aiRecipeGo(btn,text){
+  const A=S.add;
+  if(!canAI32()){toast('Dafür bitte zuerst das Script aktualisieren (Code.gs).',true);return;}
+  A.date=val('aiDate')||A.date;A.time=val('aiTime')||A.time;A.meal=pickedMeal();
+  btn.disabled=true;btn.innerHTML='<span class="sp"></span> KI stellt das Rezept zusammen …';
+  try{await loadFoods().catch(()=>{});}catch(e){}
+  const req={text,cands:aiCands(text)};if(A.aiImg)req.img=imgPart(A.aiImg);
+  callT(110000,'aiRecipe',req).then(r=>{
+    if(r.limit){btn.disabled=false;btn.textContent='✨ Rezept erstellen';aiLimitMsg();return;}
+    A.aiRec=r;openSheet(aiRecHtml());vibe();
+  }).catch(e=>{btn.disabled=false;btn.textContent='✨ Rezept erstellen';toast(e.message||String(e),true);});
+}
+function aiRecHtml(){
+  const r=S.add.aiRec,R=r.rec,dup=(S.data.recipes||[]).some(x=>x.name.toLowerCase()===R.name.toLowerCase());
+  return `<button class="back" data-act="aiRecBack">${ICON.back}Zurück</button><h2>Rezept prüfen</h2>
+    <label class="f"><span>Name</span><input class="in-t" id="arName" value="${esc(R.name)}"></label>
+    ${dup?'<p class="hint" style="color:var(--bad)">Ein Rezept mit diesem Namen gibt es schon. Bitte umbenennen.</p>':''}
+    <label class="f"><span>Portionen</span><input class="in-t" id="arP" inputmode="numeric" value="${R.portions}" style="max-width:110px"></label>
+    <div class="ing">${R.items.map(x=>`<div><span>${esc(x.name)} <small class="muted">${esc(x.amount.replace(' · geschätzt',''))}</small>${/geschätzt/.test(x.amount)?' <small title="Werte geschätzt">⚠︎</small>':''}</span><span class="num">${k(x.kcal)} kcal</span></div>`).join('')}</div>
+    <div class="nut" id="arNut" style="margin-top:10px">${aiRecPer(R.portions)}</div>
+    ${r.unsure&&r.unsure.length?`<p class="hint">⚠︎ Geschätzt (nicht in deinen Lebensmitteln): ${esc(r.unsure.join(', '))}. Kannst du später im Rezept anpassen.</p>`:''}
+    ${r.ins&&r.ins.steps.length?`<p class="hint">Zubereitung mit ${r.ins.steps.length} Schritten wird mitgespeichert.</p>`:''}
+    <label class="sw"><div><b>Gleich 1 Portion eintragen</b><span>${esc(MEAL_SHORT[S.add.meal]||S.add.meal||'')}${S.add.date&&S.add.date!==today()?' · '+shortDate(S.add.date):''}</span></div><span class="tg"><input type="checkbox" id="arEat" ${S.add.aiEat?'checked':''}><i></i></span></label>
+    <button class="btn" data-act="aiRecSave">Rezept speichern</button>`;
+}
+function aiRecPer(P){const R=S.add.aiRec.rec,s=key=>R.items.reduce((a,x)=>a+(+x[key]||0),0),p=Math.max(1,+P||1);
+  return `<div><small>kcal/Port.</small><b class="num">${k(s('kcal')/p)}</b></div><div><small>Eiweiß</small><b class="num">${g1(s('p')/p)}</b></div><div><small>KH</small><b class="num">${g1(s('c')/p)}</b></div><div><small>Fett</small><b class="num">${g1(s('f')/p)}</b></div>`;}
+document.addEventListener('input',ev=>{if(ev.target.id!=='arP')return;const n=$('#arNut');if(n&&S.add.aiRec)n.innerHTML=aiRecPer(parseInt(ev.target.value,10));});
+function aiRecSave(){
+  const A=S.add,r=A.aiRec,name=val('arName').trim(),P=parseInt(val('arP'),10);
+  if(!name){toast('Bitte einen Namen angeben.',true);return;}
+  if(!(P>0)){toast('Bitte die Portionen angeben.',true);return;}
+  if((S.data.recipes||[]).some(x=>x.name.toLowerCase()===name.toLowerCase())){toast('Ein Rezept „'+name+'“ gibt es schon. Bitte umbenennen.',true);return;}
+  const its=r.rec.items,sm=f=>its.reduce((a,x)=>a+(+x[f]||0),0);
+  const rec={name,portions:P,per:{kcal:Math.round(sm('kcal')/P),p:r1(sm('p')/P),c:r1(sm('c')/P),f:r1(sm('f')/P)},items:its},ins=r.ins?Object.assign({title:name},r.ins):null,eat=$('#arEat')&&$('#arEat').checked;
+  commit('saveRecipe',[rec,null,ins]);
+  if(eat){const rows=recipeEntryRows(rec,1,A.date||today(),A.time||nowHM(),A.meal||mealByTime(nowHM()));doneAdd(commit('addEntries',[rows]),A.date||today(),'Rezept gespeichert und eingetragen: '+name);}
+  else{closeSheet();toast('Rezept gespeichert: '+name);render();}
+  A.aiRec=null;A.aiText='';
+}
+
+/* --- Nachpflegen mit Gemini --- */
+/* gegessene Gramm aus der Mengenangabe; bei Rezeptzeilen „1 von 6 Portionen (Anteil von 500 g)“ nur der Anteil */
+function eatenGrams(a){a=String(a||'');const num=x=>+String(x).replace(',','.');
+  const rp=a.match(/([\d,.]+)\s*von\s*([\d,.]+)\s*Portionen\s*\(Anteil von ([^)]*)\)/);
+  if(rp){const g=rp[3].match(/(\d+(?:[.,]\d+)?)\s*(g|ml)\b/);return g?r1(num(g[1])*num(rp[1])/num(rp[2])):null;}
+  const gm=a.match(/(\d+(?:[.,]\d+)?)\s*(g|ml)\b/);return gm?num(gm[1]):null;}
+function fixItems(){
+  return unsureList().slice().reverse().slice(0,15).map(e=>{const q=String(e.name).replace(/\s*\([^)]*\)\s*/g,' ').trim();
+    return {row:e.row,date:e.date,name:e.name,amount:e.amount,pre:isPrelim(e),g:eatenGrams(e.amount),cands:(S.foods?searchFoods(q).slice(0,8):[]).map(f=>[f[0],f[1],f[2],f[3],f[4],f[5],f[6],f[7],f[8],f[9],f[11],f[12],f[13],f[14]])};});
+}
+function openNachpflegenAI(){
+  const u=unsureList(),pre=u.filter(isPrelim).length,inc=u.length-pre,list=u.slice().reverse().slice(0,25);
+  S.fixList=list;
+  openSheet(`<h2>Unsichere Werte nachpflegen</h2>
+    <p class="sub">${pre?pre+' '+(pre===1?'Eintrag ist':'Einträge sind')+' vorläufig':''}${pre&&inc?', ':''}${inc?inc+' '+(inc===1?'Eintrag hat':'Einträge haben')+' fehlende Zusatzwerte':''}. Gemini sucht passende Einträge in deinen Lebensmitteln und ergänzt fehlende Werte.</p>
+    <div class="ing fixl" style="max-height:240px;overflow:auto">${list.map((e,i)=>`<div><span>${esc(e.name)} <small class="muted">${shortDate(e.date)}</small></span>${isPrelim(e)?`<label class="mini" title="Nährwerttabelle fotografieren">📷<input type="file" accept="image/*" capture="environment" data-lblfor="${i}" hidden></label>`:'<span class="small muted">ergänzen</span>'}</div>`).join('')}</div>
+    <button class="btn" data-act="aiFixGo" id="aiFixGo">✨ Mit Gemini nachpflegen</button>
+    <p class="hint">📷 bei einem Eintrag: Nährwerttabelle der Packung fotografieren, dann stimmen die Werte genau.</p>
+    ${claudeOn()?`<button class="btn ghost" style="margin-top:8px" data-act="nachClaude">Stattdessen Claude fragen</button>`:''}`);
+}
+async function aiFixGo(btn){
+  btn.disabled=true;btn.innerHTML='<span class="sp"></span> Gemini prüft …';
+  try{await loadFoods().catch(()=>{});}catch(e){}
+  callT(110000,'aiFix',{items:fixItems()}).then(r=>{
+    if(r.limit){btn.disabled=false;btn.textContent='✨ Mit Gemini nachpflegen';aiLimitMsg();return;}
+    closeSheet();vibe();
+    const msg=(r.fixed?r.fixed+' nachgepflegt':'Nichts Passendes gefunden')+(r.still?', '+r.still+' noch offen (📷 Packung hilft)':'')+'.';
+    (LIVE?resync():Promise.resolve()).then(()=>{S.unsure=null;render();toast(msg);});
+  }).catch(e=>{btn.disabled=false;btn.textContent='✨ Mit Gemini nachpflegen';toast(e.message||String(e),true);});
+}
+
+/* --- Nährwerttabelle fotografieren --- */
+async function aiLabelRead(file,hint){
+  if(!canAI32()){toast('Dafür bitte zuerst das Script aktualisieren (Code.gs).',true);return null;}
+  toast('Gemini liest die Nährwerttabelle …');
+  const u=await shrinkImage(file,1400,0.85);
+  const r=await callT(80000,'aiLabel',{img:imgPart(u),hint:hint||''});
+  if(r.limit){aiLimitMsg();return null;}
+  if(!r.ok){toast('Auf dem Foto war keine Nährwerttabelle lesbar. Bitte näher ran und scharf fotografieren.',true);return null;}
+  vibe();return r.food;
+}
+document.addEventListener('change',async ev=>{
+  const t=ev.target;if(!t.files||!t.files[0])return;
+  if(t.id==='lblFile'){const f=t.files[0];t.value='';
+    try{const food=await aiLabelRead(f,val('mWhat'));if(!food)return;const A=S.add;
+      A.food=food;A.scanNew='label';A.portion=food[9]?'1 '+(food[8]||'Portion'):'';A.g=food[9]||100;A.step='food';drawAdd();
+      toast('Abgelesen: '+food[0]+' · '+k(food[2])+' kcal/100 g. Menge wählen, dann wird es auch in deinen Lebensmitteln gespeichert.');}
+    catch(e){toast(e.message||String(e),true);}return;}
+  if(t.dataset&&t.dataset.lblfor!==undefined){const e=(S.fixList||[])[+t.dataset.lblfor],f=t.files[0];t.value='';if(!e)return;
+    try{const food=await aiLabelRead(f,String(e.name).replace(/\s*\([^)]*\)/g,''));if(!food)return;S.lblFix={e,food};openSheet(lblFixHtml());}
+    catch(err){toast(err.message||String(err),true);}}
+});
+function lblFixHtml(){
+  const {e,food}=S.lblFix,g=eatenGrams(e.amount)||food[9]||100;
+  return `<h2>Werte übernehmen</h2><p class="sub">Für „${esc(e.name)}“ (${shortDate(e.date)}). Abgelesen: <b>${esc(food[0])}${food[1]?' ('+esc(food[1])+')':''}</b>, pro 100 g ${k(food[2])} kcal, ${g1(food[3])} g Eiweiß.</p>
+    <label class="f"><span>Gegessene Menge (g)</span><input class="in-t" id="lfG" inputmode="decimal" value="${String(r1(g)).replace('.',',')}" style="max-width:140px"></label>
+    <label class="sw"><div><b>Auch in meinen Lebensmitteln speichern</b><span>Dann findest du es beim nächsten Mal direkt</span></div><span class="tg"><input type="checkbox" id="lfDb" checked><i></i></span></label>
+    <button class="btn" data-act="lblFixSave">Übernehmen</button>`;
+}
+function lblFixSave(){
+  const {e,food}=S.lblFix,g=parseFloat(val('lfG').replace(',','.'));if(!(g>0)){toast('Bitte die Menge in Gramm angeben.',true);return;}
+  const row=foodRow(food,g,e.meal,e.date,e.time,'');row[4]=String(r1(g)).replace('.',',')+' g (Packung)';
+  if($('#lfDb')&&$('#lfDb').checked)commit('addFood',[foodSheetRow(food)]);
+  call('replaceEntry',{row:e.row,date:e.date,name:e.name},row).then(()=>{closeSheet();S.lblFix=null;(LIVE?resync():Promise.resolve()).then(()=>{if(!LIVE){const i=S.data.diary.findIndex(r=>r[0]===e.row);if(i>=0){S.data.diary[i]=[e.row].concat(row);index();}}S.unsure=null;render();toast('Übernommen: '+food[0]);});})
+    .catch(err=>toast(err.message||String(err),true));
+}
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+  if(a==='aiMode'){S.add.aiText=val('aiText');const e=$('#aiEat');if(e)S.add.aiEat=e.checked;S.add.aiMode=el.dataset.v;openSheet(aiHtml());return;}
+  if(a==='aiRecBack'){openSheet(aiHtml());return;}
+  if(a==='aiRecSave'){aiRecSave();return;}
+  if(a==='aiFixGo'){aiFixGo(el);return;}
+  if(a==='nachClaude'){openNachpflegen(true);return;}
+  if(a==='lblFixSave'){lblFixSave();return;}
+  if(a==='aiRecNew'){openAdd(null);S.add.step='ai';S.add.aiMode='rec';S.add.aiText='';drawAdd();return;}
+});
 /* ================= Training (v27, Script ab 25) =================
    Pläne frei anlegen, auf-/zuklappen, sortieren (Griff ⋮⋮ ziehen), per Wischen löschen.
    Geräte kommen aus der gemeinsamen Datenbank (für alle an deinem Script), mit Foto und eigenen Polster-Namen.
@@ -4151,12 +4287,13 @@ function drawAdd(){
   } else if(A.step==='manual'){
     openSheet(`<button class="back" data-act="addback">${ICON.back}Zurück</button>
       <h2>Selbst eintragen</h2><p class="sub">Für Sachen mit bekannten Werten, z. B. von der Verpackung.</p>
+      ${typeof canAI32==='function'&&canAI32()?`<label class="aibtn top" style="cursor:pointer">📷<span><b>Nährwerttabelle fotografieren</b><small>Gemini liest die Werte ab und speichert das Produkt</small></span><input type="file" accept="image/*" capture="environment" id="lblFile" hidden></label>`:''}
       <label class="f"><span>Was</span><input class="in-t" id="mWhat" value="${esc(A.q)}"></label>
       <label class="f"><span>Menge</span><input class="in-t" id="mAmt" placeholder="z. B. 1 Riegel (45 g)"></label>
       <div class="row4"><label class="f"><span>kcal</span><input class="in-t" inputmode="decimal" id="mK"></label><label class="f"><span>Eiweiß</span><input class="in-t" inputmode="decimal" id="mP"></label>
       <label class="f"><span>KH</span><input class="in-t" inputmode="decimal" id="mC"></label><label class="f"><span>Fett</span><input class="in-t" inputmode="decimal" id="mF"></label></div>
       ${mealPick(A.meal)}${whenFields(A.date,A.time,'m')}
-      <button class="btn" data-act="saveManual">Ins Tagebuch</button><p class="hint">Zucker, Ballaststoffe, Salz usw. ergänzt Claude beim nächsten Mal.</p>`);
+      <button class="btn" data-act="saveManual">Ins Tagebuch</button><p class="hint">Zucker, Ballaststoffe, Salz usw. lassen sich später über „nachpflegen“ ergänzen.</p>`);
   } else if(A.step==='claude'){
     const inb=(S.data.inbox||[]).length;
     openSheet(`<button class="back" data-act="addback">${ICON.back}Zurück</button>
@@ -4404,7 +4541,8 @@ function queueAuftrag(){
   if((S.data.inbox||[]).length>=10){toast('Der Eingang ist voll.',true);return;}
   commit('addInbox',[{what:AUFTRAG,amount:'',meal:'',date:today(),time:nowHM()}]);
 }
-function openNachpflegen(){
+function openNachpflegen(forceClaude){
+  if(!forceClaude&&typeof geminiPrimary==='function'&&geminiPrimary()&&canAI32()){openNachpflegenAI();return;}
   const u=unsureList(),pre=u.filter(isPrelim).length,inc=u.length-pre;
   openSheet(`<h2>Von Claude nachpflegen lassen</h2>
     <p class="sub">${pre?pre+' '+(pre===1?'Eintrag ist':'Einträge sind')+' als vorläufig markiert':''}${pre&&inc?', ':''}${inc?inc+' '+(inc===1?'Eintrag hat':'Einträge haben')+' fehlende Werte (z. B. Salz oder Süßstoff)':''}. Claude schlägt sie nach und schätzt, was nicht auffindbar ist.</p>
@@ -4793,6 +4931,10 @@ const Demo=(()=>{
     deleteDevice:id=>{data.training.devices=data.training.devices.filter(x=>x.id!==id);return {devices:data.training.devices};},
     savePlans:pl=>({ok:true}),logTraining:e=>({ok:true}),
     aiBarcode:img=>({ean:'4001234567890'}),
+    aiRecipe:req=>({rec:{name:'Chili con Carne',portions:6,items:[{name:'Rinderhackfleisch',amount:'500 g',kcal:1250,p:100,c:0,f:95},{name:'Kidneybohnen (Dose)',amount:'2 Dosen (480 g)',kcal:480,p:34,c:67,f:2},{name:'Mais (Dose)',amount:'1 Dose (285 g)',kcal:225,p:7,c:44,f:3},{name:'Paprika',amount:'2 Stück (300 g)',kcal:60,p:3,c:12,f:1},{name:'Tomaten passiert',amount:'500 g · geschätzt',kcal:150,p:7,c:25,f:1}]},ins:{ingredients:[],steps:['Hack anbraten','Gemüse dazu','30 Minuten köcheln'],notes:[]},per:{kcal:361,p:25.2,c:24.7,f:17},unsure:['Tomaten passiert']}),
+    aiFix:req=>{let n=0;(req.items||[]).forEach(it=>{const i=data.diary.findIndex(r=>r[0]===it.row);if(i>=0&&it.pre&&it.cands&&it.cands[0]){data.diary[i][5]=data.diary[i][5].replace(/,?\s*KI-Schätzung/,'').replace(/\s*vorläufig/,'')+', KI geprüft';n++;}});return {fixed:n,still:(req.items||[]).length-n};},
+    aiLabel:req=>({ok:true,food:['Skyr Natur','Arla',63,11,4,4,0.2,0,'Becher',450,'',0.1,'nein',0,0]}),
+    replaceEntry:(it,row)=>{const i=data.diary.findIndex(r=>r[0]===it.row);if(i>=0){row=row.slice();row[0]=data.diary[i][1];row[1]=data.diary[i][2];row[2]=data.diary[i][3];data.diary[i]=[it.row].concat(row);}return {ok:true};},
     setGeminiKey:k=>{data.aiKey=!!k;return {aiKey:data.aiKey};},
     aiEntry:req=>{const c=(req.cands||[])[0],g=c&&c[9]?c[9]:100,row=[req.date,req.time,req.meal,c?c[0]:(req.text||'Foto').slice(0,40),c?(c[8]?'1 '+c[8]+' ('+g+' g, KI)':g+' g, KI'):'1 Portion (300 g), KI-Schätzung vorläufig',c?Math.round(c[2]*g/100):450,c?r1(c[3]*g/100):20,c?r1(c[4]*g/100):40,c?r1(c[6]*g/100):18,'',0,0,0,'nein',0,0];
       const id=Math.max(...data.diary.map(r=>r[0]))+1;data.diary.push([id].concat(row));return {added:[id],rows:[row],kcal:row[5],p:row[6]};},
