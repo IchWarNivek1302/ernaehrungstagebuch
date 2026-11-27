@@ -1361,8 +1361,11 @@ body.dnd-on .card.meal:not(.dz-src) .empty::after{content:' · hierher ziehen';c
 /* ================= v43: Extras ================= */
 /* Serie: ganz dezent neben „Mehr Werte“ */
 .mvw{position:relative}
-.streak{position:absolute;left:-4px;top:6px;display:inline-flex;align-items:center;gap:3px;padding:4px 7px;border-radius:9px;font-size:12px;font-weight:650;color:var(--faint);background:none;border:0;cursor:pointer;line-height:1}
-.streak svg{width:12px;height:12px;color:color-mix(in srgb,var(--m1) 65%,var(--faint))}
+.streaks{position:absolute;left:-4px;top:4px;display:flex;gap:2px}
+.streak{display:inline-flex;align-items:center;gap:3px;padding:4px 7px;border-radius:9px;font-size:12px;font-weight:650;color:var(--faint);background:none;border:0;cursor:pointer;line-height:1}
+.streak svg{width:12px;height:12px}
+.streak.st-g svg{color:color-mix(in srgb,var(--m1) 65%,var(--faint))}
+.streak.st-t svg{color:color-mix(in srgb,var(--prot) 60%,var(--faint))}
 .streak:hover{background:var(--soft);color:var(--muted)}
 
 /* Jahresübersicht */
@@ -1423,6 +1426,7 @@ body.dnd-on .card.meal:not(.dz-src) .empty::after{content:' · hierher ziehen';c
 .wr-facts>div{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--muted)}
 .wr-facts svg{width:18px;height:18px;flex:none;color:var(--brand)}
 .wr-facts .wr-st svg{color:color-mix(in srgb,var(--m1) 70%,var(--faint))}
+.wr-facts .wr-stt svg{color:color-mix(in srgb,var(--prot) 70%,var(--faint))}
 .wr-facts b{color:var(--ink)}
 @media (max-width:360px){.wr-hero{flex-direction:column}.wr-bars{width:100%}}
 
@@ -1435,6 +1439,33 @@ body.dnd-on .card.meal:not(.dz-src) .empty::after{content:' · hierher ziehen';c
 .mile-c b{font-size:21px}
 .mile-c span{font-size:13.5px;color:var(--muted)}
 .mile.big .mile-i{background:color-mix(in srgb,var(--m1) 30%,var(--card))}
+
+/* v44: Rückblick – Rezepte mit Sternen, Beschwerden, Teilen */
+.wr-h{margin:18px 0 6px;font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.wr-hint{margin:0 0 8px;font-size:13px;color:var(--faint)}
+.wr-recs{display:flex;flex-direction:column;gap:2px}
+.wr-rec{display:flex;align-items:center;gap:12px;padding:8px 6px;border-radius:12px}
+.wr-rec.new{background:color-mix(in srgb,var(--m1) 9%,var(--card))}
+.wr-rec .pthumb{width:44px;height:44px;flex:0 0 44px;border-radius:11px;background-size:cover;background-position:center}
+.wr-noimg{display:grid;place-items:center;background:color-mix(in srgb,var(--ph) 22%,var(--card))!important;color:color-mix(in srgb,var(--ph) 70%,var(--ink))}
+.wr-noimg svg{width:22px;height:22px;opacity:.5}
+.wr-rn{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.wr-rn b{font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wr-rn small{font-size:12px;color:var(--faint)}
+.wr-rec .stars{flex:none}
+.wr-rec .stars .st{font-size:21px;padding:2px 1px}
+.wr-comps{display:flex;flex-direction:column;gap:6px}
+.wr-comp{display:flex;align-items:center;gap:10px;font-size:14px;padding:8px 12px;border-radius:12px;background:color-mix(in srgb,var(--bad) 8%,var(--card))}
+.wr-cd{color:var(--muted);font-size:12.5px;min-width:64px}
+.wr-comp b{flex:1;min-width:0}
+.wr-cs{font-weight:700;color:var(--bad)}
+.wr-sus{margin-top:8px;padding:12px 14px;border-radius:14px;background:var(--soft);display:flex;flex-direction:column;gap:5px;font-size:13.5px;color:var(--muted)}
+.wr-sus>b{color:var(--ink);font-size:14px}
+.wr-sx em{font-style:normal;font-weight:650;color:var(--ink)}
+.wr-sus small{color:var(--faint);font-size:12px;margin-top:2px}
+.wr-sus .linkbtn{align-self:flex-start;margin:2px 0 0}
+.wr-share{margin-top:18px;display:flex;align-items:center;justify-content:center;gap:8px}
+.wr-share svg{width:18px;height:18px}
 </style>
 </head>
 <body>
@@ -1526,7 +1557,7 @@ function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{}
 function topTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{},top=navTopOf(s);return tabOrder(s).filter(key=>tabOn(key,s)&&top.includes(key)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='43';
+const APP_VERSION='44';
 const MIN_SCRIPT=37;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -5012,13 +5043,19 @@ const inGoal=s=>{const d=S.by[s];return !!(d&&d.n&&d.kcal<=goalOn(s).kcalDay);};
 /* ---------- Serie ---------- */
 /* Tage am Stück im kcal-Ziel bis gestern (heute läuft noch); zählt heute mit, sobald heute schon im Ziel ist und gestern auch */
 function streakTo(day){let n=0,s=addDays(day,-1);while(inGoal(s)&&n<400){n++;s=addDays(s,-1);}return n;}
+/* Tage am Stück mit Einträgen bis einschließlich 'day' (ist 'day' noch leer, zählt ab dem Vortag) */
+const hasDay=s=>!!(S.by[s]&&S.by[s].n);
+function trackTo(day){let s=hasDay(day)?day:addDays(day,-1),n=0;while(hasDay(s)&&n<400){n++;s=addDays(s,-1);}return n;}
 function longestStreak(days){let best=0,cur=0;days.forEach(s=>{if(inGoal(s)){cur++;best=Math.max(best,cur);}else cur=0;});return best;}
+const SHARE_ICO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>';
+const PEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
 const FLAME_SPARK='<span class="aistar">✨</span>';
 const FLAME='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.6 2.2c.3 2.6-.8 4.3-2.3 5.9C8.7 9.8 7 11.6 7 14.6A5 5 0 0 0 12 20a5 5 0 0 0 5-5.2c0-1.6-.6-2.9-1.4-4 .1 1.3-.4 2.4-1.4 2.9.4-3.6-.6-8.3-1.6-11.5z"/></svg>';
 function streakHtml(){
   if(!fun().streak||S.day!==today())return '';
-  const n=streakTo(today());if(n<2)return '';
-  return `<button class="streak" data-act="streakInfo" data-n="${n}" title="${n} Tage am Stück im kcal-Ziel" aria-label="${n} Tage am Stück im kcal-Ziel">${FLAME}<span class="num">${n}</span></button>`;
+  const t=trackTo(today()),g=streakTo(today());if(t<2&&g<2)return '';
+  const b=(cls,n,ico,txt)=>`<button class="streak ${cls}" data-act="streakInfo" data-k="${cls}" data-n="${n}" title="${n} ${txt}" aria-label="${n} ${txt}">${ico}<span class="num">${n}</span></button>`;
+  return `<span class="streaks">${t>=2?b('st-t',t,PEN,'Tage am Stück eingetragen'):''}${g>=2?b('st-g',g,FLAME,'Tage am Stück im kcal-Ziel'):''}</span>`;
 }
 
 /* ---------- Jahresübersicht ---------- */
@@ -5084,9 +5121,9 @@ function wrHtml(mon){
   tiles.push(['Eiweiß-Ziel erreicht',`${x.inP}<span>/${x.used.length||7}</span>`]);
   tiles.push(['Ø kcal pro Tag',x.used.length?k(x.avgK):'–',x.prevAvgK!==null&&x.used.length?((x.avgK<=x.prevAvgK?'−':'+')+k(Math.abs(x.avgK-x.prevAvgK))+' zur Vorwoche'):'']);
   tiles.push(['Ø Eiweiß pro Tag',x.used.length?g1(x.avgP)+' g':'–']);
-  if(x.w0!==null&&x.w1!==null&&mods().gewicht)tiles.push(['Gewicht',nf1.format(x.w1)+' kg',(x.w1-x.w0<=0?'−':'+')+nf1.format(Math.abs(x.w1-x.w0))+' kg']);
+  if(x.w0!==null&&x.w1!==null&&mods().gewicht)tiles.push(['Gewicht',nf1.format(x.w1)+' kg',sgn(x.w1-x.w0)+' diese Woche']);
   if(x.trained!==null)tiles.push(['Training',x.trained+'×','trainiert']);
-  const st=fun().streak?streakTo(addDays(sun,1)):0;
+  const st=fun().streak?streakTo(addDays(sun,1)):0,stT=fun().streak?trackTo(sun):0;
   const best=x.used.slice().sort((a,b)=>{const sc=s=>(inGoal(s)?1:0)+(S.by[s].p>=goalOn(s).proteinDay?1:0)-Math.abs(S.by[s].kcal-goalOn(s).kcalDay*.95)/goalOn(s).kcalDay;return sc(b)-sc(a);})[0];
   const topP=x.used.length?topSources(x.used,'p',1)[0]:null;
   return `<div class="wr"><div class="wr-top"><small>Wochenrückblick · KW ${isoWeek(mon)} · ${shortDate(mon)} bis ${shortDate(sun)}</small><h2>${h1}</h2><p>${h2}</p></div>
@@ -5094,8 +5131,11 @@ function wrHtml(mon){
     <div class="wr-tiles">${tiles.map(([l,v,sub])=>`<div><small>${l}</small><b class="num">${v}</b>${sub?`<em>${sub}</em>`:''}</div>`).join('')}</div>
     <div class="wr-facts">${best?`<div>${ICON.check||'✓'}<span>Bester Tag: <b>${DAYS[wd(best)]}</b>, ${k(S.by[best].kcal)} kcal · ${g1(S.by[best].p)} g Eiweiß</span></div>`:''}
       ${topP?`<div>${ICON.rezepte}<span>Meiste Eiweiß: <b>${esc(topP[0])}</b> (${g1(topP[1])} g)</span></div>`:''}
-      ${st>=2?`<div class="wr-st">${FLAME}<span>Serie läuft: <b>${st} Tage</b> am Stück im kcal-Ziel</span></div>`:''}</div>
-    <div class="row2" style="margin-top:16px"><button class="btn ghost" data-act="wrWeek" data-mon="${mon}">Woche ansehen</button><button class="btn" data-act="wrClose">Schließen</button></div></div>`;
+      ${stT>=2?`<div class="wr-stt">${PEN}<span><b>${stT} Tage</b> am Stück eingetragen</span></div>`:''}
+      ${st>=2?`<div class="wr-st">${FLAME}<span><b>${st} Tage</b> am Stück im kcal-Ziel</span></div>`:''}</div>
+    <div id="wrRecs">${wrRecHtml(mon)}</div>${wrCompHtml(mon)}
+    <button class="btn ghost wr-share" data-act="wrShare" data-mon="${mon}">${SHARE_ICO}Rückblick teilen</button>
+    <div class="row2" style="margin-top:10px"><button class="btn ghost" data-act="wrWeek" data-mon="${mon}">Woche ansehen</button><button class="btn" data-act="wrClose">Schließen</button></div></div>`;
 }
 function openWeekReview(mon){
   openSheet(wrHtml(mon));
@@ -5107,16 +5147,102 @@ function wrAuto(){
   if(!S.data||S.wrDone||!fun().weekReview)return;
   if(DEMO&&!window.WR_TEST)return;
   const mon=monday(today()),last=addDays(mon,-7);let seen=null;try{seen=localStorage.getItem('et-wr');}catch(e){}
-  if(seen===mon){S.wrDone=true;return;}
+  if(seen===mon||S.data.settings.wrSeen===mon){S.wrDone=true;return;}
   const x=wrData(last);if(x.used.length<2){S.wrDone=true;return;}
   if($('#sheet.on')||$('#incpop')||$('#intro')||$('#wrpop'))return;   /* später nochmal beim nächsten Zeichnen */
   S.wrDone=true;
   const el=document.createElement('div');el.id='wrpop';el.className='incpop wrpop';el.setAttribute('role','dialog');
   el.innerHTML=`<div class="incpop-i">${ICON.woche||ICON.check}</div><div class="incpop-t"><b>Wochenrückblick KW ${isoWeek(last)} ansehen?</b><span>${x.inK} von ${x.used.length} Tagen im kcal-Ziel · Ø ${k(x.avgK)} kcal</span></div>
     <div class="incpop-a"><button class="linkbtn wr-off" data-act="wrPop" data-v="off">Nicht mehr anzeigen</button><span style="flex:1"></span><button class="linkbtn" data-act="wrPop" data-v="no">Nein</button><button class="btn" data-act="wrPop" data-v="yes" data-mon="${last}">Ja</button></div>`;
-  setTimeout(()=>{if($('#sheet.on')||$('#incpop')||$('#intro')){S.wrDone=false;return;}document.body.appendChild(el);requestAnimationFrame(()=>el.classList.add('on'));},1400);
+  setTimeout(()=>{if($('#sheet.on')||$('#incpop')||$('#intro')){S.wrDone=false;return;}document.body.appendChild(el);requestAnimationFrame(()=>el.classList.add('on'));wrMarkSeen();},1400);
 }
+/* Sobald das Fenster einmal da war, gilt die Woche als gefragt – auf allen Geräten (settings.wrSeen) */
+function wrMarkSeen(){const mon=monday(today());try{localStorage.setItem('et-wr',mon);}catch(e){}
+  if(S.data.settings.wrSeen!==mon){const s=JSON.parse(JSON.stringify(S.data.settings));s.wrSeen=mon;commit('saveSettings',[s]);}}
 function wrPopClose(){const el=$('#wrpop');if(!el)return;el.classList.remove('on');setTimeout(()=>el.remove(),250);try{localStorage.setItem('et-wr',monday(today()));}catch(e){}}
+
+/* Rezepte der Woche: wie oft gegessen, Sterne direkt antippbar */
+function wrRecipes(mon){
+  const m={};
+  for(let i=0;i<7;i++){const s=addDays(mon,i),d=S.by[s];if(!d)continue;
+    MEALS.forEach(ml=>{const seen=new Set();(d.meals[ml]?d.meals[ml].items:[]).forEach(e=>{if(!e.recipe)return;const key=e.recipe+'|'+(e.time||'');if(seen.has(key))return;seen.add(key);(m[e.recipe]=m[e.recipe]||{n:0,days:new Set()}).n++;m[e.recipe].days.add(s);});});}
+  return Object.entries(m).sort((a,b)=>b[1].n-a[1].n||a[0].localeCompare(b[0]));
+}
+function wrRecHtml(mon){
+  const rs=wrRecipes(mon);if(!rs.length)return '';
+  const open=rs.filter(([n])=>recipeBy(n)&&!rRating(n)).length;
+  return `<h3 class="wr-h">Diese Rezepte hast du gegessen</h3>${open?`<p class="wr-hint">${open===1?'Eins ist':open+' sind'} noch nicht bewertet. Einfach die Sterne antippen.</p>`:''}
+    <div class="wr-recs">${rs.map(([n,x])=>{const r=recipeBy(n),v=r?rRating(n):0;
+      return `<div class="wr-rec ${r&&!v?'new':''}">${pThumb(n)||`<span class="pthumb wr-noimg" style="--ph:${recColor(n)}">${ICON.rezepte}</span>`}<div class="wr-rn"><b>${esc(n)}</b><small>${x.n}× gegessen${x.days.size>1?' an '+x.days.size+' Tagen':''}${r&&!v?' · noch nicht bewertet':''}</small></div>${r?starsHtml(n,v,{act:'wrRate'}):''}</div>`;}).join('')}</div>`;
+}
+/* Beschwerden der Woche + Vermutung: was vor Beschwerden auffällig oft gegessen wurde (über alle Daten) */
+function wrSuspects(cs){
+  const comp=new Set((S.data.complaints||[]).map(c=>c.date)),eat={};
+  (S.data.diary||[]).forEach(r=>{const n=r[10]||r[4];if(!n||!r[1])return;(eat[n]=eat[n]||new Set()).add(r[1]);});
+  const cand=new Set();cs.forEach(c=>{namesOn(c.date).concat(namesOn(addDays(c.date,-1))).forEach(n=>cand.add(n));});
+  return [...cand].map(n=>{const ds=[...(eat[n]||[])],hit=ds.filter(d=>comp.has(d)||comp.has(addDays(d,1))).length;return {n,eaten:ds.length,hit,q:ds.length?hit/ds.length:0};})
+    .filter(x=>x.eaten>=2&&x.hit>=2&&x.q>=0.5).sort((a,b)=>b.q-a.q||b.hit-a.hit).slice(0,3);
+}
+function wrCompHtml(mon){
+  if(!mods().beschwerden)return '';
+  const cs=[];for(let i=0;i<7;i++){const s=addDays(mon,i);(S.comp[s]||[]).forEach(c=>cs.push(c));}
+  if(!cs.length)return `<h3 class="wr-h">Beschwerden</h3><p class="wr-hint" style="margin:0">Keine Beschwerden in dieser Woche.</p>`;
+  cs.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  const sus=wrSuspects(cs);
+  return `<h3 class="wr-h">Beschwerden in dieser Woche</h3><div class="wr-comps">${cs.map(c=>`<div class="wr-comp"><span class="wr-cd">${DS[wd(c.date)]} ${esc(c.time||'')}</span><b>${esc(c.what)}</b><span class="wr-cs num">${g1(c.strength).replace(',0','')}/10</span></div>`).join('')}</div>
+    <div class="wr-sus">${sus.length?`<b>Vermutung</b><span>Danach kamen oft Beschwerden (am selben oder am nächsten Tag):</span>${sus.map(x=>`<span class="wr-sx"><em>${esc(x.n)}</em> ${x.hit} von ${x.eaten} Mal</span>`).join('')}`
+      :`<b>Vermutung</b><span>Noch kein klares Muster. Je mehr Beschwerden eingetragen sind, desto genauer wird es.</span>`}
+      <small>Nur ein Hinweis aus deinen Einträgen, keine Diagnose.</small>${mods().auswertung?`<button class="linkbtn" data-act="wrAusw">Ganze Auswertung ansehen</button>`:''}</div>`;
+}
+
+/* Teilen: Bild-Karte ohne Körpergewicht, nur die Veränderung */
+function wrWeightChange(mon){
+  const ws=weights();if(!ws.length)return null;const sun=addDays(mon,6);
+  const upto=ws.filter(w=>w.date<=sun);if(!upto.length)return null;const end=upto[upto.length-1];
+  const before=ws.filter(w=>w.date<mon),startW=before.length?before[before.length-1]:ws.find(w=>w.date>=mon);
+  return {week:startW?end.kg-startW.kg:null,total:end.kg-ws[0].kg,since:ws[0].date};
+}
+const sgn=v=>Math.abs(v)<0.05?'±0,0 kg':(v<0?'−':'+')+nf1.format(Math.abs(v))+' kg';
+async function wrShare(mon){
+  const x=wrData(mon),[h1]=wrHead(x),wc=mods().gewicht?wrWeightChange(mon):null,st=fun().streak?streakTo(addDays(mon,7)):0,stT=fun().streak?trackTo(addDays(mon,6)):0;
+  const tiles=[['Tage im kcal-Ziel',x.inK+'/'+(x.used.length||7)],['Eiweiß-Ziel',x.inP+'/'+(x.used.length||7)],['Ø kcal pro Tag',x.used.length?k(x.avgK):'–'],['Ø Eiweiß pro Tag',x.used.length?g1(x.avgP)+' g':'–']];
+  if(stT>=2)tiles.push(['Am Stück eingetragen',stT+' Tage',1]);
+  if(st>=2)tiles.push(['Am Stück im kcal-Ziel',st+' Tage',2]);
+  if(wc&&wc.week!==null)tiles.push(['Gewicht diese Woche',sgn(wc.week)]);
+  if(wc&&Math.abs(wc.total)>=0.1)tiles.push(wc.total<0?['Abgenommen seit '+shortDate(wc.since)+wc.since.slice(2,4),nf1.format(-wc.total)+' kg']:['Gewicht seit '+shortDate(wc.since)+wc.since.slice(2,4),sgn(wc.total)]);
+  if(x.trained)tiles.push(['Training',x.trained+'× trainiert']);
+  const file=await wrCard({kw:'Wochenrückblick · KW '+isoWeek(mon),range:shortDate(mon)+' bis '+shortDate(addDays(mon,6)),title:h1,tiles,days:x.days.map(s=>({v:day(s).kcal,g:goalOn(s).kcalDay,n:day(s).n}))});
+  const text=`Mein Wochenrückblick KW ${isoWeek(mon)}: ${h1} ${x.inK} von ${x.used.length||7} Tagen im kcal-Ziel`+(wc&&wc.week!==null?`, ${sgn(wc.week)} diese Woche`:'')+(wc&&Math.abs(wc.total)>=0.1&&wc.total<0?`, insgesamt ${nf1.format(-wc.total)} kg abgenommen`:'')+(stT>=2?`, ${stT} Tage am Stück eingetragen`:'')+(st>=2?`, ${st} Tage am Stück im Ziel`:'')+'.';
+  shareOut({files:[file],text,title:'Wochenrückblick'});
+}
+async function wrCard(o){
+  const W=1080,P=80,rows=Math.ceil(Math.min(10,o.tiles.length)/2),H=Math.max(1350,P+180+330+40+rows*170+120),c=document.createElement('canvas'),g=c.getContext('2d');c.width=W;c.height=H;
+  const font=getComputedStyle(document.body).fontFamily||'sans-serif',head=cssVar('--font-head','')||font;
+  const brand=cssVar('--brand','#2E5D50'),bad=cssVar('--bad','#D9705F'),ink='#1E2320',muted='#6C726E',soft='#EFEDE6',bg='#FBFAF6',tint=cssVar('--brand-soft','#E3EEE8');
+  const rr=(x,y,w,h,r,f)=>{g.beginPath();g.roundRect(x,y,w,h,r);g.fillStyle=f;g.fill();};
+  g.fillStyle=bg;g.fillRect(0,0,W,H);
+  g.textAlign='center';g.fillStyle=muted;g.font=`600 30px ${font}`;g.fillText(o.kw+' · '+o.range,W/2,P+30);
+  g.fillStyle=ink;g.font=`700 76px ${head}`;g.fillText(o.title,W/2,P+125);
+  // Balken
+  const bx=P,by=P+180,bw=W-2*P,bh=330;rr(bx,by,bw,bh,36,tint);
+  const max=Math.max(...o.days.map(d=>Math.max(d.v,d.g*1.15)),1),cw=(bw-80)/7,DS2=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  o.days.forEach((d,i)=>{const x=bx+40+i*cw+cw*0.22,w=cw*0.56,base=by+bh-70,hh=(bh-120)*d.v/max;
+    if(d.n)rr(x,base-hh,w,Math.max(hh,8),12,d.v>d.g?bad:brand);
+    const gy=base-(bh-120)*d.g/max;g.strokeStyle='rgba(30,35,32,.35)';g.setLineDash([8,8]);g.lineWidth=3;g.beginPath();g.moveTo(x-10,gy);g.lineTo(x+w+10,gy);g.stroke();g.setLineDash([]);
+    g.fillStyle=muted;g.font=`600 26px ${font}`;g.textAlign='center';g.fillText(DS2[i],x+w/2,base+44);});
+  // Kacheln
+  const tw=(W-2*P-24)/2,th=150;let ty=by+bh+40;
+  const n=Math.min(10,o.tiles.length);o.tiles.slice(0,10).forEach((t,i)=>{const last=i===n-1&&n%2===1,x=last?P:P+(i%2)*(tw+24),y=ty+Math.floor(i/2)*(th+20),ww=last?W-2*P:tw;
+    rr(x,y,ww,th,28,t[2]===1?'#E1ECF4':t[2]===2?'#F8ECE3':soft);
+    if(t[2]){g.save();g.translate(x+ww-78,y+22);g.scale(2.2,2.2);
+      if(t[2]===1){g.strokeStyle='#2F6E9A';g.lineWidth=2.6;g.lineCap='round';g.lineJoin='round';g.stroke(new Path2D('M20 6 9 17l-5-5'));}
+      else{g.fillStyle='#E0904F';g.fill(new Path2D('M12.6 2.2c.3 2.6-.8 4.3-2.3 5.9C8.7 9.8 7 11.6 7 14.6A5 5 0 0 0 12 20a5 5 0 0 0 5-5.2c0-1.6-.6-2.9-1.4-4 .1 1.3-.4 2.4-1.4 2.9.4-3.6-.6-8.3-1.6-11.5z'));}
+      g.restore();}
+    g.textAlign='left';g.fillStyle=muted;g.font=`500 27px ${font}`;g.fillText(t[0],x+32,y+50);
+    g.fillStyle=ink;g.font=`700 52px ${font}`;g.fillText(t[1],x+32,y+115);});
+  g.textAlign='center';g.fillStyle=muted;g.font=`500 26px ${font}`;g.fillText('Ernährungstagebuch',W/2,H-50);
+  const url=c.toDataURL('image/png');return dataUrlToFile(url,'wochenrueckblick-kw'+o.kw.replace(/\D/g,'')+'.png');
+}
 
 /* ---------- Gewichts-Meilensteine ---------- */
 function mileLevel(kg,step,dir){return dir==='up'?Math.ceil(kg/step-1e-9)*step-step:Math.floor(kg/step+1e-9)*step+step;}
@@ -5159,14 +5285,14 @@ function mileParty(title,sub,big){
 /* ---------- Einstellungen → Extras ---------- */
 function funSetHtml(){
   const f=fun(),m=mods(),tg=(opt,on,b,s)=>`<div class="sw"><div><b>${b}</b><span>${s}</span></div><label class="tg"><input type="checkbox" data-opt="${opt}" ${on?'checked':''}><i></i></label></div>`;
-  return tg('streak',f.streak,'Serie','Tage am Stück im kcal-Ziel, ganz klein unter Heute')
+  return tg('streak',f.streak,'Serien','Tage am Stück eingetragen und Tage am Stück im kcal-Ziel, ganz klein unter Heute')
     +tg('weekReview',f.weekReview,'Wochenrückblick','Fragt beim ersten Start der Woche, ob du die letzte Woche sehen willst')
     +`<button class="linkbtn" data-act="wrNow" style="margin:-2px 0 10px">Letzte Woche jetzt ansehen</button>`
     +tg('heatmap',f.heatmap,'Jahresübersicht','Die letzten 12 Monate als Kästchen oben im Verlauf')
     +(m.gewicht?`<div class="sw"><div><b>Gewichts-Meilensteine</b><span>Kleine Feier bei jeder neuen runden Zahl und am Zielgewicht</span></div><label class="tg"><input type="checkbox" data-mile="on" ${f.mile.on?'checked':''}><i></i></label></div>
       ${f.mile.on?`<div class="sw"><div><b>Meilenstein alle</b><span>${f.mile.best?'Nächster: '+(f.mile.dir==='up'?'über ':'unter ')+(f.mile.dir==='up'?f.mile.best+(f.mile.step||1):f.mile.best-(f.mile.step||1))+' kg':'Ab deinem nächsten Gewicht'}</span></div><select class="in-t" style="width:96px" data-mile="step">${[1,2,5].map(n=>`<option value="${n}" ${(f.mile.step||1)===n?'selected':''}>${n} kg</option>`).join('')}</select></div>`:''}`:'');
 }
-function funSub(){const f=fun(),on=[f.streak&&'Serie',f.weekReview&&'Wochenrückblick',f.heatmap&&'Jahresübersicht',f.mile.on&&mods().gewicht&&'Meilensteine'].filter(Boolean);return on.length?on.join(', '):'alles aus';}
+function funSub(){const f=fun(),on=[f.streak&&'Serien',f.weekReview&&'Wochenrückblick',f.heatmap&&'Jahresübersicht',f.mile.on&&mods().gewicht&&'Meilensteine'].filter(Boolean);return on.length?on.join(', '):'alles aus';}
 
 document.addEventListener('change',ev=>{
   const t=ev.target;if(!t.dataset||!t.dataset.mile||!S.data)return;
@@ -5182,12 +5308,16 @@ document.addEventListener('change',ev=>{const t=ev.target;if(!t.dataset||!['stre
   setTimeout(()=>{const sm=document.querySelector('[data-sec=fun] summary small');if(sm)sm.textContent=funSub();},0);});
 document.addEventListener('click',ev=>{
   const el=ev.target.closest&&ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
-  if(a==='streakInfo'){const n=+el.dataset.n;toast(n+' Tage am Stück im kcal-Ziel. '+(n>=14?'Stark!':n>=7?'Eine ganze Woche, weiter so!':'Weiter so!'));return;}
+  if(a==='streakInfo'){const n=+el.dataset.n,g=el.dataset.k==='st-g';toast(n+' Tage am Stück '+(g?'im kcal-Ziel':'eingetragen')+'. '+(n>=30?'Wahnsinn!':n>=14?'Stark!':n>=7?'Eine ganze Woche, weiter so!':'Weiter so!'));return;}
   if(a==='wrPop'){const v=el.dataset.v;wrPopClose();
     if(v==='yes')openWeekReview(el.dataset.mon);
     if(v==='off'){const s=JSON.parse(JSON.stringify(S.data.settings));s.weekReview=false;commit('saveSettings',[s]);toast('Wochenrückblick aus. In den Einstellungen unter Extras wieder einschaltbar.');}
     return;}
   if(a==='wrClose'){closeSheet();return;}
+  if(a==='wrRate'){ev.stopPropagation();const n=el.dataset.n,v=nextRating(rRating(n),+el.dataset.i);commit('setRating',[n,v]);vibe(8);
+    const box=$('#wrRecs'),mon=$('#sheet .wr-share');if(box&&mon)box.innerHTML=wrRecHtml(mon.dataset.mon);loadImages();return;}
+  if(a==='wrShare'){wrShare(el.dataset.mon);return;}
+  if(a==='wrAusw'){closeSheet();go('auswertung');return;}
   if(a==='incpopX')setTimeout(wrAuto,700);
   if(a==='wrWeek'){closeSheet();S.week=el.dataset.mon;go('woche');return;}
   if(a==='wrNow'){openWeekReview(addDays(monday(today()),-7));return;}
