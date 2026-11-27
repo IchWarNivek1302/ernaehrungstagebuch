@@ -9,6 +9,8 @@
 ## Aufträge in Spalte D
 - „Auftrag: Rezept vervollständigen „X““: im Rezepte-Block X alle Zutatenzeilen mit „offen“ in B bearbeiten (grob geschrieben, z. B. „TK Lachs“, „1 Pack“). Produkt bestimmen, Packungs-/Stückgewicht nachschlagen. Dann A = sauberer Name, C = Menge mit Gramm („1 Pack (250 g)“), D–G = Gesamtwerte, B leeren (update_values, nur diese Zeilen). Neue Lebensmittel wie üblich. Auftragszeile leeren. Antwort: „Rezept X vervollständigt: N kcal, M g Eiweiß pro Portion.“
 - „Auftrag: Bild suchen für Rezept „X““: per WebSearch ein echtes Foto (kein generiertes, kein Wasserzeichen). Direkte https-Bildadresse (.jpg/.png/.webp) in Bilder!D der Zeile mit Rezept X schreiben. Das Script lädt es selbst. Auftragszeile leeren. Antwort: „Bild für X gesucht.“
+- „Auftrag: Rezept anlegen – …“: Rezept wie bei „lege Rezept an“ aus dem Text anlegen (Rezepte-Block, Werte, Anleitung, falls Schritte genannt). Nichts ins Tagebuch. Auftragszeile leeren.
+- „Auftrag: Anleitung schreiben für Rezept „X““: kurze Zubereitung (4–8 Schritte) passend zu den Zutaten von X im Tab Anleitungen anlegen (Titel = Rezeptname). Auftragszeile leeren.
 - Andere Aufträge ausführen (Löschungen nach Bestätigung).
 
 ## „Nachpflegen“
