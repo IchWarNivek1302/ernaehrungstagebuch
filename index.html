@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Ernährungstagebuch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Fredoka:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -40,7 +40,7 @@ window.etApplyTheme=function(t,o){
 window.etZoom=function(z){z=+z||1;window._etZ=z;var r=document.documentElement,m=document.querySelector('meta[name=viewport]');
   var touch=window.matchMedia&&matchMedia('(pointer:coarse)').matches;
   if(touch&&m){r.style.zoom='';var a=screen.width||innerWidth,b=screen.height||innerHeight,land=window.matchMedia&&matchMedia('(orientation: landscape)').matches,sw=land?Math.max(a,b):Math.min(a,b);
-    m.setAttribute('content',z===1?'width=device-width, initial-scale=1, viewport-fit=cover':'width='+Math.round(sw/z)+', viewport-fit=cover');}
+    m.setAttribute('content',z===1?'width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content':'width='+Math.round(sw/z)+', viewport-fit=cover, interactive-widget=resizes-content');}
   else r.style.zoom=z!==1?z:'';};
 window.addEventListener('orientationchange',function(){setTimeout(function(){window.etZoom(window._etZ||1);},350);});
 try{window.etApplyTheme(localStorage.getItem('et-theme')||'auto',JSON.parse(localStorage.getItem('et-over')||'null'));window.etZoom(+localStorage.getItem('et-zoom')||1);}catch(e){document.documentElement.dataset.theme='auto';}</script>
@@ -1032,6 +1032,19 @@ details.sec[open]{border-color:var(--brand)}
 .rimg{position:relative}.rcred{position:absolute;right:6px;bottom:4px;max-width:80%;font-size:9.5px;line-height:1.2;color:#fff;background:#0007;padding:1px 5px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rimg.mini .rcred,.pthumb .rcred{display:none}
 
+/* v37: Tastatur – Fenster endet über der Tastatur (interactive-widget=resizes-content + dvh) */
+.sheet{max-height:90vh;max-height:90dvh}
+/* v37: Rezept-Editor kompakter, KI-Feld aufklappbar mit Mikrofon */
+.reai-c{display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;margin:2px 0 10px;border-radius:14px;border:1px dashed var(--brand);background:var(--brand-soft);color:var(--ink);font:inherit;font-size:14px;cursor:pointer;text-align:left}
+.reai-c b{font-weight:650}.reai-c small{color:var(--muted);font-size:12px;margin-left:auto}.reai-c i{font-style:normal;color:var(--muted)}
+.reai.open{padding:8px 12px 10px}.reai-h{display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;padding:2px 0 6px;font:inherit;font-size:14px;color:var(--ink);cursor:pointer;text-align:left}.reai-h i{margin-left:auto;font-style:normal;color:var(--muted)}
+.reai-t{position:relative}.reai-t textarea{width:100%;padding-right:48px}
+.reai-mic{position:absolute;right:6px;bottom:8px;width:38px;height:38px;border-radius:50%;border:0;background:var(--brand-soft);font-size:18px;cursor:pointer}
+.reai-mic.rec{background:var(--bad);animation:recp 1s infinite}@keyframes recp{50%{opacity:.6}}
+.re-sub{margin:0 0 6px;font-size:13px}
+.re-top{margin-bottom:0}.re-top .f{margin-bottom:4px}.re-rate{margin:2px 0 8px}
+.reimg-pv{position:relative;overflow:hidden}.reai-c b{white-space:nowrap}
+
 /* ================= Tablet und PC ================= */
 .side{display:none}
 #view{container-type:inline-size}
@@ -1300,8 +1313,8 @@ function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{}
 function topTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{},top=navTopOf(s);return tabOrder(s).filter(key=>tabOn(key,s)&&top.includes(key)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='36';
-const MIN_SCRIPT=35;   /* so neu muss Code.gs mindestens sein */
+const APP_VERSION='37';
+const MIN_SCRIPT=36;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf0=new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
@@ -2911,16 +2924,17 @@ function recipeCards(){
 function openRecipeEdit(name){
   const r=name?recipeBy(name):null,ins=name?instrFor(name):null;
   const im=r?(S.data.images||{})[r.name]:null;
-  S.redit={rating:r?rRating(r.name):0,kb:r?(S.data.kochbuch||[]).some(x=>x.mine&&x.name===r.name):false,img:im?imgCache(im):null,hadImg:!!im,file:null,dropImg:false,want:r?imgWanted(r.name):false,old:r?r.name:null,name:r?r.name:'',portions:r?r.portions:2,items:r?JSON.parse(JSON.stringify(r.items)):[],steps:ins?ins.steps.join('\n'):'',notes:ins?ins.notes.join('\n'):'',fq:'',fres:[]};
+  S.redit={rating:r?rRating(r.name):0,kb:r?(S.data.kochbuch||[]).some(x=>x.mine&&x.name===r.name):false,img:im?imgCache(im):null,hadImg:!!im,file:null,dropImg:false,want:r?imgWanted(r.name):false,old:r?r.name:null,name:r?r.name:'',portions:r?r.portions:2,items:r?JSON.parse(JSON.stringify(r.items)):[],steps:ins?ins.steps.join('\n'):'',notes:ins?ins.notes.join('\n'):'',fq:'',fres:[],aiImg:true,aiSteps:!(ins&&ins.steps.length)};
   drawRecipeEdit();
 }
 const imgWanted=n=>!!(S.data.imgWanted||{})[n];
 function reImgHtml(){
-  const R=S.redit;
-  return `<div class="reimg">${R.img?`<div class="reimg-pv" style="background-image:url('${R.img}')"></div>`:`<div class="reimg-pv empty">${ICON.camera}</div>`}
-    <div class="reimg-a"><label class="btn ghost">${R.img?'Anderes Bild wählen':'Bild auswählen'}<input type="file" accept="image/*" id="reFile" hidden></label>
-      ${!R.img&&typeof canImg35==='function'&&canImg35()?'<button class="btn ghost" data-act="reImgSearch">🔍 Foto suchen</button>':''}
-      ${R.img?'<button class="linkbtn" data-act="reImgDel" style="color:var(--bad)">Bild entfernen</button>':(aiMain()==='claude'?`<label class="chk"><input type="checkbox" id="reWant" ${R.want?'checked':''}><i>${ICON.check}</i><span>Oder die <b>KI sucht beim nächsten Gespräch</b> ein Foto im Web.</span></label>`:'')}</div></div>${R.img?'':(typeof rePicsHtml==='function'?rePicsHtml():'')}`;
+  /* v37: Foto sucht die KI (Openverse, frei lizenziert) – Vorschau mit „✨ Anderes Foto“; eigenes Foto geht immer */
+  const R=S.redit,src=R.pick?R.pick.url:R.img,ai=typeof canImg35==='function'&&canImg35();
+  return `<div class="reimg">${src?`<div class="reimg-pv" style="background-image:url('${src}')">${R.pick?`<small class="rcred">Foto: ${esc(R.pick.credit)}</small>`:''}</div>`:`<div class="reimg-pv empty">${R.picBusy?'<span class="sp"></span>':ICON.camera}</div>`}
+    <div class="reimg-a">${ai?`<button class="btn ghost" data-act="reImgAlt" ${R.picBusy?'disabled':''}>✨ ${src?'Anderes Foto':'Foto suchen lassen'}</button>`:''}
+      <label class="btn ghost">${src?'Eigenes Foto':'Eigenes Foto wählen'}<input type="file" accept="image/*" id="reFile" hidden></label>
+      ${src?'<button class="linkbtn" data-act="reImgDel" style="color:var(--bad)">Bild entfernen</button>':(ai||aiMain()==='claude'?`<label class="chk"><input type="checkbox" id="reAiImg" ${R.aiImg!==false?'checked':''}><i>${ICON.check}</i><span>✨ Foto beim Speichern von der KI suchen lassen</span></label>`:'')}</div></div>`;
 }
 function reSumHtml(){
   const R=S.redit,P=+String(R.portions).replace(',','.')||1,s=f=>R.items.reduce((a,x)=>a+(+String(x[f]).replace(',','.')||0),0);
@@ -2944,9 +2958,13 @@ function reRows(){
 function drawRecipeEdit(){
   const R=S.redit;
   const kiTop=!R.old&&!R.aiDone&&typeof kiOn==='function'&&kiOn();
-  openSheet(`${kiTop?`<div class="reai"><label class="f" style="margin:0"><span>✨ Rezept einfach hinschreiben (optional)</span><textarea class="in-t" id="reAiText" rows="3" placeholder="z. B. Chili, 4 Portionen: 500 g Rinderhack, 2 Dosen Kidneybohnen, 1 Dose Mais, 2 Paprika">${esc(R.aiText||'')}</textarea></label>
-      <button class="btn ghost" data-act="reAiGo" id="reAiGo" style="margin-top:6px">${geminiPrimary()?'✨ Felder ausfüllen lassen':'✨ An die KI geben'}</button><p class="hint" style="margin:4px 0 0">${geminiPrimary()?'Die KI füllt Name, Portionen, Zutaten und Werte aus. Du prüfst und speicherst.':'Die KI legt das Rezept beim nächsten Gespräch an.'} Oder unten selbst eingeben.</p></div>`:''}
-    <p class="sub" style="margin-top:2px">Mengen und Werte gelten für das ganze Rezept. Die App rechnet daraus die Portion.</p>
+  const mic=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
+  openSheet(`${kiTop?(R.aiOpen||R.aiText?`<div class="reai open"><button class="reai-h" data-act="reAiToggle">✨ <b>Rezept einfach hinschreiben</b><i>▴</i></button>
+      <div class="reai-t"><textarea class="in-t" id="reAiText" rows="3" placeholder="z. B. Chili, 4 Portionen: 500 g Rinderhack, 2 Dosen Kidneybohnen, 1 Dose Mais">${esc(R.aiText||'')}</textarea>${mic?`<button class="reai-mic" data-act="reMic" aria-label="Sprechen" title="Sprechen">🎤</button>`:''}</div>
+      <button class="btn" data-act="reAiGo" id="reAiGo" style="margin-top:6px">${geminiPrimary()?'✨ Felder ausfüllen lassen':'✨ An die KI geben'}</button>
+      <p class="hint" style="margin:4px 0 0">${geminiPrimary()?'Die KI füllt alles aus, du prüfst und speicherst.':'Die KI legt es beim nächsten Gespräch an.'}</p></div>`
+      :`<button class="reai-c" data-act="reAiToggle">✨ <b>Rezept einfach hinschreiben</b><i>▾</i></button>`):''}
+    <p class="sub re-sub">Mengen und Werte fürs ganze Rezept.</p>
     <div class="row2 re-top"><label class="f"><span>Name</span><input class="in-t" id="reName" value="${esc(R.name)}" placeholder="z. B. Linsen-Curry"></label>
     <label class="f"><span>Portionen</span><input class="in-t num" inputmode="decimal" id="rePort" value="${fmtN(R.portions)}"></label></div>
     <div class="re-rate"><span class="lbl">Bewertung</span><span id="reStars">${starsHtml('',R.rating||0,{act:'reRate'})}<small class="muted">${R.rating?String(R.rating/2).replace('.',',')+' von 5':'antippen'}</small></span></div>
@@ -2957,7 +2975,7 @@ function drawRecipeEdit(){
       <div id="reFoodRes"></div><button class="linkbtn" data-act="reBlank">+ Zutat mit eigenen Werten eintragen</button></div>
     <h3 class="ph3">Pro Portion</h3><div class="nut" id="reSum">${reSumHtml()}</div>
     <h3 class="ph3">Anleitung <small>optional</small></h3>
-    ${typeof kiOn==='function'&&kiOn()?`<label class="chk re-aist"><input type="checkbox" id="reAiSteps" ${R.aiSteps?'checked':''}><i>${ICON.check}</i><span>✨ Anleitung von der KI schreiben lassen</span></label>`:''}
+    ${typeof kiOn==='function'&&kiOn()&&!String(R.steps||'').trim()?`<label class="chk re-aist"><input type="checkbox" id="reAiSteps" ${R.aiSteps!==false?'checked':''}><i>${ICON.check}</i><span>✨ Anleitung von der KI schreiben lassen</span></label>`:''}
     <label class="f"><span>Schritte, einer pro Zeile</span><textarea class="in-t" id="reSteps" rows="5" placeholder="Zwiebeln würfeln und anschwitzen&#10;Linsen und Kokosmilch dazu …">${esc(R.steps)}</textarea></label>
     <label class="f"><span>Hinweis</span><textarea class="in-t" id="reNotes" rows="2" placeholder="z. B. hält 3 Tage im Kühlschrank">${esc(R.notes)}</textarea></label>
     <div class="re-acts">${typeof kiOn==='function'&&kiOn()?'<button class="btn ghost" data-act="reRefine">✨ Mit KI verfeinern</button>':''}<button class="btn" data-act="reSave">Rezept speichern</button></div>
@@ -3010,15 +3028,15 @@ function reSave(){
   commit('saveRecipe',[rec,R.old,ins]);
   if(R.dropImg&&!R.file)removeRecipeImage(name);
   if(R.file)pickRecipeImage(name,R.file);
-  else if(R.pickUrl&&!R.img)pickRecipeImageUrl(name,R.pickUrl,R.pickCredit);
-  else if(!R.img&&R.want!==imgWanted(name))commit('wantImage',[name,!!R.want]);
+  else if(R.pick)pickRecipeImageUrl(name,R.pick.url,R.pick.credit);
+  else if(!R.img&&$('#reAiImg')&&$('#reAiImg').checked&&typeof reBgImg==='function')reBgImg(name);
   const aiSt=($('#reAiSteps')&&$('#reAiSteps').checked||R.orderSteps)&&!steps.length,hasOpen=items.some(x=>x.open);
   /* Claude: Anleitung als Auftrag; Gemini: offene Zutaten/Anleitung still im Hintergrund */
-  if(aiSt&&!geminiPrimary()&&(S.data.inbox||[]).length<10)commit('addInbox',[{what:'Auftrag: Anleitung schreiben für Rezept „'+name+'“ (kurze Schritte in Tab Anleitungen, passend zu den Zutaten)',amount:'',meal:'',date:today(),time:nowHM()}]);
+  if(aiSt&&!geminiPrimary()&&(S.data.inbox||[]).length<10&&!(S.data.inbox||[]).some(i=>i.what.indexOf('Anleitung schreiben für Rezept „'+name+'“')>=0))commit('addInbox',[{what:'Auftrag: Anleitung schreiben für Rezept „'+name+'“ (kurze Schritte in Tab Anleitungen, passend zu den Zutaten)',amount:'',meal:'',date:today(),time:nowHM()}]);
   if(geminiPrimary()&&(hasOpen||aiSt))reBgFill(rec,ins,aiSt);
   closeSheet();vibe();
   if(R.planTo){S.padd=Object.assign({},S.padd||{},{d:R.planTo.d,m:R.planTo.m});planAddItem({type:'recipe',name},R.planTo.m);return;}
-  if(!R.file&&!R.pickUrl)toast(hasOpen||aiSt?(geminiPrimary()?'Gespeichert. ✨ Die KI rechnet den Rest im Hintergrund aus.':'Gespeichert. ✨ Die KI verfeinert das Rezept beim nächsten Gespräch.'):R.old?'Rezept gespeichert.':'Rezept angelegt: '+name);
+  if(!R.file&&!R.pick)toast(hasOpen||aiSt?(geminiPrimary()?'Gespeichert. ✨ Die KI rechnet den Rest im Hintergrund aus.':'Gespeichert. ✨ Die KI verfeinert das Rezept beim nächsten Gespräch.'):R.old?'Rezept gespeichert.':'Rezept angelegt: '+name);
 }
 
 /* --- Heute: was für heute geplant ist --- */
@@ -3075,7 +3093,7 @@ document.addEventListener('click',ev=>{
     savePlan(p);toast(n+' Gerichte aus der Vorwoche übernommen.',false,{label:'Rückgängig',fn:()=>savePlan(before)});break;}
   case 'recNew':{const fromPlan=!!$('#planList');const pt=fromPlan?{d:S.padd.d,m:pickedPlanMeal()}:null;openRecipeEdit(null);S.redit.planTo=pt;
     if(pt)$('#sheet .sub').textContent='Wird danach gleich für '+DS[wd(pt.d)]+' '+MEAL_SHORT[pt.m]+' eingeplant. Werte gelten für das ganze Rezept.';break;}
-  case 'reImgDel':S.redit.img=null;S.redit.file=null;S.redit.dropImg=S.redit.hadImg;$('#reImg').innerHTML=reImgHtml();break;
+  case 'reImgDel':S.redit.img=null;S.redit.file=null;S.redit.pick=null;S.redit.aiImg=false;S.redit.dropImg=S.redit.hadImg;$('#reImg').innerHTML=reImgHtml();break;
   case 'recEdit':openRecipeEdit(el.dataset.n);break;
   case 'recPlan':{const t=today();openPlanAdd(S.pweek&&S.pweek>monday(t)?S.pweek:t,mealByTime(nowHM())==='Frühstück'?'Frühstück':'Abendessen');S.padd.q=el.dataset.n;drawPlanAdd();break;}
   case 'reDel':S.redit.items.splice(+el.dataset.i,1);$('#reRows').innerHTML=reRows();$('#reSum').innerHTML=reSumHtml();break;
@@ -3109,7 +3127,7 @@ document.addEventListener('change',ev=>{
   const t=ev.target;
   if(t.dataset&&t.dataset.link!==undefined&&t.value){commit('linkInstruction',[t.dataset.link,t.value]);toast('Anleitung gehört jetzt zu „'+t.value+'“.');return;}
   if(t.id==='pTarget'){S.ptarget=t.value;render();return;}
-  if(t.id==='reFile'&&t.files&&t.files[0]){const f=t.files[0];shrinkImage(f,720,0.8).then(u=>{S.redit.file=f;S.redit.img=u;S.redit.want=false;$('#reImg').innerHTML=reImgHtml();}).catch(e=>toast(e.message,true));return;}
+  if(t.id==='reFile'&&t.files&&t.files[0]){const f=t.files[0];shrinkImage(f,720,0.8).then(u=>{S.redit.file=f;S.redit.img=u;S.redit.want=false;S.redit.pick=null;$('#reImg').innerHTML=reImgHtml();}).catch(e=>toast(e.message,true));return;}
   if(t.id==='reWant'){S.redit.want=t.checked;return;}
   if(!t.dataset||t.dataset.shop===undefined)return;
   const got=store.get(shopKey(S.pweek))||{};if(t.checked)got[t.dataset.shop]=1;else delete got[t.dataset.shop];store.set(shopKey(S.pweek),got);
@@ -4192,16 +4210,16 @@ async function reAiFill(btn){
 }
 /* --- „Mit KI verfeinern“: offene Zutaten ausrechnen, Anleitung schreiben, Foto vorschlagen --- */
 function reReadForm(){const R=S.redit;const n=$('#reName'),p=$('#rePort'),st=$('#reSteps'),no=$('#reNotes'),ck=$('#reAiSteps');
-  if(n)R.name=n.value;if(p)R.portions=+String(p.value).replace(',','.')||R.portions;if(st)R.steps=st.value;if(no)R.notes=no.value;if(ck)R.aiSteps=ck.checked;}
+  if(n)R.name=n.value;if(p)R.portions=+String(p.value).replace(',','.')||R.portions;if(st)R.steps=st.value;if(no)R.notes=no.value;if(ck)R.aiSteps=ck.checked;const ai=$('#reAiImg');if(ai)R.aiImg=ai.checked;const t=$('#reAiText');if(t)R.aiText=t.value;}
 async function reRefine(btn){
   const R=S.redit;reReadForm();
   if(!String(R.name||'').trim()){toast('Bitte zuerst einen Namen eingeben.',true);return;}
   const open=R.items.map((x,i)=>Object.assign({i},x)).filter(x=>x.open&&String(x.name).trim()),wantSteps=!!R.aiSteps&&!String(R.steps||'').trim();
   if(!geminiPrimary()){
-    /* Claude: speichern und Aufträge hinterlassen – Claude verfeinert beim nächsten Gespräch */
-    R.want=!R.img&&!R.file;if(wantSteps)R.orderSteps=true;reSave();return;}
+    /* Claude: speichern und Aufträge hinterlassen – Claude verfeinert beim nächsten Gespräch; Foto sucht die App gleich */
+    if(wantSteps)R.orderSteps=true;reSave();return;}
   if(!canAI35()){toast('Dafür bitte zuerst das Script aktualisieren (Code.gs).',true);return;}
-  if(!open.length&&!wantSteps){if(!R.img&&!R.file&&canImg35()){reImgSearch();toast('Alles ausgerechnet. Hier noch Fotos zur Auswahl.');}else toast('Alles ausgerechnet – nichts zu verfeinern.');return;}
+  if(!open.length&&!wantSteps){if(!R.img&&!R.pick&&canImg35()){reImgAlt();toast('Alles ausgerechnet. ✨ Die KI sucht noch ein Foto.');}else toast('Alles ausgerechnet – nichts zu verfeinern.');return;}
   btn.disabled=true;btn.innerHTML='<span class="sp"></span> KI verfeinert …';
   try{await loadFoods().catch(()=>{});}catch(e){}
   const items=open.map(x=>({i:x.i,name:x.name,amount:x.amount,cands:(S.foods?searchFoods(String(x.name).replace(/\s*\([^)]*\)\s*/g,' ')).slice(0,8):[]).map(f=>[f[0],f[1],f[2],f[3],f[4],f[5],f[6],f[7],f[8],f[9]])}));
@@ -4213,7 +4231,7 @@ async function reRefine(btn){
     drawRecipeEdit();vibe();
     const parts=[(r.items||[]).length?(r.items.length===1?'1 Zutat':r.items.length+' Zutaten')+' ausgerechnet':'',r.steps&&r.steps.length?'Anleitung geschrieben':''].filter(Boolean);
     toast('✨ '+(parts.join(', ')||'Fertig')+' – bitte prüfen und speichern.');
-    if(!R.img&&!R.file&&canImg35())setTimeout(reImgSearch,300);
+    if(!R.img&&!R.pick&&R.aiImg!==false&&canImg35())setTimeout(reImgAlt,300);
   }).catch(e=>{btn.disabled=false;btn.textContent='✨ Mit KI verfeinern';toast(e.message||String(e),true);});
 }
 /* Gemini als Haupt-KI: nach dem Speichern offene Zutaten still im Hintergrund ausrechnen */
@@ -4230,26 +4248,44 @@ async function reBgFill(rec,ins,wantSteps){
     toast('✨ „'+rec.name+'“: '+[r.items.length?(r.items.length===1?'1 Zutat':r.items.length+' Zutaten')+' ausgerechnet':'',(r.steps||[]).length?'Anleitung geschrieben':''].filter(Boolean).join(', ')+'.');
   }).catch(()=>{});
 }
-/* --- Fotos suchen (Openverse, frei lizenziert; braucht keine KI) --- */
-function reImgSearch(){
+/* --- Fotos (Openverse, frei lizenziert): die KI wählt eins, „✨ Anderes Foto“ blättert weiter --- */
+const picCredit=x=>[x.title,x.creator,x.license].filter(Boolean).join(' · ');
+function reImgAlt(){
   const R=S.redit;reReadForm();if(!String(R.name||'').trim()){toast('Bitte zuerst einen Namen eingeben.',true);return;}
   if(!canImg35()){toast('Dafür bitte zuerst das Script aktualisieren (Code.gs).',true);return;}
-  R.pics={busy:true,list:[]};const b=$('#reImg');if(b)b.innerHTML=reImgHtml();
-  call('imgSearch',{name:R.name}).then(r=>{R.pics={list:r.list||[]};const b2=$('#reImg');if(b2)b2.innerHTML=reImgHtml();})
-    .catch(e=>{R.pics=null;const b2=$('#reImg');if(b2)b2.innerHTML=reImgHtml();toast(e.message||String(e),true);});
+  const P=R.pics&&R.pics.name===R.name?R.pics:(R.pics={name:R.name,list:[],i:-1,page:0,q:null,end:false});
+  const show=()=>{const b=$('#reImg');if(b)b.innerHTML=reImgHtml();};
+  if(P.i+1<P.list.length){P.i++;const x=P.list[P.i];R.pick={url:x.url,credit:picCredit(x)};show();return;}
+  if(P.end){toast('Keine weiteren freien Fotos gefunden. Eigenes Foto geht immer.');return;}
+  R.picBusy=true;show();
+  call('imgSearch',{name:R.name,q:P.q,page:P.page+1}).then(r=>{R.picBusy=false;P.page=r.page||P.page+1;P.q=r.q||P.q;
+    const seen=new Set(P.list.map(x=>x.url)),nw=(r.list||[]).filter(x=>!seen.has(x.url));if(!nw.length||P.page>=5)P.end=true;
+    P.list=P.list.concat(nw);if(P.i+1<P.list.length){P.i++;const x=P.list[P.i];R.pick={url:x.url,credit:picCredit(x)};}
+    else toast(P.list.length?'Keine weiteren freien Fotos gefunden.':'Kein passendes freies Foto gefunden. Eigenes Foto geht immer.');show();})
+    .catch(e=>{R.picBusy=false;show();toast(e.message||String(e),true);});
 }
-function rePicsHtml(){const P=S.redit.pics;if(!P)return '';
-  if(P.busy)return '<div class="pics busy"><span class="sp"></span> Suche Fotos …</div>';
-  if(!P.list.length)return '<div class="pics"><p class="hint" style="margin:0">Kein passendes freies Foto gefunden. Eigenes Foto geht immer.</p></div>';
-  return `<div class="pics"><div class="picg">${P.list.map((x,i)=>`<button class="pic ${P.sel===i?'on':''}" data-act="rePick" data-i="${i}" style="background-image:url('${esc(x.thumb)}')" aria-label="${esc(x.title||'Foto')}"></button>`).join('')}</div>
-    <p class="hint" style="margin:4px 0 0">Freie Fotos (Openverse). ${P.sel!==undefined?'Gewählt: '+esc(picCredit(P.list[P.sel])):'Antippen zum Wählen.'}</p></div>`;}
-const picCredit=x=>[x.title,x.creator,x.license].filter(Boolean).join(' · ');
+/* Beim Speichern ohne Foto (Haken an): erstes passendes Foto still holen; nichts gefunden + Claude → Claude sucht */
+function reBgImg(name){
+  if(!canImg35()){if(aiMain()==='claude')commit('wantImage',[name,true]);return;}
+  call('imgSearch',{name}).then(r=>{const x=(r.list||[])[0];if(x)pickRecipeImageUrl(name,x.url,picCredit(x));else if(aiMain()==='claude')commit('wantImage',[name,true]);}).catch(()=>{});
+}
+/* Mikrofon fürs „Rezept einfach hinschreiben“ (Chrome/Android; tippen geht immer) */
+function reMic(btn){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
+  if(S.recog){try{S.recog.stop();}catch(e){}return;}
+  const ta=$('#reAiText');if(!ta)return;const base=ta.value?ta.value.replace(/\s*$/,' '):'';
+  const r=new SR();r.lang='de-DE';r.continuous=true;r.interimResults=true;S.recog=r;btn.classList.add('rec');
+  let fin='';r.onresult=e=>{let tmp='';for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=t+' ';else tmp+=t;}ta.value=base+fin+tmp;S.redit.aiText=ta.value;};
+  r.onerror=e=>{if(e.error==='not-allowed')toast('Bitte das Mikrofon für die App erlauben.',true);};
+  r.onend=()=>{S.recog=null;btn.classList.remove('rec');};
+  try{r.start();toast('🎤 Sprich jetzt – nochmal tippen beendet.');}catch(e){S.recog=null;btn.classList.remove('rec');}
+}
 document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
   if(a==='reAiGo'){reAiFill(el);return;}
   if(a==='reRefine'){reRefine(el);return;}
-  if(a==='reImgSearch'){reImgSearch();return;}
-  if(a==='rePick'){const R=S.redit,P=R.pics,i=+el.dataset.i;P.sel=P.sel===i?undefined:i;R.pickUrl=P.sel!==undefined?P.list[i].url:null;R.pickCredit=P.sel!==undefined?picCredit(P.list[i]):'';
-    const b=$('#reImg');if(b)b.innerHTML=reImgHtml();return;}
+  if(a==='reImgAlt'){reImgAlt();return;}
+  if(a==='reMic'){reMic(el);return;}
+  if(a==='reAiToggle'){reReadForm();S.redit.aiOpen=!(S.redit.aiOpen||S.redit.aiText);if(!S.redit.aiOpen)S.redit.aiText='';if(S.recog)try{S.recog.stop();}catch(e){}drawRecipeEdit();if(S.redit.aiOpen)setTimeout(()=>{const t=$('#reAiText');if(t)t.focus();},250);return;}
 });
 /* ================= Training (v27, überarbeitet v32 / Script ab 33) =================
    Pläne frei anlegen, auf-/zuklappen, sortieren (Griff ⋮⋮ ziehen), per Wischen löschen (Pläne UND Übungen).
@@ -4723,7 +4759,6 @@ function resultsHtml(){
   rec=rec.slice(0,q?8:(S.data.settings.recentN||20));
   S.add.recList=rec;
   let h='';
-  if(!q&&geminiPrimary())h+=`<button class="aibtn top" data-act="addstep" data-step="ai">✨<span><b>Mit KI eintragen</b><small>Einfach hinschreiben oder Foto wählen</small></span></button>`;
   h+=tplChips(q)+(q?recipeChips(q):'');
   if(!q&&mods().haeufig&&!S.add.mealOnly){const mm=S.add.meal,fq=frequent().slice().sort((a,b)=>(b.meal===mm)-(a.meal===mm));if(fq.length)h+=`<div class="res-h">Häufig${fq[0].meal===mm?' · '+MEAL_SHORT[mm]+' zuerst':''}</div><div class="fchips">${fq.map((x,i)=>`<button class="fchip" data-act="pickFreq" data-i="${i}" style="--mc:${MEAL_COLOR[x.meal]||'var(--m4)'}"><i></i><span>${esc(x.recipe||x.name)}</span><small class="num">${k(x.kcal)}</small></button>`).join('')}</div>`;}
   if(rec.length||S.add.mealOnly)h+=`<div class="res-h">${q?'Schon gegessen':S.add.mealOnly?'Zuletzt zum '+MEAL_SHORT[S.add.mealOnly]+' <button class="linkbtn" data-act="mealOnlyOff" style="float:right;margin:0">alle zeigen</button>':'Zuletzt gegessen'}</div>`+(S.add.mealOnly&&!rec.length?'<div class="empty">Dazu gibt es noch nichts.</div>':'')+`<div class="res">${rec.map((x,i)=>`<button class="item" data-act="pickRecent" data-i="${i}"><div class="it-main"><div class="it-name">${x.recipe?'<span class="tag">Rezept</span>'+esc(x.recipe):esc(x.name)}</div><div class="it-sub">${esc(x.amount)} · ${relDay(x.last)||shortDate(x.last)}</div></div><div class="it-val"><b class="num">${k(x.kcal)}</b><small class="num">${g1(x.p)} g E</small></div></button>`).join('')}</div>`;
@@ -4736,7 +4771,7 @@ function resultsHtml(){
     /* v36: Eine KI. Nichts gefunden → „KI regelt“ steht oben (nicht unter der Tastatur), sonst am Ende der Liste */
     const none=!(S.add.foodList||[]).length&&!rec.length,ki=kiOn()?`<button class="aibtn kireg" data-act="kiRegelt">✨<span><b>${none?'Nichts gefunden':'Nichts Passendes?'} → KI regelt</b><small>„${esc(q)}“ · ${geminiPrimary()?'wird gleich im Hintergrund eingetragen':'wartet auf die KI, wird beim nächsten Gespräch eingetragen'}</small></span></button>`:'';
     if(none&&ki)h=ki+h;
-    h+=`${none?'':ki}<div class="fallback"><button data-act="addstep" data-step="manual" class="${kiOn()?'':'wide'}">Selbst eintragen<small>Werte bekannt</small></button>${kiOn()?`<button data-act="addstep" data-step="${geminiPrimary()?'ai':'photo'}">📷 Foto an die KI<small>Teller oder Packung</small></button>`:''}</div>`;
+    h+=`<div class="fallback"><button data-act="addstep" data-step="manual" class="${kiOn()?'':'wide'}">Selbst eintragen<small>Werte bekannt</small></button>${kiOn()?`<button data-act="addstep" data-step="${geminiPrimary()?'ai':'photo'}">📷 Foto an die KI<small>Teller oder Packung</small></button>`:''}</div>`;
   } else h+=`<p class="hint">Tippe oben, um in deinen ${S.foods?k(S.foods.length)+' ':''}Lebensmitteln zu suchen.</p>`;
   return h;
 }
@@ -5238,6 +5273,10 @@ document.addEventListener('pointerdown',e=>{const svg=e.target.closest&&e.target
 document.addEventListener('pointermove',e=>{if(S.wDrag&&e.buttons)wTip(S.wDrag,e.clientX);});
 document.addEventListener('pointerup',()=>{S.wDrag=null;});
 document.addEventListener('pointercancel',()=>{S.wDrag=null;});
+
+/* v37: Beim Tippen in der Plus-Suche die Suche nach oben schieben, damit Treffer bzw. „KI regelt“ über der Tastatur stehen */
+document.addEventListener('focusin',e=>{if(e.target.id!=='fq')return;const sh=$('#sheet');if(!sh)return;
+  setTimeout(()=>{const s=e.target.closest('.search');if(s&&sh.scrollHeight>sh.clientHeight){sh.scrollTop+=s.getBoundingClientRect().top-sh.getBoundingClientRect().top-8;}},350);});
 
 /* ================= Vorschau ohne Google (Beispiel- oder eingebettete Daten) ================= */
 const Demo=(()=>{
