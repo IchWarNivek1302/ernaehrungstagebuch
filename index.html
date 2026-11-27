@@ -928,9 +928,10 @@ details.sec[open]{border-color:var(--brand)}
 .pwrap.swr{border-radius:12px}.swr>.pitem{position:relative;z-index:1;touch-action:pan-y;will-change:transform}
 /* v27: Training */
 .trstrip{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:10px 12px;border-radius:14px;background:var(--card);border:1px solid var(--line);flex-wrap:wrap}
-.trs-l{font-size:13px;color:var(--muted)}.trs-l b{color:var(--ink);font-size:15px}
+.trs-l{font-size:13px;color:var(--muted);background:none;border:0;padding:0;font-family:inherit;text-align:left;cursor:pointer}.trs-l b{color:var(--ink);font-size:15px}
 .trs-d{display:grid;grid-template-columns:repeat(28,1fr);gap:2px;flex:1;min-width:220px}
-.trs-d i{aspect-ratio:1;border-radius:4px;background:var(--soft);display:grid;place-items:center;color:#fff}.trs-d i.on{background:var(--brand)}.trs-d i.t{outline:1.5px solid var(--brand);outline-offset:1px}.trs-d i svg{width:80%;height:80%}
+.trs-d>*{aspect-ratio:1;border-radius:4px;background:var(--soft);display:grid;place-items:center;color:#fff;border:0;padding:0;cursor:pointer;min-width:0}.trs-d>.on{background:var(--brand)}.trs-d>.t{outline:1.5px solid var(--brand);outline-offset:1px}.trs-d>* svg{width:80%;height:80%}
+.trs-l small{display:block;font-size:11px;color:var(--faint)}
 .trp{padding:0;margin:0 0 10px;overflow:hidden}.trh-w{border-radius:0}
 .trh{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--card);position:relative;z-index:1;touch-action:pan-y}
 .drag-h{cursor:grab;color:var(--faint);font-size:16px;letter-spacing:-2px;padding:6px 4px;touch-action:none;user-select:none;flex:0 0 auto}
@@ -968,6 +969,33 @@ details.sec[open]{border-color:var(--brand)}
 .trstrip,.trplans,.trnew{max-width:760px}.trs-d{max-width:520px}.trch{max-width:560px}
 .aibtn.sec{border-style:dashed;background:var(--card)}
 .aibtn.top{margin:2px 0 12px}
+
+/* v32: Training überarbeitet */
+.trx-w{border-radius:12px}.trx-h{background:var(--card);position:relative;z-index:1;touch-action:pan-y;border-radius:12px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.trx.sup-a .trx-w,.trx.sup-a .trx-h{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.trok{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);color:var(--faint);font:700 16px/1 inherit;cursor:pointer;display:grid;place-items:center}
+.trok.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.trck{flex:0 0 auto;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;margin:0 2px}
+.trx.sel{border-color:var(--brand);background:var(--brand-soft)}.trx.sel .trx-h{background:var(--brand-soft)}.trx.sel .trck{background:var(--brand);border-color:var(--brand)}
+.trselbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:10px 0;padding:8px 10px;border-radius:12px;background:var(--soft)}.trselbar b{font-size:13.5px;margin-right:auto}
+.trselbar small{flex-basis:100%;font-size:12px;color:var(--muted)}.pbtn.bad{background:var(--bad-soft);color:var(--bad)}
+.trtip{font-size:12px;color:var(--faint);margin:8px 0 6px}
+.trnote{display:block;font-style:normal;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trren{flex:0 0 auto;background:none;border:0;color:var(--muted);font-size:16px;padding:4px 6px;cursor:pointer}
+.trlast{font-size:12.5px;color:var(--muted);margin:8px 0 2px}.trlast b.up{color:var(--brand)}.trlast b.dn{color:var(--warn)}
+.trpads{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin:10px 0 4px}
+.trpads label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}.trpads input{text-align:center;padding:8px 6px}
+.trnotef{display:flex;flex-direction:column;gap:3px;margin:10px 0 2px;font-size:12px;color:var(--muted)}.trnotef textarea{resize:vertical;min-height:38px;font:inherit;font-size:14px;padding:8px 10px}
+.padrows{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
+.padrow{display:flex;align-items:center;gap:10px;padding:4px 6px 4px 10px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
+.padrow.on{border-color:var(--brand);background:var(--brand-soft)}
+.padrow label{flex:1;display:flex;align-items:center;gap:8px;font-size:14.5px;cursor:pointer}.padrow input[type=checkbox]{width:18px;height:18px;accent-color:var(--brand)}
+.padrow .in-t{width:96px;text-align:center;padding:7px 6px}
+.trbig{height:260px;background-size:contain;background-color:var(--soft)}.trcap{margin:4px 0;font-size:14px;color:var(--ink)}.trcap b{color:var(--muted);font-weight:650}
+.trday{display:flex;flex-direction:column;gap:6px}
+.trdr{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:1px solid var(--line)}.trdr>div{flex:1;min-width:0;display:flex;flex-direction:column}
+.trdr small{font-size:12.5px;color:var(--muted)}.trdr.faint{opacity:.7}
+.trdx{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:0;background:var(--soft);color:var(--muted);font-size:15px;cursor:pointer}
 
 /* ================= Tablet und PC ================= */
 .side{display:none}
@@ -1237,8 +1265,8 @@ function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{}
 function topTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{},top=navTopOf(s);return tabOrder(s).filter(key=>tabOn(key,s)&&top.includes(key)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='31';
-const MIN_SCRIPT=32;   /* so neu muss Code.gs mindestens sein */
+const APP_VERSION='32';
+const MIN_SCRIPT=33;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nf0=new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
@@ -1640,7 +1668,8 @@ const L={
     return {};},
   savePlans(plans){TRD().plans=JSON.parse(JSON.stringify(plans));return {};},
   logTraining(e){const L2=TRD().log,i=L2.findIndex(r=>r[0]===e.date&&r[1]===e.plan&&r[2]===(e.dev||''));if(i>=0)L2.splice(i,1);
-    if(!e.remove){const n=v=>v===''||v===null||v===undefined||isNaN(+v)?null:+v,pd=(e.pads||[]).concat(['','','']);L2.push([e.date,e.plan,e.dev||'',n(e.kg),n(e.sets),n(e.reps),pd[0]||'',pd[1]||'',pd[2]||'',n(e.level),n(e.dur),e.note||'']);}return {};},
+    if(!e.remove){const n=v=>v===''||v===null||v===undefined||isNaN(+v)?null:+v,pd=(e.pads||[]).concat(['','','','','']);L2.push([e.date,e.plan,e.dev||'',n(e.kg),n(e.sets),n(e.reps),pd[0]||'',pd[1]||'',pd[2]||'',n(e.level),n(e.dur),e.note||'',pd[3]||'',pd[4]||'',e.counts===false?0:1]);}return {};},
+  deleteTraining(q){const it=q.items?q.items.map(x=>x.plan+'\u0001'+(x.dev||'')):null;const T=TRD();T.log=T.log.filter(r=>!(r[0]===q.date&&(!it||it.includes(r[1]+'\u0001'+r[2]))));return {};},
   setRating(name,v){const st=S.data.recipeStats=S.data.recipeStats||{};st[name]=Object.assign({n:0},st[name]||{},{rating:v});return {};},
   deleteRecipe(name){const oi=instrFor(name);S.data.recipes=(S.data.recipes||[]).filter(r=>r.name!==name);S.data.instructions=(S.data.instructions||[]).filter(x=>x!==oi);return {};}
 };
@@ -3048,7 +3077,7 @@ function claudeGo(){
 }
 function openClaudeQueue(){
   const q=claudeQueue();
-  openSheet(`<h2>Wartet auf Claude</h2><p class="sub">Das erledigt Claude beim nächsten Gespräch sowieso. Wenn du es gleich willst: Claude jetzt öffnen.</p>
+  openSheet(`<h2>Wartet auf KI</h2><p class="sub">Das erledigt Claude beim nächsten Gespräch sowieso. Wenn du es gleich willst: Claude jetzt öffnen.</p>
     <div class="ing">${q.map(i=>`<div><span>${esc(cqText(i))}${i.amount&&!/^Auftrag/.test(i.what)?' · '+esc(i.amount):''}</span></div>`).join('')}</div>
     <button class="btn" data-act="claudeGo">Claude jetzt öffnen</button>
     <p class="hint">Öffnet Claude mit genau dieser Liste (steht sie nicht im Eingabefeld: einfügen, sie ist kopiert). Rezepte nachrechnen und Bilder suchen dauert ein paar Minuten. Danach hier oben auf Aktualisieren tippen.</p>`);
@@ -3079,7 +3108,7 @@ function renderSide(){
     <nav class="side-nav">${navTabs().map(([key,lbl],i)=>link(key,{anleitungen:'Anleitungen',wochenplan:'Wochenplan'}[key]||lbl).replace('</span>',`</span><kbd>${i<9?i+1:''}</kbd>`)).join('')}</nav>
     ${pages.length?`<div class="side-h">Mehr</div><nav class="side-nav">${pages.map(x=>link(x.key,x.title,true)).join('')}</nav>`:''}
     <nav class="side-nav side-low"><button class="sl" data-act="openExport">${ICON.report}<span>Bericht und Export</span></button>
-      ${claudeQueue().length?`<button class="sl" data-act="claudeGo">${ICON.claude}<span>Wartet auf Claude</span><b class="sbadge">${claudeQueue().length}</b></button>`:''}
+      ${claudeQueue().length?`<button class="sl" data-act="claudeGo">${ICON.claude}<span>Wartet auf KI</span><b class="sbadge">${claudeQueue().length}</b></button>`:''}
       ${geminiPrimary()?`<button class="sl sl-ai"><span class="aistar">✨</span><span>Mit KI eintragen</span></button>`:`<a class="sl" href="https://claude.ai/new" target="_blank" rel="noopener">${ICON.claude}<span>Mit Claude eintragen</span></a>`}
       <button class="sl" data-act="sideSettings">${ICON.settings}<span>Einstellungen</span></button></nav>
     <div class="side-keys"><kbd>←</kbd><kbd>→</kbd> blättern · <kbd>T</kbd> heute · <kbd>Esc</kbd> schließen</div></div>`;
@@ -3651,11 +3680,11 @@ document.addEventListener('click',ev=>{
 (function(){
   let st=null,suppress=0;
   const W_DEL=104,W_AGAIN=150;
-  function close(row){if(!row)return;const it=row.querySelector(':scope>.item,:scope>.pitem,:scope>.trh');if(it){it.style.transition='transform .2s';it.style.transform='';}row.classList.remove('open-l','open-r','swiping');delete row.dataset.open;}
+  function close(row){if(!row)return;const it=row.querySelector(':scope>.item,:scope>.pitem,:scope>.trh,:scope>.trx-h');if(it){it.style.transition='transform .2s';it.style.transform='';}row.classList.remove('open-l','open-r','swiping');delete row.dataset.open;}
   function closeAll(except){document.querySelectorAll('.swr[data-open]').forEach(r=>{if(r!==except)close(r);});}
   document.addEventListener('touchstart',e=>{
-    const it=e.target.closest('.swr>.item,.swr>.pitem,.swr>.trh');
-    if(!it||S.selMode||S.sheetOpen||e.target.closest('.drag-h,input,select,.trdone')){if(!e.target.closest('.swa'))closeAll();st=null;return;}
+    const it=e.target.closest('.swr>.item,.swr>.pitem,.swr>.trh,.swr>.trx-h');
+    if(!it||S.selMode||(S.tr&&S.tr.sel)||S.sheetOpen||e.target.closest('.drag-h,input,select,textarea,.trdone,.trok')){if(!e.target.closest('.swa'))closeAll();st=null;return;}
     const row=it.parentNode;closeAll(row);
     st={row,it,x:e.touches[0].clientX,y:e.touches[0].clientY,lock:null,dx:0,base:row.dataset.open==='r'?-W_DEL:row.dataset.open==='l'?W_AGAIN:0};
     it.style.transition='none';
@@ -3679,7 +3708,7 @@ document.addEventListener('click',ev=>{
   },{passive:true});
   /* Tipp direkt nach dem Wischen oder auf einen offenen Eintrag: nur zurückschieben */
   document.addEventListener('click',ev=>{
-    const it=ev.target.closest('.swr>.item,.swr>.pitem,.swr>.trh');if(!it)return;
+    const it=ev.target.closest('.swr>.item,.swr>.pitem,.swr>.trh,.swr>.trx-h');if(!it)return;
     if(Date.now()-suppress<400||it.parentNode.dataset.open){ev.stopPropagation();ev.preventDefault();close(it.parentNode);}
   },true);
   document.addEventListener('click',ev=>{
@@ -3981,44 +4010,59 @@ document.addEventListener('click',ev=>{
   if(a==='lblFixSave'){lblFixSave();return;}
   if(a==='aiRecNew'){openAdd(null);S.add.step='ai';S.add.aiMode='rec';S.add.aiText='';drawAdd();return;}
 });
-/* ================= Training (v27, Script ab 25) =================
-   Pläne frei anlegen, auf-/zuklappen, sortieren (Griff ⋮⋮ ziehen), per Wischen löschen.
-   Geräte kommen aus der gemeinsamen Datenbank (für alle an deinem Script), mit Foto und eigenen Polster-Namen.
-   Werte vom letzten Mal sind vorausgefüllt; Änderungen werden nach kurzer Pause EINMAL gespeichert (pro Tag eine Zeile). */
+/* ================= Training (v27, überarbeitet v32 / Script ab 33) =================
+   Pläne frei anlegen, auf-/zuklappen, sortieren (Griff ⋮⋮ ziehen), per Wischen löschen (Pläne UND Übungen).
+   Geräte kommen aus der gemeinsamen Datenbank (für alle an deinem Script), mit Foto und festen Polstern:
+   Sitz, Rücken, Fußplatte, Griff, Sonstiges (alte, eigene Namen bleiben erhalten).
+   Werte vom letzten Mal sind vorausgefüllt; Änderungen werden nach kurzer Pause EINMAL gespeichert (pro Tag eine Zeile).
+   v32: Als „trainiert“ zählt nur ✓ an der Übung, „Heute trainiert“ am Plan oder eine Gewichtsänderung
+        gegenüber dem letzten Training. Startwerte und Polster zählen nicht (Spalte „Zählt als Training“ = nein).
+   Lange drücken auf eine Übung = Auswählen → Supersatz bilden / lösen / löschen.
+   Tag im 4-Wochen-Streifen antippen = Einträge dieses Tages ansehen und löschen. */
 ICON.training='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>';
 const TR_MINI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></svg>';
+const PAD_STD=['Sitz','Rücken','Fußplatte','Griff','Sonstiges'];
 const canTR=()=>S.data&&(DEMO||(LIVE&&(+S.data.scriptVersion||0)>=25));
 const TRD=()=>S.data.training||(S.data.training={devices:[],plans:[],log:[]});
 const trOpt=()=>Object.assign({step:0.5,timer:false,timerSec:90,trainedBtn:true,cal:true},(S.data.settings||{}).training||{});
 const trDev=id=>(TRD().devices||[]).find(d=>d.id===id);
-const TRS=()=>S.tr||(S.tr={open:{},ex:null,pend:{},t:null});
-function trLast(devId){let best=null;for(const r of TRD().log)if(r[2]===devId&&(!best||r[0]>=best[0]))best=r;
-  return best?{date:best[0],kg:best[3],sets:best[4],reps:best[5],pads:[best[6],best[7],best[8]],level:best[9],dur:best[10]}:null;}
-function trDays(){const s=new Set();for(const r of TRD().log)s.add(r[0]);return s;}
+const TRS=()=>S.tr||(S.tr={open:{},ex:null,pend:{},t:null,fresh:{},sel:null,ren:null});
+/* Log-Zeile: 0 Datum,1 Plan,2 Geräte-ID,3 kg,4 Sätze,5 Wdh,6-8 Polster 1-3,9 Stufe,10 Dauer,11 Notiz,12-13 Polster 4-5,14 zählt (1/0) */
+const trCnt=r=>r[14]!==0;
+const rowPads=r=>[r[6]||'',r[7]||'',r[8]||'',r[12]||'',r[13]||''];
+function trLast(devId,before){let best=null;for(const r of TRD().log)if(r[2]===devId&&(!before||r[0]<before)&&(!best||r[0]>=best[0]))best=r;
+  return best?{date:best[0],kg:best[3],sets:best[4],reps:best[5],pads:rowPads(best),level:best[9],dur:best[10]}:null;}
+function trDays(){const s=new Set();for(const r of TRD().log)if(trCnt(r))s.add(r[0]);return s;}
 const trainedOn=d=>mods().training&&trOpt().cal!==false&&trDays().has(d);
-function planLast(name){let d='';for(const r of TRD().log)if(r[1]===name&&r[0]>d)d=r[0];return d;}
+function planLast(name){let d='';for(const r of TRD().log)if(r[1]===name&&trCnt(r)&&r[0]>d)d=r[0];return d;}
+const trRowToday=(plan,dev)=>TRD().log.find(r=>r[0]===today()&&r[1]===plan&&r[2]===dev);
+const doneToday=(plan,dev)=>{const r=trRowToday(plan,dev);return !!(r&&trCnt(r));};
 function agoTxt(d){if(!d)return 'noch nie';const n=Math.round((parse(today())-parse(d))/864e5);return n===0?'heute':n===1?'gestern':'vor '+n+' Tagen';}
-const devThumb=(d,cls)=>d&&d.img?`<div class="dimg ${cls||''}" data-dimg="${esc(d.img)}" style="${imgCache(d.img)?`background-image:url('${imgCache(d.img)}')`:''}"></div>`:`<div class="dimg none ${cls||''}">${d&&d.kind==='cardio'?'🏃':ICON.training}</div>`;
+const devThumb=(d,cls,zoom)=>d&&d.img?`<div class="dimg ${cls||''}" data-dimg="${esc(d.img)}" ${zoom?`data-act="trImg" data-id="${esc(d.id)}" role="button" aria-label="Bild groß"`:''} style="${imgCache(d.img)?`background-image:url('${imgCache(d.img)}')`:''}"></div>`:`<div class="dimg none ${cls||''}">${d&&d.kind==='cardio'?'🏃':ICON.training}</div>`;
 function loadDevImages(){
-  document.querySelectorAll('.dimg[data-dimg]').forEach(el=>{const id=el.dataset.dimg;if(imgCache(id)||el.dataset.loading||!LIVE)return;el.dataset.loading='1';
+  document.querySelectorAll('.dimg[data-dimg],.ph-prev[data-dimg]').forEach(el=>{const id=el.dataset.dimg;if(imgCache(id)||el.dataset.loading||!LIVE)return;el.dataset.loading='1';
     api(CONN.url,CONN.key,'getDeviceImage',[id]).then(r=>shrinkDataUrl('data:'+r.mime+';base64,'+r.b64,400,0.8)).then(u=>{if(!u)return;imgStore(id,u);
-      document.querySelectorAll('.dimg[data-dimg="'+id+'"]').forEach(x=>x.style.backgroundImage="url('"+u+"')");}).catch(()=>{});});
+      document.querySelectorAll('[data-dimg="'+id+'"]').forEach(x=>x.style.backgroundImage="url('"+u+"')");}).catch(()=>{});});
 }
+const pads5=p=>(p||[]).concat(['','','','','']).slice(0,5);
 function trVals(planName,devId){const k2=planName+'|'+devId,T=TRS();if(T.pend[k2])return T.pend[k2].v;const l=trLast(devId);
-  return l?{kg:l.kg,sets:l.sets,reps:l.reps,pads:l.pads.slice(),level:l.level,dur:l.dur}:{kg:null,sets:3,reps:10,pads:['','',''],level:null,dur:null};}
+  return l?{kg:l.kg,sets:l.sets,reps:l.reps,pads:l.pads.slice(),level:l.level,dur:l.dur}:{kg:null,sets:3,reps:10,pads:pads5(),level:null,dur:null};}
+function padTxt(d,pads){return (d.pads||[]).map((p,i)=>pads&&pads[i]?esc(p)+' '+esc(pads[i]):'').filter(Boolean).join(', ');}
 function trSum(d,v){
   if(!d)return 'Gerät gelöscht';
   if(d.kind==='cardio')return [v.level!=null&&v.level!==''?esc(d.intLabel||'Stufe')+' '+fmtN(v.level):'',v.dur?fmtN(v.dur)+' min':''].filter(Boolean).join(' · ')||'noch nichts eingetragen';
-  const pads=(d.pads||[]).map((p,i)=>v.pads&&v.pads[i]?esc(p)+' '+esc(v.pads[i]):'').filter(Boolean).join(', ');
-  return [v.kg!=null&&v.kg!==''?fmtN(v.kg)+' kg':'',v.sets&&v.reps?v.sets+'×'+v.reps:'',pads].filter(Boolean).join(' · ')||'noch nichts eingetragen';
+  return [v.kg!=null&&v.kg!==''?fmtN(v.kg)+' kg':'',v.sets&&v.reps?v.sets+'×'+v.reps:'',padTxt(d,v.pads)].filter(Boolean).join(' · ')||'noch nichts eingetragen';
 }
+/* Übung aus einer Liste nehmen, ohne Supersätze anderer Übungen zu zerreißen */
+function trRemove(items,i){const x=items[i];if(i>0&&items[i-1].sup)items[i-1].sup=!!x.sup&&i+1<items.length;items.splice(i,1);x.sup=false;return x;}
 /* ---------- Ansicht ---------- */
 function vTraining(){
   if(!canTR())return '<div class="card faint">Für das Training bitte das Script im Sheet auf Version 25 bringen.</div>';
-  const T=TRS(),plans=TRD().plans||[],days=trDays(),t=today();
-  let strip='';for(let i=27;i>=0;i--){const d=addDays(t,-i);strip+=`<i class="${days.has(d)?'on':''} ${d===t?'t':''}" title="${shortDate(d)}">${days.has(d)?TR_MINI:''}</i>`;}
+  const plans=TRD().plans||[],days=trDays(),t=today();
+  let strip='';for(let i=27;i>=0;i--){const d=addDays(t,-i),on=days.has(d),pn=on?[...new Set(TRD().log.filter(r=>r[0]===d&&trCnt(r)).map(r=>r[1]))].join(', '):'';
+    strip+=`<button class="${on?'on':''} ${d===t?'t':''}" data-act="trDay" data-d="${d}" title="${shortDate(d)}${pn?': '+esc(pn):''}" aria-label="${shortDate(d)}">${on?TR_MINI:''}</button>`;}
   const n28=[...days].filter(d=>d>addDays(t,-28)).length;
-  let h=`<div class="trstrip"><div class="trs-l"><b>${n28}×</b> trainiert in 4 Wochen</div><div class="trs-d">${strip}</div></div>`;
+  let h=`<div class="trstrip"><button class="trs-l" data-act="trDays"><b>${n28}×</b> trainiert in 4 Wochen<small>Antippen: Tage ansehen oder löschen ›</small></button><div class="trs-d">${strip}</div></div>`;
   h+=`<div class="trplans" data-list="plans">${plans.map((p,pi)=>trPlanHtml(p,pi)).join('')}</div>`;
   h+=`<button class="btn ghost trnew" data-act="trPlanNew">${ICON.plus} Neuer Plan</button>`;
   if(!plans.length)h+=`<p class="hint">Lege einen Plan an, z. B. „Oberkörper“, und füge Übungen hinzu. Geräte, die du anlegst, stehen allen zur Verfügung, die mit deiner App verbunden sind.</p>`;
@@ -4026,20 +4070,32 @@ function vTraining(){
   return h;
 }
 function trPlanHtml(p,pi){
-  const T=TRS(),o=!!T.open[p.id],last=planLast(p.name),tdy=last===today(),opt=trOpt();
+  const T=TRS(),o=!!T.open[p.id],last=planLast(p.name),tdy=last===today(),opt=trOpt(),sel=T.sel&&T.sel.pi===pi?T.sel:null;
   let h=`<div class="card trp ${o?'open':''}" data-pi="${pi}"><div class="swr trh-w"><button class="swa swa-r" data-act="swTrDel" data-pi="${pi}" tabindex="-1"><span>Löschen?</span></button>
     <div class="trh"><span class="drag-h" data-list="plans" data-i="${pi}" aria-label="Plan verschieben">⋮⋮</span>
       <button class="trh-m" data-act="trToggle" data-id="${p.id}"><b>${esc(p.name)}</b><small>${p.items.length} ${p.items.length===1?'Übung':'Übungen'} · zuletzt ${agoTxt(last)}</small></button>
+      ${o?`<button class="trren" data-act="trRen" data-pi="${pi}" aria-label="Umbenennen" title="Umbenennen">✎</button>`:''}
       ${opt.trainedBtn?`<button class="trdone ${tdy?'on':''}" data-act="trDone" data-pi="${pi}" title="${tdy?'Heute trainiert – nochmal tippen nimmt es zurück':'Heute trainiert'}">${tdy?'✓ heute':'Heute trainiert'}</button>`:''}
       <span class="trchev">${o?'▴':'▾'}</span></div></div>`;
   if(o){
-    h+=`<div class="trbody"><label class="trname"><span>Name</span><input class="in-t" data-trname="${pi}" value="${esc(p.name)}" maxlength="60"></label><div class="trex" data-list="ex:${pi}">`;
-    p.items.forEach((it,xi)=>{const d=trDev(it.dev),v=trVals(p.name,it.dev),eo=T.ex===p.id+'|'+xi,supIn=xi>0&&p.items[xi-1].sup;
-      h+=`<div class="trx ${eo?'open':''} ${it.sup?'sup-a':''} ${supIn?'sup-b':''}" data-xi="${xi}">
-        <div class="trx-h"><span class="drag-h" data-list="ex:${pi}" data-i="${xi}" aria-label="Übung verschieben">⋮⋮</span>
-        <button class="trx-m" data-act="trEx" data-pi="${pi}" data-xi="${xi}">${devThumb(d,'sm')}<span><b>${esc(d?d.name:'Gerät gelöscht')}</b><small>${trSum(d,v)}</small></span></button></div>
+    h+=`<div class="trbody">${T.ren===p.id?`<label class="trname"><span>Name</span><input class="in-t" data-trname="${pi}" value="${esc(p.name)}" maxlength="60"></label>`:''}`;
+    if(sel){const xs=[...sel.xs],anySup=xs.some(i=>p.items[i]&&(p.items[i].sup||(i>0&&p.items[i-1].sup)));
+      h+=`<div class="trselbar"><b>${xs.length} ausgewählt</b>
+        ${xs.length>=2?`<button class="pbtn" data-act="trSupMake">Supersatz bilden</button>`:''}
+        ${anySup?`<button class="pbtn" data-act="trSupFree">Supersatz lösen</button>`:''}
+        <button class="pbtn bad" data-act="trSelDel">Löschen</button><button class="linkbtn" data-act="trSelEnd">Fertig</button>
+        ${xs.length<2?'<small>Tippe eine zweite Übung an, um einen Supersatz zu bilden.</small>':''}</div>`;}
+    else if(p.items.length>1)h+=`<p class="trtip">Lange auf eine Übung drücken: Supersatz bilden oder löschen.</p>`;
+    h+=`<div class="trex" data-list="ex:${pi}">`;
+    p.items.forEach((it,xi)=>{const d=trDev(it.dev),v=trVals(p.name,it.dev),eo=!sel&&T.ex===p.id+'|'+xi,supIn=xi>0&&p.items[xi-1].sup,ok=doneToday(p.name,it.dev),isSel=sel&&sel.xs.has(xi);
+      h+=`<div class="trx ${eo?'open':''} ${it.sup?'sup-a':''} ${supIn?'sup-b':''} ${isSel?'sel':''}" data-xi="${xi}">
+        <div class="swr trx-w"><button class="swa swa-r" data-act="swTrExDel" data-pi="${pi}" data-xi="${xi}" tabindex="-1"><span>Löschen?</span></button>
+        <div class="trx-h">${sel?`<span class="trck">${isSel?'✓':''}</span>`:`<span class="drag-h" data-list="ex:${pi}" data-i="${xi}" aria-label="Übung verschieben">⋮⋮</span>`}
+        ${devThumb(d,'sm',!sel)}
+        <button class="trx-m" data-act="trEx" data-pi="${pi}" data-xi="${xi}"><span><b>${esc(d?d.name:'Gerät gelöscht')}</b><small>${trSum(d,v)}</small>${it.note?`<i class="trnote">📝 ${esc(it.note)}</i>`:''}</span></button>
+        ${!sel&&d?`<button class="trok ${ok?'on':''}" data-act="trOk" data-pi="${pi}" data-xi="${xi}" aria-label="${ok?'Heute gemacht – tippen nimmt es zurück':'Heute gemacht'}" title="${ok?'Heute gemacht':'Gemacht?'}">✓</button>`:''}</div></div>
         ${it.sup?'<div class="supl">Supersatz ↓</div>':''}${eo&&d?trEditor(p,pi,xi,d,v):''}</div>`;});
-    h+=`</div><button class="linkbtn" data-act="trAddEx" data-pi="${pi}">+ Übung hinzufügen</button></div>`;
+    h+=`</div>${sel?'':`<button class="linkbtn" data-act="trAddEx" data-pi="${pi}">+ Übung hinzufügen</button>`}</div>`;
   }
   return h+'</div>';
 }
@@ -4047,16 +4103,25 @@ function stepper(key,val,step,lbl,unit){
   return `<div class="trst"><span class="trst-l">${lbl}</span><div class="trst-c"><button data-act="trStep" data-k="${key}" data-d="-${step}" aria-label="weniger">−</button>
     <input class="in-t num" inputmode="decimal" data-trin="${key}" value="${val===null||val===undefined||val===''?'':String(val).replace('.',',')}">${unit?`<em>${unit}</em>`:''}<button data-act="trStep" data-k="${key}" data-d="${step}" aria-label="mehr">+</button></div></div>`;
 }
+/* „Letztes Mal“-Zeile mit Steigerung */
+function trLastLine(d,v){
+  const l=trLast(d.id,today());if(!l)return '<div class="trlast">Neu in deinem Training – die Werte gelten als Startwerte.</div>';
+  let txt='Zuletzt '+agoTxt(l.date)+': ',diff='';
+  if(d.kind==='cardio'){txt+=trSum(d,l);if(v.level!=null&&l.level!=null&&+v.level!==+l.level){const x=+v.level-l.level;diff=(x>0?'+':'')+fmtN(x)+' '+esc(d.intLabel||'Stufe');}}
+  else{txt+=[l.kg!=null?fmtN(l.kg)+' kg':'',l.sets&&l.reps?l.sets+'×'+l.reps:''].filter(Boolean).join(' · ')||'ohne Gewicht';
+    if(v.kg!=null&&l.kg!=null&&+v.kg!==+l.kg){const x=Math.round((v.kg-l.kg)*100)/100;diff=(x>0?'+':'')+fmtN(x)+' kg';}}
+  return `<div class="trlast">${txt}${diff?` <b class="${diff[0]==='+'?'up':'dn'}">${diff}</b>`:''}</div>`;
+}
 function trEditor(p,pi,xi,d,v){
-  const opt=trOpt(),it=p.items[xi];let h='<div class="tred">';
+  const opt=trOpt(),it=p.items[xi];let h='<div class="tred">'+trLastLine(d,v);
   if(d.kind==='cardio')h+=stepper('level',v.level,0.5,esc(d.intLabel||'Stufe'),'')+stepper('dur',v.dur,1,'Dauer','min');
   else{h+=stepper('kg',v.kg,opt.step,'Gewicht','kg')+stepper('sets',v.sets,1,'Sätze','')+stepper('reps',v.reps,1,'Wiederholungen','');
-    (d.pads||[]).forEach((pd,i)=>{h+=`<div class="trst"><span class="trst-l">${esc(pd)}</span><div class="trst-c"><input class="in-t" data-trin="pad${i}" value="${esc(v.pads&&v.pads[i]||'')}" placeholder="z. B. 3"></div></div>`;});}
+    if((d.pads||[]).length)h+=`<div class="trpads">${(d.pads||[]).map((pd,i)=>`<label><span>${esc(pd)}</span><input class="in-t num" inputmode="decimal" data-trin="pad${i}" value="${esc(v.pads&&v.pads[i]||'')}" placeholder="–"></label>`).join('')}</div>`;}
+  h+=`<label class="trnotef"><span>Notiz (optional)</span><textarea class="in-t" data-trnote="${pi}|${xi}" rows="1" maxlength="300" placeholder="z. B. langsam ablassen, Griff eng">${esc(it.note||'')}</textarea></label>`;
   h+=`<div class="trsave" id="trSave">${TRS().pend[p.name+'|'+it.dev]?'wird gleich gespeichert …':'Änderungen werden automatisch gespeichert'}</div>`;
   h+=trChart(d,it.dev);
   h+=`<div class="tracts">${opt.timer?`<button class="pbtn" data-act="trTimer">⏱ Pause ${opt.timerSec} s</button>`:''}
-    ${xi<p.items.length-1?`<button class="linkbtn" data-act="trSup" data-pi="${pi}" data-xi="${xi}">${it.sup?'Supersatz lösen':'Supersatz mit nächster'}</button>`:''}
-    <button class="linkbtn" data-act="trDevEdit" data-id="${d.id}">Gerät bearbeiten</button>
+    <button class="linkbtn" data-act="trDevEdit" data-id="${d.id}" data-pi="${pi}" data-xi="${xi}">Gerät bearbeiten</button>
     <button class="linkbtn" style="color:var(--bad)" data-act="trExDel" data-pi="${pi}" data-xi="${xi}">Aus Plan entfernen</button></div>`;
   return h+'</div>';
 }
@@ -4071,28 +4136,70 @@ function trChart(d,devId){
     <div class="trch-x"><span>${shortDate(pts[0][0])}</span><span>${shortDate(pts[pts.length-1][0])}</span></div></div>`;
 }
 /* ---------- Speichern: erst nach 2,5 s Ruhe, eine Änderung pro Tag ---------- */
-function trChanged(pi,xi,patch){
-  const p=TRD().plans[pi],it=p.items[xi],d=trDev(it.dev),k2=p.name+'|'+it.dev,T=TRS();
-  const v=Object.assign({},trVals(p.name,it.dev),patch);if(patch.pads)v.pads=patch.pads;
-  T.pend[k2]={pi,xi,v};const el=$('#trSave');if(el)el.textContent='wird gleich gespeichert …';
+function trChanged(pi,xi,patch,opts){
+  const p=TRD().plans[pi],it=p.items[xi],d=trDev(it.dev),k2=p.name+'|'+it.dev,T=TRS(),old=T.pend[k2];
+  const v=Object.assign({},trVals(p.name,it.dev),patch);v.pads=pads5(patch.pads||v.pads);
+  const main=d&&(d.kind==='cardio'?('level' in patch||'dur' in patch):'kg' in patch);
+  T.pend[k2]={pi,xi,v,main:!!(old&&old.main)||main,force:!!(old&&old.force)||!!(opts&&opts.force),setup:!!(opts&&opts.setup)||!!(old&&old.setup)};
+  const el=$('#trSave');if(el)el.textContent='wird gleich gespeichert …';
   clearTimeout(T.t);T.t=setTimeout(trFlush,2500);
-  const sm=document.querySelector(`.trx[data-xi="${xi}"] .trx-m small`);if(sm&&d)sm.innerHTML=trSum(d,v);
+  const sm=document.querySelector(`.trp[data-pi="${pi}"] .trx[data-xi="${xi}"] .trx-m small`);if(sm&&d)sm.innerHTML=trSum(d,v);
+}
+/* Zählt diese Änderung als Training? Nur ✓, oder Gewicht (Cardio: Stufe/Dauer) anders als beim letzten Training. */
+function trCounts(pe,p,d){
+  const ex=trRowToday(p.name,d.id);if(ex&&trCnt(ex))return true;if(pe.force)return true;
+  if(pe.setup||!pe.main||TRS().fresh[p.name+'|'+d.id])return false;
+  const l=trLast(d.id,today()),v=pe.v;if(!l)return false;
+  if(d.kind==='cardio')return (v.level!=null&&+v.level!==+(l.level||0))||(v.dur!=null&&+v.dur!==+(l.dur||0));
+  return v.kg!=null&&v.kg!==''&&(l.kg==null||+v.kg!==+l.kg);
 }
 function trFlush(){
   const T=TRS(),ks=Object.keys(T.pend);if(!ks.length)return;
-  ks.forEach(k2=>{const {pi,xi,v}=T.pend[k2],p=TRD().plans[pi];if(!p)return;const it=p.items[xi],d=trDev(it&&it.dev);if(!d)return;
-    commit('logTraining',[{date:today(),plan:p.name,dev:d.id,devName:d.name,kg:v.kg,sets:v.sets,reps:v.reps,pads:v.pads,level:v.level,dur:v.dur}]);});
+  ks.forEach(k2=>{const pe=T.pend[k2],{pi,xi,v}=pe,p=TRD().plans[pi];if(!p)return;const it=p.items[xi],d=trDev(it&&it.dev);if(!d)return;
+    const c=trCounts(pe,p,d);
+    commit('logTraining',[{date:today(),plan:p.name,dev:d.id,devName:d.name,kg:v.kg,sets:v.sets,reps:v.reps,pads:v.pads,level:v.level,dur:v.dur,counts:c}]);
+    /* ✓ und „zuletzt“ an Ort und Stelle nachziehen, ohne neu zu zeichnen (sonst springt die Tastatur weg) */
+    const ok=document.querySelector(`.trp[data-pi="${pi}"] .trx[data-xi="${xi}"] .trok`);if(ok)ok.classList.toggle('on',c);});
   T.pend={};const el=$('#trSave');if(el)el.textContent='✓ gespeichert';
 }
 window.addEventListener('pagehide',()=>{try{trFlush();}catch(e){}});
 function trSavePlans(){commit('savePlans',[TRD().plans]);}
+/* ---------- Tag ansehen / löschen ---------- */
+function trDayHtml(d){
+  const rows=TRD().log.filter(r=>r[0]===d),plans=[...new Set(rows.map(r=>r[1]))];
+  let h=`<h2>${shortDate(d)}</h2><p class="sub">${rows.some(trCnt)?'Trainiert':'Kein Training gezählt'}${rows.length?' · '+rows.length+' '+(rows.length===1?'Eintrag':'Einträge'):''}</p>`;
+  if(!rows.length)return h+'<div class="empty">An diesem Tag ist nichts eingetragen.</div>';
+  plans.forEach(pn=>{h+=`<div class="rfh">${esc(pn||'Ohne Plan')}</div><div class="trday">`;
+    rows.filter(r=>r[1]===pn).forEach(r=>{const dv=r[2]?trDev(r[2]):null,v={kg:r[3],sets:r[4],reps:r[5],pads:rowPads(r),level:r[9],dur:r[10]};
+      h+=`<div class="trdr ${trCnt(r)?'':'faint'}"><div><b>${r[2]?esc(dv?dv.name:'Gerät gelöscht'):'„Heute trainiert“'}</b><small>${r[2]?trSum(dv,v):'ohne Werte'}${trCnt(r)?'':' · zählt nicht (nur Einstellung)'}</small></div>
+        <button class="trdx" data-act="trDayDel" data-d="${d}" data-plan="${esc(r[1])}" data-dev="${esc(r[2])}" aria-label="Eintrag löschen">✕</button></div>`;});
+    h+='</div>';});
+  return h+`<button class="btn ghost" style="margin-top:14px;color:var(--bad)" data-act="trDayAll" data-d="${d}">Ganzen Tag löschen</button>`;
+}
+function trDaysHtml(){
+  const ds=[...new Set(TRD().log.map(r=>r[0]))].sort().reverse().slice(0,60);
+  return `<h2>Trainingstage</h2><p class="sub">Tag antippen, um Einträge zu sehen oder zu löschen.</p><div class="trday">${ds.map(d=>{const rs=TRD().log.filter(r=>r[0]===d),c=rs.some(trCnt);
+    return `<button class="trdr ${c?'':'faint'}" data-act="trDay" data-d="${d}" style="text-align:left;background:var(--card);font:inherit;color:inherit;cursor:pointer"><div><b>${shortDate(d)} · ${agoTxt(d)}</b><small>${esc([...new Set(rs.map(r=>r[1]))].join(', '))} · ${rs.length} ${rs.length===1?'Eintrag':'Einträge'}${c?'':' · zählt nicht'}</small></div><span class="trchev">›</span></button>`;}).join('')||'<div class="empty">Noch nichts eingetragen.</div>'}</div>`;
+}
+/* ---------- Bild groß, mit Beschreibung ---------- */
+function trImgHtml(id){
+  const d=trDev(id);if(!d)return '';const T=TRS(),ctx=(TRD().plans||[]).map(p=>({p,it:p.items.find(x=>x.dev===id)})).find(x=>x.it);
+  const v=ctx?trVals(ctx.p.name,id):trVals('',id);
+  return `<h2>${esc(d.name)}</h2><div class="ph-prev trbig" data-dimg="${esc(d.img)}" style="${imgCache(d.img)?`background-image:url('${imgCache(d.img)}')`:''}"></div>
+    <p class="trcap">${d.kind==='cardio'?'Cardio · '+esc(d.intLabel||'Stufe'):'Kraft'}${d.by?' · angelegt von '+esc(d.by):''}</p>
+    ${d.kind!=='cardio'&&(d.pads||[]).length?`<p class="trcap"><b>Deine Einstellung:</b> ${padTxt(d,v.pads)||'noch keine'}</p>`:''}
+    <p class="trcap"><b>Zuletzt:</b> ${trSum(d,v)}</p>${ctx&&ctx.it.note?`<p class="trcap">📝 ${esc(ctx.it.note)}</p>`:''}`;
+}
 /* ---------- Geräte auswählen / anlegen ---------- */
 function trPickHtml(){
-  const P=S.trPick,q=norm(P.q||''),ds=(TRD().devices||[]).filter(d=>!q||norm(d.name).includes(q)).sort((a,b)=>a.name.localeCompare(b.name,'de'));
+  const P=S.trPick,q=norm(P.q||''),all=(TRD().devices||[]).filter(d=>!q||norm(d.name).includes(q)).sort((a,b)=>a.name.localeCompare(b.name,'de'));
+  const lu={};TRD().log.forEach(r=>{if(r[2]&&(!lu[r[2]]||r[0]>lu[r[2]]))lu[r[2]]=r[0];});
+  const recent=q?[]:all.filter(d=>lu[d.id]).sort((a,b)=>lu[b.id].localeCompare(lu[a.id])).slice(0,5),rest=all.filter(d=>!recent.includes(d));
+  const it=d=>`<button class="item" data-act="trPickDev" data-id="${d.id}">${devThumb(d,'sm')}<div class="it-main"><div class="it-name">${esc(d.name)}</div><div class="it-sub">${d.kind==='cardio'?'Cardio · '+esc(d.intLabel||'Stufe'):'Kraft'+(d.pads.length?' · '+d.pads.map(esc).join(', '):'')}${lu[d.id]?' · zuletzt '+agoTxt(lu[d.id]):d.by?' · von '+esc(d.by):''}</div></div></button>`;
   return `<h2>Übung hinzufügen</h2><p class="sub">Geräte aus der gemeinsamen Datenbank. Neue Geräte sehen alle, die mit deiner App verbunden sind.</p>
     <div class="search" style="box-shadow:none;background:var(--soft);margin:8px 0 10px">${ICON.search}<input id="trPickQ" placeholder="Gerät suchen" value="${esc(P.q||'')}" autocomplete="off"></div>
     <button class="aibtn" data-act="trDevNew" style="font-size:20px">＋<span><b>Neues Gerät anlegen</b><small>Mit Foto, Polstern und Art (Kraft oder Cardio)</small></span></button>
-    <div class="res" id="trPickList">${ds.map(d=>`<button class="item" data-act="trPickDev" data-id="${d.id}">${devThumb(d,'sm')}<div class="it-main"><div class="it-name">${esc(d.name)}</div><div class="it-sub">${d.kind==='cardio'?'Cardio · '+esc(d.intLabel||'Stufe'):'Kraft'+(d.pads.length?' · '+d.pads.map(esc).join(', '):'')}${d.by?' · von '+esc(d.by):''}</div></div></button>`).join('')||'<div class="empty">Noch keine Geräte. Leg das erste an.</div>'}</div>`;
+    <div class="res" id="trPickList">${recent.length?`<div class="rfh">Zuletzt benutzt</div>${recent.map(it).join('')}${rest.length?'<div class="rfh">Alle Geräte</div>':''}`:''}${rest.map(it).join('')||(recent.length?'':'<div class="empty">'+(q?'Kein Gerät gefunden.':'Noch keine Geräte. Leg das erste an.')+'</div>')}</div>`;
 }
 function trDevHtml(){
   const D=S.trDev;
@@ -4100,14 +4207,18 @@ function trDevHtml(){
     <label class="f"><span>Name</span><input class="in-t" id="tdName" value="${esc(D.name||'')}" placeholder="z. B. Beinpresse, Latzug, Laufband" maxlength="60"></label>
     <div class="seg2"><button class="${D.kind!=='cardio'?'on':''}" data-act="tdKind" data-v="kraft">🏋 Kraft</button><button class="${D.kind==='cardio'?'on':''}" data-act="tdKind" data-v="cardio">🏃 Cardio</button></div>
     ${D.kind==='cardio'?`<label class="f"><span>Was stellst du ein?</span><input class="in-t" id="tdInt" value="${esc(D.intLabel||'Stufe')}" placeholder="z. B. Geschwindigkeit, Stufe, Steigung"></label>`
-      :`<div class="rfh">Polster und Einstellungen (bis zu 3)</div>${[0,1,2].map(i=>`<input class="in-t" id="tdPad${i}" value="${esc((D.pads||[])[i]||'')}" placeholder="${['z. B. Rückenlehne','z. B. Sitzhöhe','z. B. Fußplatte'][i]}" style="margin-bottom:6px">`).join('')}`}
+      :`<div class="rfh">Polster und Einstellungen</div><p class="hint" style="margin:0 0 6px">Nur bei dem eintragen, was das Gerät hat – z. B. Sitz 3, Rücken 4. Nur diese kommen ins Gerät.</p>
+      <div class="padrows">${D.rows.map((r,i)=>`<div class="padrow ${r.on?'on':''}"><label><input type="checkbox" id="tdPadOn${i}" ${r.on?'checked':''}><span>${esc(r.name)}</span></label><input class="in-t num" inputmode="decimal" id="tdPadV${i}" value="${esc(r.v||'')}" placeholder="Stellung"></div>`).join('')}</div>`}
     <div class="rfh">Foto</div>
     ${D.imgUrl?`<div class="ph-prev" style="background-image:url('${D.imgUrl}');height:150px"></div><button class="linkbtn" data-act="tdImgDel">Foto entfernen</button>`
       :`<label class="ph-pick" style="padding:12px">${ICON.camera}<span>Foto aufnehmen oder auswählen (optional)</span><input type="file" accept="image/*" id="tdFile" hidden></label>`}
     <button class="btn" data-act="tdSave" style="margin-top:12px">${D.id?'Speichern':'Anlegen und hinzufügen'}</button>
     ${D.id?`<button class="linkbtn" style="color:var(--bad);display:block;margin:10px auto 0" data-act="tdDel">Gerät für alle löschen</button>`:''}`;
 }
-function tdRead(){const D=S.trDev;D.name=val('tdName');if($('#tdInt'))D.intLabel=val('tdInt');if($('#tdPad0'))D.pads=[0,1,2].map(i=>val('tdPad'+i));}
+function tdRows(pads,vals){const rows=PAD_STD.map(n=>({name:n,on:false,v:''}));
+  (pads||[]).forEach((n,i)=>{let r=rows.find(x=>x.name.toLowerCase()===String(n).toLowerCase());if(!r){r={name:n,on:false,v:''};rows.push(r);}r.on=true;r.v=vals&&vals[i]||'';});return rows;}
+function tdRead(){const D=S.trDev;D.name=val('tdName');if($('#tdInt'))D.intLabel=val('tdInt');
+  if($('#tdPadOn0'))D.rows.forEach((r,i)=>{r.v=val('tdPadV'+i);r.on=$('#tdPadOn'+i).checked||!!r.v;});}
 /* ---------- Pausen-Timer ---------- */
 function trTimerStart(){
   const sec=trOpt().timerSec||90;let el=$('#trtimer');if(!el){el=document.createElement('button');el.id='trtimer';el.className='trtimer';document.body.appendChild(el);el.onclick=()=>{clearInterval(el._i);el.remove();};}
@@ -4135,64 +4246,112 @@ function trTimerStart(){
   const end=()=>{if(!D)return;const d=D;D=null;d.item.style.transform='';d.item.classList.remove('dragging');d.items.forEach(x=>x.classList.remove('drop-b'));
     if(d.to===d.from)return;const plans=TRD().plans;
     if(d.key==='plans'){const [x]=plans.splice(d.from,1);plans.splice(d.to,0,x);}
-    else{const pi=+d.key.split(':')[1],arr=plans[pi].items;const [x]=arr.splice(d.from,1);x.sup=false;arr.splice(d.to,0,x);TRS().ex=null;}
-    vibe(10);trSavePlans();};
+    else{const pi=+d.key.split(':')[1],arr=plans[pi].items;const x=trRemove(arr,d.from);arr.splice(d.to,0,x);TRS().ex=null;}
+    vibe(10);trSavePlans();render();};
   document.addEventListener('pointerup',end);document.addEventListener('pointercancel',end);
+})();
+/* ---------- Lange drücken auf eine Übung = Auswählen ---------- */
+function trSelStart(pi,xi){const T=TRS();trFlush();T.sel={pi,xs:new Set([xi])};T.ex=null;vibe(25);render();}
+function trSelToggle(xi){const s=TRS().sel;if(s.xs.has(xi))s.xs.delete(xi);else s.xs.add(xi);if(!s.xs.size)TRS().sel=null;render();}
+(function(){
+  let t=null,sx=0,sy=0,fired=0;
+  const at=e=>{const h=e.target.closest('.trx-h');if(!h||e.target.closest('.drag-h,.trok,.swa,input,textarea'))return null;const tx=h.closest('.trx'),tp=h.closest('.trp');return tx&&tp?{pi:+tp.dataset.pi,xi:+tx.dataset.xi}:null;};
+  const fire=w=>{fired=Date.now();const s=TRS().sel;if(s&&s.pi===w.pi)trSelToggle(w.xi);else trSelStart(w.pi,w.xi);};
+  document.addEventListener('touchstart',e=>{const w=at(e);clearTimeout(t);t=null;if(!w||S.sheetOpen)return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;
+    t=setTimeout(()=>{t=null;const r=e.target.closest('.swr');if(r&&r.dataset.open)return;fire(w);},480);},{passive:true});
+  document.addEventListener('touchmove',e=>{if(t&&(Math.abs(e.touches[0].clientX-sx)>8||Math.abs(e.touches[0].clientY-sy)>8)){clearTimeout(t);t=null;}},{passive:true});
+  document.addEventListener('touchend',()=>{if(t){clearTimeout(t);t=null;}},{passive:true});
+  document.addEventListener('contextmenu',e=>{const w=at(e);if(!w)return;e.preventDefault();if(Date.now()-(window.lastTouch||0)<1500&&Date.now()-fired<1500)return;fire(w);});
+  document.addEventListener('click',e=>{if(fired&&Date.now()-fired<600&&e.target.closest('.trx-h')){fired=0;e.stopPropagation();e.preventDefault();}},true);
 })();
 /* ---------- Aktionen ---------- */
 document.addEventListener('click',ev=>{
   const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act,T=TRS(),plans=()=>TRD().plans;
   switch(a){
-  case 'trToggle':{trFlush();T.open[el.dataset.id]=!T.open[el.dataset.id];T.ex=null;render();break;}
-  case 'trPlanNew':{const p={id:'p'+Date.now().toString(36),name:'Neuer Plan',items:[]};plans().push(p);T.open[p.id]=true;trSavePlans();
+  case 'trToggle':{trFlush();T.open[el.dataset.id]=!T.open[el.dataset.id];T.ex=null;T.sel=null;T.ren=null;render();break;}
+  case 'trRen':{T.ren=T.ren===plans()[+el.dataset.pi].id?null:plans()[+el.dataset.pi].id;render();
+    setTimeout(()=>{const i=document.querySelector(`[data-trname="${el.dataset.pi}"]`);if(i){i.focus();i.select();}},60);break;}
+  case 'trPlanNew':{const p={id:'p'+Date.now().toString(36),name:'Neuer Plan',items:[]};plans().push(p);T.open[p.id]=true;T.ren=p.id;trSavePlans();
     setTimeout(()=>{const i=document.querySelector(`[data-trname="${plans().length-1}"]`);if(i){i.focus();i.select();}},80);break;}
   case 'trDone':{const p=plans()[+el.dataset.pi],tdy=planLast(p.name)===today()&&TRD().log.some(r=>r[0]===today()&&r[1]===p.name&&!r[2]);
-    if(planLast(p.name)===today()&&!tdy){toast('Heute schon trainiert (durch Änderungen an Gewichten).');break;}
+    if(planLast(p.name)===today()&&!tdy){toast('Heute schon trainiert (Übungen abgehakt).');break;}
     commit('logTraining',[{date:today(),plan:p.name,remove:tdy}]);vibe(12);if(!tdy)toast('„'+p.name+'“: heute trainiert ✓');break;}
-  case 'trEx':{trFlush();const k2=plans()[+el.dataset.pi].id+'|'+el.dataset.xi;T.ex=T.ex===k2?null:k2;render();break;}
+  case 'trEx':{const pi=+el.dataset.pi,xi=+el.dataset.xi;if(T.sel&&T.sel.pi===pi){trSelToggle(xi);break;}
+    trFlush();const k2=plans()[pi].id+'|'+xi;T.ex=T.ex===k2?null:k2;render();break;}
+  case 'trOk':{const pi=+el.dataset.pi,xi=+el.dataset.xi,p=plans()[pi],it=p.items[xi],d=trDev(it.dev);if(!d)break;
+    const on=doneToday(p.name,d.id);trChanged(pi,xi,{},{force:!on});
+    if(on){T.pend[p.name+'|'+d.id].force=false;T.pend[p.name+'|'+d.id].main=false;const ex=trRowToday(p.name,d.id);if(ex)ex[14]=0;}
+    trFlush();vibe(on?8:15);if(!on)toast(d.name+': gemacht ✓');render();break;}
   case 'trStep':{const tx=el.closest('.trx'),pi=+el.closest('.trp').dataset.pi,xi=+tx.dataset.xi,inp=tx.querySelector(`[data-trin="${el.dataset.k}"]`);
     const cur=parseFloat(String(inp.value).replace(',','.'))||0,nv=Math.max(0,Math.round((cur+ +el.dataset.d)*100)/100);inp.value=String(nv).replace('.',',');
     trChanged(pi,xi,{[el.dataset.k]:nv});vibe(5);break;}
-  case 'trAddEx':{S.trPick={pi:+el.dataset.pi,q:''};openSheet(trPickHtml());break;}
-  case 'trPickDev':{const pi=S.trPick.pi;plans()[pi].items.push({dev:el.dataset.id,sup:false});trSavePlans();closeSheet();T.ex=plans()[pi].id+'|'+(plans()[pi].items.length-1);render();break;}
-  case 'trDevNew':{S.trDev={kind:'kraft',pads:[],intLabel:'Stufe',back:'pick'};openSheet(trDevHtml());break;}
-  case 'trDevEdit':{const d=trDev(el.dataset.id);if(!d)break;S.trDev={id:d.id,name:d.name,kind:d.kind,pads:d.pads.slice(),intLabel:d.intLabel,imgUrl:d.img?imgCache(d.img):null,back:'close'};openSheet(trDevHtml());break;}
+  case 'trAddEx':{S.trPick={pi:+el.dataset.pi,q:''};openSheet(trPickHtml());loadDevImages();break;}
+  case 'trPickDev':{const pi=S.trPick.pi,p=plans()[pi];p.items.push({dev:el.dataset.id,sup:false});T.fresh[p.name+'|'+el.dataset.id]=true;trSavePlans();closeSheet();T.ex=p.id+'|'+(p.items.length-1);render();break;}
+  case 'trDevNew':{S.trDev={kind:'kraft',rows:tdRows([]),intLabel:'Stufe',back:'pick'};openSheet(trDevHtml());break;}
+  case 'trDevEdit':{const d=trDev(el.dataset.id);if(!d)break;const pi=+el.dataset.pi,xi=+el.dataset.xi,p=plans()[pi],v=p?trVals(p.name,d.id):{pads:[]};
+    S.trDev={id:d.id,name:d.name,kind:d.kind,rows:tdRows(d.pads,v.pads),intLabel:d.intLabel,imgUrl:d.img?imgCache(d.img):null,back:'close',ctx:p?{pi,xi}:null};openSheet(trDevHtml());break;}
   case 'trDevBack':{if(S.trDev&&S.trDev.back==='pick'&&S.trPick)openSheet(trPickHtml());else closeSheet();break;}
   case 'tdKind':{tdRead();S.trDev.kind=el.dataset.v;openSheet(trDevHtml());break;}
   case 'tdImgDel':{tdRead();S.trDev.imgUrl=null;S.trDev.file=null;S.trDev.dropImg=true;openSheet(trDevHtml());break;}
   case 'tdSave':{tdRead();const D=S.trDev;if(!D.name.trim()){toast('Bitte einen Namen eingeben.',true);break;}
-    const req={id:D.id,name:D.name,kind:D.kind,pads:D.kind==='cardio'?[]:(D.pads||[]),intLabel:D.kind==='cardio'?(D.intLabel||'Stufe'):'',dropImg:!!D.dropImg};
+    const on=D.kind==='cardio'?[]:(D.rows||[]).filter(r=>r.on);if(on.length>5){toast('Höchstens 5 Polster – bitte eins abwählen.',true);break;}
+    const req={id:D.id,name:D.name,kind:D.kind,pads:on.map(r=>r.name),intLabel:D.kind==='cardio'?(D.intLabel||'Stufe'):'',dropImg:!!D.dropImg},vals=on.map(r=>r.v||'');
     if(D.file){const m=D.file.match(/^data:([^;]+);base64,(.*)$/);if(m)req.img={mime:m[1],b64:m[2]};}
     el.disabled=true;el.textContent='Wird gespeichert …';
     call('saveDevice',req).then(r=>{TRD().devices=r.devices;const nd=TRD().devices.find(x=>x.id===r.id);if(nd&&nd.img&&D.file)imgStore(nd.img,D.file);
-      if(!D.id&&S.trPick){const pi=S.trPick.pi;plans()[pi].items.push({dev:r.id,sup:false});trSavePlans();T.ex=plans()[pi].id+'|'+(plans()[pi].items.length-1);}
-      closeSheet();vibe();toast(D.id?'Gerät gespeichert.':'„'+D.name+'“ angelegt – für alle verfügbar.');render();})
+      if(!D.id&&S.trPick){const pi=S.trPick.pi,p=plans()[pi];p.items.push({dev:r.id,sup:false});T.fresh[p.name+'|'+r.id]=true;trSavePlans();const xi=p.items.length-1;T.ex=p.id+'|'+xi;
+        if(vals.some(Boolean))trChanged(pi,xi,{pads:vals},{setup:true});}
+      else if(D.ctx&&D.kind!=='cardio'){const p=plans()[D.ctx.pi],cur=p?trVals(p.name,r.id).pads:[];if(p&&pads5(vals).join('|')!==pads5(cur).join('|'))trChanged(D.ctx.pi,D.ctx.xi,{pads:vals});}
+      trFlush();closeSheet();vibe();toast(D.id?'Gerät gespeichert.':'„'+D.name+'“ angelegt – für alle verfügbar.');render();})
       .catch(e=>{el.disabled=false;el.textContent='Speichern';toast(e.message||String(e),true);});break;}
   case 'tdDel':{if(!S.trDev.delArm){S.trDev.delArm=true;el.textContent='Wirklich für alle löschen?';break;}
     call('deleteDevice',S.trDev.id).then(r=>{TRD().devices=r.devices;closeSheet();toast('Gerät gelöscht.');render();}).catch(e=>toast(e.message,true));break;}
-  case 'trSup':{const it=plans()[+el.dataset.pi].items[+el.dataset.xi];it.sup=!it.sup;trSavePlans();break;}
-  case 'trExDel':{const pi=+el.dataset.pi,xi=+el.dataset.xi,before=JSON.parse(JSON.stringify(plans()));plans()[pi].items.splice(xi,1);if(xi>0)plans()[pi].items[xi-1].sup=plans()[pi].items[xi-1].sup&&xi<plans()[pi].items.length;T.ex=null;trSavePlans();
-    toast('Übung entfernt.',false,{label:'Rückgängig',fn:()=>{TRD().plans=before;trSavePlans();}});break;}
+  case 'trImg':{ev.stopPropagation();openSheet(trImgHtml(el.dataset.id));loadDevImages();break;}
+  /* Auswahl: Supersatz bilden / lösen / löschen */
+  case 'trSupMake':{const s=T.sel,arr=plans()[s.pi].items,xs=[...s.xs].sort((a,b)=>a-b),first=xs[0];
+    const grp=xs.slice().reverse().map(i=>trRemove(arr,i)).reverse();grp.forEach((x,i)=>x.sup=i<grp.length-1);arr.splice(first,0,...grp);
+    T.sel=null;T.ex=null;trSavePlans();vibe(15);toast('Supersatz gebildet.');render();break;}
+  case 'trSupFree':{const s=T.sel,arr=plans()[s.pi].items;s.xs.forEach(i=>{if(arr[i])arr[i].sup=false;if(i>0&&arr[i-1])arr[i-1].sup=false;});T.sel=null;trSavePlans();toast('Supersatz gelöst.');render();break;}
+  case 'trSelDel':{const s=T.sel,before=JSON.parse(JSON.stringify(plans())),arr=plans()[s.pi].items,xs=[...s.xs].sort((a,b)=>b-a);xs.forEach(i=>trRemove(arr,i));
+    T.sel=null;T.ex=null;trSavePlans();vibe(15);toast(xs.length===1?'Übung entfernt.':xs.length+' Übungen entfernt.',false,{label:'Rückgängig',fn:()=>{TRD().plans=before;trSavePlans();render();}});render();break;}
+  case 'trSelEnd':{T.sel=null;render();break;}
+  case 'trExDel':case 'swTrExDel':{const pi=+el.dataset.pi,xi=+el.dataset.xi,before=JSON.parse(JSON.stringify(plans()));trFlush();trRemove(plans()[pi].items,xi);T.ex=null;trSavePlans();vibe(15);
+    toast('Übung entfernt.',false,{label:'Rückgängig',fn:()=>{TRD().plans=before;trSavePlans();render();}});render();break;}
   case 'swTrDel':{const pi=+el.dataset.pi,before=JSON.parse(JSON.stringify(plans())),name=plans()[pi].name;plans().splice(pi,1);trSavePlans();vibe(15);
-    toast('Plan „'+name+'“ gelöscht.',false,{label:'Rückgängig',fn:()=>{TRD().plans=before;trSavePlans();}});break;}
+    toast('Plan „'+name+'“ gelöscht.',false,{label:'Rückgängig',fn:()=>{TRD().plans=before;trSavePlans();render();}});render();break;}
+  /* Tag ansehen / löschen */
+  case 'trDays':{trFlush();openSheet(trDaysHtml());break;}
+  case 'trDay':{trFlush();S.trDay=el.dataset.d;openSheet(trDayHtml(el.dataset.d));break;}
+  case 'trDayDel':{const d=el.dataset.d,plan=el.dataset.plan,dev=el.dataset.dev,r=TRD().log.find(x=>x[0]===d&&x[1]===plan&&x[2]===dev);
+    commit('deleteTraining',[{date:d,items:[{plan,dev}]}]);vibe(12);openSheet(trDayHtml(d));render();
+    if(r){const e={date:d,plan,dev,devName:(trDev(dev)||{}).name||'',kg:r[3],sets:r[4],reps:r[5],pads:rowPads(r),level:r[9],dur:r[10],note:r[11],counts:trCnt(r)};
+      toast('Eintrag gelöscht.',false,{label:'Rückgängig',fn:()=>{commit('logTraining',[e]);if(S.sheetOpen&&S.trDay===d)openSheet(trDayHtml(d));render();}});}break;}
+  case 'trDayAll':{if(!el.dataset.arm){el.dataset.arm='1';el.textContent='Wirklich alles von diesem Tag löschen?';break;}
+    commit('deleteTraining',[{date:el.dataset.d}]);vibe(15);closeSheet();toast('Training vom '+shortDate(el.dataset.d)+' gelöscht.');render();break;}
   case 'trTimer':trTimerStart();break;
   }
 });
 document.addEventListener('input',ev=>{
   const t=ev.target;
   if(t.id==='trPickQ'){S.trPick.q=t.value;const l=$('#trPickList');if(l){const tmp=document.createElement('div');tmp.innerHTML=trPickHtml();l.innerHTML=tmp.querySelector('#trPickList').innerHTML;loadDevImages();}return;}
+  if(/^tdPadV\d+$/.test(t.id)){const i=t.id.slice(6),c=$('#tdPadOn'+i);if(c&&t.value.trim())c.checked=true;const row=t.closest('.padrow');if(row)row.classList.toggle('on',!!(c&&c.checked));return;}
+  if(/^tdPadOn\d+$/.test(t.id)){const row=t.closest('.padrow');if(row)row.classList.toggle('on',t.checked);return;}
   if(t.dataset&&t.dataset.trin){const tx=t.closest('.trx'),pi=+t.closest('.trp').dataset.pi,xi=+tx.dataset.xi,k2=t.dataset.trin;
-    if(/^pad/.test(k2)){const v=trVals(TRD().plans[pi].name,TRD().plans[pi].items[xi].dev),pads=(v.pads||['','','']).slice();pads[+k2.slice(3)]=t.value;trChanged(pi,xi,{pads});}
+    if(/^pad/.test(k2)){const v=trVals(TRD().plans[pi].name,TRD().plans[pi].items[xi].dev),pads=pads5(v.pads);pads[+k2.slice(3)]=t.value;trChanged(pi,xi,{pads});}
     else{const n=parseFloat(String(t.value).replace(',','.'));trChanged(pi,xi,{[k2]:isNaN(n)?null:n});}return;}
 });
 document.addEventListener('change',ev=>{
   const t=ev.target;
-  if(t.dataset&&t.dataset.trname!==undefined){const p=TRD().plans[+t.dataset.trname],nv=t.value.trim()||'Plan';if(p&&p.name!==nv){p.name=nv;trSavePlans();render();}return;}
+  if(t.dataset&&t.dataset.trname!==undefined){const p=TRD().plans[+t.dataset.trname],nv=t.value.trim()||'Plan';TRS().ren=null;if(p&&p.name!==nv){p.name=nv;trSavePlans();}render();return;}
+  if(t.dataset&&t.dataset.trnote){const [pi,xi]=t.dataset.trnote.split('|').map(Number),it=TRD().plans[pi]&&TRD().plans[pi].items[xi];if(!it)return;const nv=t.value.trim();
+    if((it.note||'')!==nv){if(nv)it.note=nv;else delete it.note;trSavePlans();const el=$('#trSave');if(el)el.textContent='✓ Notiz gespeichert';}return;}
   if(t.id==='tdFile'&&t.files&&t.files[0]){tdRead();shrinkImage(t.files[0],900,0.82).then(u=>{S.trDev.file=u;S.trDev.imgUrl=u;S.trDev.dropImg=false;openSheet(trDevHtml());}).catch(()=>toast('Das Bild ließ sich nicht öffnen.',true));}
   if(t.dataset&&t.dataset.trOpt){const s=JSON.parse(JSON.stringify(S.data.settings)),o=Object.assign({},trOpt());const k2=t.dataset.trOpt;
     o[k2]=t.type==='checkbox'?t.checked:(k2==='step'||k2==='timerSec'?+t.value:t.value);s.training=o;commit('saveSettings',[s]);
     const b=document.querySelector('[data-sec=train] .sec-b');if(b)b.innerHTML=trSetHtml();}
 });
+/* Umbenennen ohne Änderung: Feld beim Verlassen wieder schließen */
+document.addEventListener('focusout',ev=>{const t=ev.target;if(t.dataset&&t.dataset.trname!==undefined&&TRS().ren){setTimeout(()=>{if(TRS().ren&&!document.activeElement.closest('.trname')){TRS().ren=null;render();}},150);}});
 /* ---------- Einstellungen ---------- */
 function trSetHtml(){
   const o=trOpt();
@@ -4374,7 +4533,7 @@ const refs=x=>itemsOf(x).map(e=>({row:e.row,date:e.date,name:e.name}));
 /* ---- Eingang ---- */
 function openInbox(i){
   const it=S.data.inbox[i];S.inboxSel=it;S.delArm=false;
-  openSheet(`<h2>Wartet auf Claude</h2><p class="sub">Noch ohne Nährwerte. Du kannst den Eintrag hier ändern oder löschen.</p>
+  openSheet(`<h2>Wartet auf KI</h2><p class="sub">Noch ohne Nährwerte. Du kannst den Eintrag hier ändern oder löschen.</p>
     <label class="f"><span>Was</span><input class="in-t" id="iWhat" value="${esc(it.what)}"></label>
     <label class="f"><span>Menge</span><input class="in-t" id="iAmt" value="${esc(it.amount)}"></label>
     ${mealPick(it.meal||mealByTime(it.time||nowHM()))}${whenFields(it.date||today(),it.time||nowHM(),'i')}
@@ -4888,7 +5047,7 @@ const Demo=(()=>{
     data.plan=P;data.isOwner=true;data.persons=[{id:'p1',name:'Mama',email:'mama@gmail.com',claude:'',sheetUrl:'https://docs.google.com/spreadsheets/d/VORSCHAU/edit'}];data.myName='Kevin';data.claudeOk='';data.contacts=[{id:'p1',name:'Mama'}];data.incoming=[{id:'demo1',from:'Mama',name:'Omas Linsensuppe',kcal:410,portions:4}];
     data.feedback=[{row:2,date:addDays(t,-1)+' 19:12',from:'Mama',mine:false,kind:'Wunsch',text:'Kann man beim Wochenplan auch Snacks einplanen?',where:'Plan · App 23 · Handy (Android)',done:false},{row:3,date:addDays(t,-3)+' 08:40',from:'Mama',mine:false,kind:'Bug',text:'Beim Scannen bleibt das Bild schwarz.',where:'Heute · App 22 · Handy (Android)',done:true}];
     data.kochbuch=[{author:'Mama',mine:false,aid:'p1',name:'Omas Kartoffelsalat',portions:4,per:{kcal:320,p:7,c:38,f:15},items:[{name:'Kartoffeln',amount:'1 kg',kcal:710,p:20,c:150,f:1},{name:'Gurken',amount:'1 Glas',kcal:60,p:2,c:12,f:0},{name:'Mayonnaise',amount:'100 g',kcal:510,p:1,c:1,f:55}],ins:{steps:['Kartoffeln kochen, pellen, in Scheiben schneiden.','Mit Gurken und Mayo mischen, ziehen lassen.'],notes:[]}}];
-    {const D=(n)=>addDays(t,-n);data.training={devices:[{id:'g1',name:'Beinpresse',kind:'kraft',pads:['Rückenlehne','Fußplatte'],intLabel:'',img:'',by:'Kevin'},{id:'g2',name:'Latzug',kind:'kraft',pads:['Oberschenkelpolster'],intLabel:'',img:'',by:'Kevin'},{id:'g3',name:'Beinstrecker',kind:'kraft',pads:['Rücken','Schienbein'],intLabel:'',img:'',by:'Mama'},{id:'g4',name:'Beinbeuger',kind:'kraft',pads:['Sitz'],intLabel:'',img:'',by:'Kevin'},{id:'g5',name:'Laufband',kind:'cardio',pads:[],intLabel:'Geschwindigkeit',img:'',by:'Kevin'}],
+    {const D=(n)=>addDays(t,-n);data.training={devices:[{id:'g1',name:'Beinpresse',kind:'kraft',pads:['Rücken','Fußplatte'],intLabel:'',img:'',by:'Kevin'},{id:'g2',name:'Latzug',kind:'kraft',pads:['Sitz','Oberschenkelpolster'],intLabel:'',img:'',by:'Kevin'},{id:'g3',name:'Beinstrecker',kind:'kraft',pads:['Rücken','Schienbein'],intLabel:'',img:'',by:'Mama'},{id:'g4',name:'Beinbeuger',kind:'kraft',pads:['Sitz'],intLabel:'',img:'',by:'Kevin'},{id:'g5',name:'Laufband',kind:'cardio',pads:[],intLabel:'Geschwindigkeit',img:'',by:'Kevin'}],
       plans:[{id:'p1',name:'Beine',items:[{dev:'g1',sup:false},{dev:'g3',sup:true},{dev:'g4',sup:false},{dev:'g5',sup:false}]},{id:'p2',name:'Oberkörper',items:[{dev:'g2',sup:false}]}],
       log:[[D(24),'Beine','g1',80,3,12,'4','6','',null,null,''],[D(17),'Beine','g1',85,3,12,'4','6','',null,null,''],[D(10),'Beine','g1',85,3,12,'4','6','',null,null,''],[D(3),'Beine','g1',92.5,3,10,'4','6','',null,null,''],
         [D(3),'Beine','g3',40,3,12,'2','3','',null,null,''],[D(3),'Beine','g4',35,3,12,'5','','',null,null,''],[D(3),'Beine','g5',null,null,null,'','','',8.5,20,''],[D(10),'Beine','g5',null,null,null,'','','',8,15,''],
@@ -4929,7 +5088,7 @@ const Demo=(()=>{
     setRating:(n,v)=>({rating:v}),
     saveDevice:dv=>{const T=data.training;let d=dv.id&&T.devices.find(x=>x.id===dv.id);if(!d){d={id:'g'+(T.devices.length+1)};T.devices.push(d);}Object.assign(d,{name:dv.name,kind:dv.kind,pads:dv.pads||[],intLabel:dv.intLabel||'Stufe',img:dv.img?'local-dev'+d.id:(dv.dropImg?'':d.img||''),by:'Kevin'});return {id:d.id,devices:T.devices};},
     deleteDevice:id=>{data.training.devices=data.training.devices.filter(x=>x.id!==id);return {devices:data.training.devices};},
-    savePlans:pl=>({ok:true}),logTraining:e=>({ok:true}),
+    savePlans:pl=>({ok:true}),logTraining:e=>({ok:true}),deleteTraining:q=>({ok:true,n:0}),
     aiBarcode:img=>({ean:'4001234567890'}),
     aiRecipe:req=>({rec:{name:'Chili con Carne',portions:6,items:[{name:'Rinderhackfleisch',amount:'500 g',kcal:1250,p:100,c:0,f:95},{name:'Kidneybohnen (Dose)',amount:'2 Dosen (480 g)',kcal:480,p:34,c:67,f:2},{name:'Mais (Dose)',amount:'1 Dose (285 g)',kcal:225,p:7,c:44,f:3},{name:'Paprika',amount:'2 Stück (300 g)',kcal:60,p:3,c:12,f:1},{name:'Tomaten passiert',amount:'500 g · geschätzt',kcal:150,p:7,c:25,f:1}]},ins:{ingredients:[],steps:['Hack anbraten','Gemüse dazu','30 Minuten köcheln'],notes:[]},per:{kcal:361,p:25.2,c:24.7,f:17},unsure:['Tomaten passiert']}),
     aiFix:req=>{let n=0;(req.items||[]).forEach(it=>{const i=data.diary.findIndex(r=>r[0]===it.row);if(i>=0&&it.pre&&it.cands&&it.cands[0]){data.diary[i][5]=data.diary[i][5].replace(/,?\s*KI-Schätzung/,'').replace(/\s*vorläufig/,'')+', KI geprüft';n++;}});return {fixed:n,still:(req.items||[]).length-n};},
