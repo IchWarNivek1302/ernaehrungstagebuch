@@ -1045,6 +1045,16 @@ details.sec[open]{border-color:var(--brand)}
 .re-top{margin-bottom:0}.re-top .f{margin-bottom:4px}.re-rate{margin:2px 0 8px}
 .reimg-pv{position:relative;overflow:hidden}.reai-c b{white-space:nowrap}
 
+/* v39: Plus – Kopieren oben (so hoch wie „Aus Rezept“), ✨ in der Suchleiste, Symbole gleichmäßig */
+.addh{gap:8px}.addh h2{flex:1;min-width:0}
+.minibtn.mini-ic{padding:6px 9px}.minibtn.mini-ic svg{width:15px;height:15px}
+.search .scanbtn,.search .scanbtn+.scanbtn{width:34px;margin:0}
+.search .kibar{font-size:19px;line-height:1}
+.search .sclear{margin-right:2px}
+.addh .minibtn{height:32px;box-sizing:border-box}
+.addh h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:clamp(13px,4.05vw,21px)}.addh{gap:6px}
+.fqm{background:none;border:0;padding:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}.fqm i{font-style:normal;margin-left:2px}
+
 /* ================= Tablet und PC ================= */
 .side{display:none}
 #view{container-type:inline-size}
@@ -1313,7 +1323,7 @@ function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{}
 function topTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{},top=navTopOf(s);return tabOrder(s).filter(key=>tabOn(key,s)&&top.includes(key)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='37';
+const APP_VERSION='41';
 const MIN_SCRIPT=36;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1385,7 +1395,8 @@ const CONN=store.get('et-conn');
 const DEMO=!!(window.PREVIEW||window.DEMO||location.hash.indexOf('demo')>=0);
 const LIVE=!DEMO&&!!(CONN&&CONN.url&&CONN.key);
 function api(url,key,fn,args){
-  return fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key,fn,args})})
+  const ac=typeof AbortController==='function'?new AbortController():null,tm=ac?setTimeout(()=>ac.abort(),120000):0;
+  return fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({key,fn,args}),signal:ac?ac.signal:undefined}).finally(()=>clearTimeout(tm))
     .then(r=>{if(!r.ok){const er=new Error('Server antwortet nicht ('+r.status+').');er.net=true;throw er;}return r.json();},
           e=>{const er=new Error('Keine Verbindung zum Sheet. Internet an?');er.net=true;throw er;})
     .then(j=>{if(!j.ok)throw new Error(j.error||'Unbekannter Fehler');return j.result;});
@@ -2220,6 +2231,12 @@ function pickScanned(rec,code,known){
 }
 /* Lebensmittel-Zeile A-P für das Sheet */
 function foodSheetRow(f){const v=x=>x===null||x===undefined?'':x;return [f[0],f[1],f[2],f[3],f[4],v(f[5]),f[6],v(f[7]),f[8]||'',v(f[9]),f[10],today(),v(f[11]),f[12]||'',v(f[13]),v(f[14])];}
+
+/* v38 Akku: App weggewischt/Bildschirm aus → Kamera aus; zurück im Scanner → wieder an */
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'){stopScan();if(S.recog)try{S.recog.stop();}catch(e){}return;}
+  if($('#scanVid')&&!SCAN.stream)setTimeout(startScan,150);
+});
 
 /* ================= Aus Rezept essen + Mahlzeit-Vorlagen ================= */
 const fmtN=n=>String(Math.round(n*100)/100).replace('.',',');
@@ -3647,9 +3664,10 @@ document.addEventListener('change',ev=>{
 (function(){
   let raf=0;
   const deco=()=>{document.querySelectorAll('.search').forEach(s=>{const i=s.querySelector('input');if(!i)return;
-    if(!s.querySelector('.sclear')){const b=document.createElement('button');b.type='button';b.className='sclear';b.tabIndex=-1;b.setAttribute('aria-label','Suche löschen');b.textContent='✕';s.appendChild(b);}
+    if(!s.querySelector('.sclear')){const b=document.createElement('button');b.type='button';b.className='sclear';b.tabIndex=-1;b.setAttribute('aria-label','Suche löschen');b.textContent='✕';s.insertBefore(b,i.nextSibling);}
     s.classList.toggle('has',!!i.value);});};
-  new MutationObserver(()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(deco);}).observe(document.body,{childList:true,subtree:true});
+  /* v38 Akku: nur reagieren, wenn wirklich neue Elemente (mit Suchfeld) dazukommen – nicht bei Zahlen-/Textänderungen */
+  new MutationObserver(rs=>{if(document.hidden)return;for(const m of rs)for(const n of m.addedNodes)if(n.nodeType===1&&(n.classList.contains('search')||n.querySelector&&n.querySelector('.search'))){cancelAnimationFrame(raf);raf=requestAnimationFrame(deco);return;}}).observe(document.body,{childList:true,subtree:true});
   document.addEventListener('input',e=>{const s=e.target.closest&&e.target.closest('.search');if(s)s.classList.toggle('has',!!e.target.value);});
   document.addEventListener('click',e=>{const b=e.target.closest('.sclear');if(!b)return;e.preventDefault();e.stopPropagation();
     const s=b.closest('.search'),i=s&&s.querySelector('input');if(!i)return;i.value='';s.classList.remove('has');
@@ -4287,6 +4305,10 @@ document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');
   if(a==='reMic'){reMic(el);return;}
   if(a==='reAiToggle'){reReadForm();S.redit.aiOpen=!(S.redit.aiOpen||S.redit.aiText);if(!S.redit.aiOpen)S.redit.aiText='';if(S.recog)try{S.recog.stop();}catch(e){}drawRecipeEdit();if(S.redit.aiOpen)setTimeout(()=>{const t=$('#reAiText');if(t)t.focus();},250);return;}
 });
+
+/* v39: ✨ in der Plus-Suchleiste – mit Text: KI regelt genau das; leer: frei hinschreiben (Gemini) bzw. für die KI vormerken (Claude) */
+document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act=kiBar]');if(!el)return;const A=S.add;const q=($('#fq')&&$('#fq').value||'').trim();
+  if(q){A.q=q;kiRegelt(q);return;}A.step=geminiPrimary()?'ai':'claude';drawAdd();});
 /* ================= Training (v27, überarbeitet v32 / Script ab 33) =================
    Pläne frei anlegen, auf-/zuklappen, sortieren (Griff ⋮⋮ ziehen), per Wischen löschen (Pläne UND Übungen).
    Geräte kommen aus der gemeinsamen Datenbank (für alle an deinem Script), mit Foto und festen Polstern:
@@ -4641,6 +4663,7 @@ function trSetHtml(){
 
 /* ================= Sheets (Overlays) ================= */
 function openSheet(html,o){
+  if(typeof stopScan==='function')stopScan();   /* v38 Akku: Kamera nie im Hintergrund weiterlaufen lassen */
   $('#toast').className='toast';
   const sh=$('#sheet');sh.classList.toggle('wide',!!(o&&o.wide));sh.classList.toggle('hashead',!!(o&&o.head));
   sh.innerHTML='<div class="grabzone"><div class="grab"></div>'+(o&&o.head?'<div class="shead">'+o.head+'</div>':'')+'<button class="xbtn" data-act="close" aria-label="Schließen">×</button></div>'+html;
@@ -4690,8 +4713,8 @@ function drawAdd(){
   if(A.seg==='beschwerde'){openSheet(segHtml()+complaintForm());return;}
   if(A.seg==='gewicht'){openSheet(segHtml()+`<h2>Gewicht eintragen</h2><p class="sub">Mit Plus und Minus in 0,1-kg-Schritten vom letzten Wert aus.</p>`+weightForm('aKg'));return;}
   if(A.step==='search'){
-    openSheet(segHtml()+`<div class="addh"><h2>Was hast du gegessen?</h2>${(S.data.recipes||[]).length?`<button class="minibtn" data-act="addstep" data-step="recipes">${ICON.rezepte}Aus Rezept</button>`:''}</div>
-      <div class="search" style="box-shadow:none;background:var(--soft);margin:8px 0 0">${ICON.search}<input id="fq" type="search" placeholder="z. B. Magerquark, Banane, Ehrmann" value="${esc(A.q)}" autocomplete="off"><button class="scanbtn" data-act="addstep" data-step="copy" aria-label="Von einer anderen Mahlzeit kopieren" title="Kopieren von …">${ICON.copy}</button><button class="scanbtn" data-act="addstep" data-step="${geminiPrimary()?'ai':'photo'}" aria-label="Foto an die KI">${ICON.camera}</button><button class="scanbtn" data-act="scan" aria-label="Barcode scannen">${ICON.barcode}</button></div>
+    openSheet(segHtml()+`<div class="addh"><h2>Was hast du gegessen?</h2><button class="minibtn mini-ic" data-act="addstep" data-step="copy" aria-label="Von einer anderen Mahlzeit kopieren" title="Kopieren von …">${ICON.copy}</button>${(S.data.recipes||[]).length?`<button class="minibtn" data-act="addstep" data-step="recipes">${ICON.rezepte}Aus Rezept</button>`:''}</div>
+      <div class="search" style="box-shadow:none;background:var(--soft);margin:8px 0 0">${ICON.search}<input id="fq" type="search" placeholder="z. B. Magerquark, Banane, Ehrmann" value="${esc(A.q)}" autocomplete="off">${kiOn()?`<button class="scanbtn kibar" data-act="kiBar" aria-label="Mit KI eintragen" title="Mit KI eintragen">✨</button>`:''}<button class="scanbtn" data-act="addstep" data-step="${geminiPrimary()?'ai':'photo'}" aria-label="Foto an die KI">${ICON.camera}</button><button class="scanbtn" data-act="scan" aria-label="Barcode scannen">${ICON.barcode}</button></div>
       <div id="fres">${resultsHtml()}</div>`);
   } else if(A.step==='copy'){openSheet(copyStep());
   } else if(A.step==='photo'){openSheet(photoHtml());
@@ -4760,7 +4783,8 @@ function resultsHtml(){
   S.add.recList=rec;
   let h='';
   h+=tplChips(q)+(q?recipeChips(q):'');
-  if(!q&&mods().haeufig&&!S.add.mealOnly){const mm=S.add.meal,fq=frequent().slice().sort((a,b)=>(b.meal===mm)-(a.meal===mm));if(fq.length)h+=`<div class="res-h">Häufig${fq[0].meal===mm?' · '+MEAL_SHORT[mm]+' zuerst':''}</div><div class="fchips">${fq.map((x,i)=>`<button class="fchip" data-act="pickFreq" data-i="${i}" style="--mc:${MEAL_COLOR[x.meal]||'var(--m4)'}"><i></i><span>${esc(x.recipe||x.name)}</span><small class="num">${k(x.kcal)}</small></button>`).join('')}</div>`;}
+  /* v41: angezeigte Reihenfolge = gemerkte Liste (vorher griff der Tipp in die unsortierte Liste → falscher Eintrag); „… zuerst“ antippen wechselt die Mahlzeit */
+  if(!q&&mods().haeufig&&!S.add.mealOnly){const mm=S.add.fqMeal||S.add.meal,fq=frequent().slice().sort((a,b)=>(b.meal===mm)-(a.meal===mm));S.add.freqList=fq;if(fq.length)h+=`<div class="res-h">Häufig · <button class="fqm" data-act="fqMeal">${MEAL_SHORT[mm]} zuerst <i>⇄</i></button></div><div class="fchips">${fq.map((x,i)=>`<button class="fchip" data-act="pickFreq" data-i="${i}" style="--mc:${MEAL_COLOR[x.meal]||'var(--m4)'}"><i></i><span>${esc(x.recipe||x.name)}</span><small class="num">${k(x.kcal)}</small></button>`).join('')}</div>`;}
   if(rec.length||S.add.mealOnly)h+=`<div class="res-h">${q?'Schon gegessen':S.add.mealOnly?'Zuletzt zum '+MEAL_SHORT[S.add.mealOnly]+' <button class="linkbtn" data-act="mealOnlyOff" style="float:right;margin:0">alle zeigen</button>':'Zuletzt gegessen'}</div>`+(S.add.mealOnly&&!rec.length?'<div class="empty">Dazu gibt es noch nichts.</div>':'')+`<div class="res">${rec.map((x,i)=>`<button class="item" data-act="pickRecent" data-i="${i}"><div class="it-main"><div class="it-name">${x.recipe?'<span class="tag">Rezept</span>'+esc(x.recipe):esc(x.name)}</div><div class="it-sub">${esc(x.amount)} · ${relDay(x.last)||shortDate(x.last)}</div></div><div class="it-val"><b class="num">${k(x.kcal)}</b><small class="num">${g1(x.p)} g E</small></div></button>`).join('')}</div>`;
   if(q){
     if(!S.foods)h+=`<div class="res-h">Lebensmittel</div><div class="empty" style="padding:10px 2px">Lade Lebensmittel-Datenbank …</div>`;
@@ -5051,7 +5075,8 @@ document.addEventListener('click',ev=>{
   case 'mealOnlyOff':A.mealOnly=null;$('#fres').innerHTML=resultsHtml();break;
   case 'addback':A.step=A.step==='recipe'&&A.recBack?'recipes':'search';drawAdd();break;
   case 'addstep':A.step=el.dataset.step;drawAdd();break;
-  case 'pickFreq':A.recent=frequent()[+el.dataset.i];A.factor=1;A.step='recent';drawAdd();break;
+  case 'fqMeal':{const cur=A.fqMeal||A.meal,i=MEALS.indexOf(cur);A.fqMeal=MEALS[(i+1)%MEALS.length];const f=$('#fres');if(f)f.innerHTML=resultsHtml();else drawAdd();vibe(5);break;}
+  case 'pickFreq':A.recent=(A.freqList||frequent())[+el.dataset.i];A.factor=1;A.step='recent';drawAdd();break;
   case 'close':closeSheet();break;
   case 'openExport':openExport();break;
   case 'expKind':S.exp.kind=el.dataset.k;S.exp.parts=EXP_KINDS[el.dataset.k].parts.slice();openExport();break;
