@@ -997,6 +997,14 @@ details.sec[open]{border-color:var(--brand)}
 .trdr small{font-size:12.5px;color:var(--muted)}.trdr.faint{opacity:.7}
 .trdx{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:0;background:var(--soft);color:var(--muted);font-size:15px;cursor:pointer}
 
+/* v33: Suchfeld leeren, Filter löschen */
+.sclear{display:none;flex:0 0 auto;width:26px;height:26px;border:0;border-radius:50%;background:var(--soft);color:var(--muted);font:600 12px/1 inherit;cursor:pointer;padding:0}
+.search.has .sclear{display:grid;place-items:center}
+.rbx span{font-size:12.5px}
+#prBar .rbar{margin:0 0 8px}#prBar .rfp{margin:0 0 10px;box-shadow:none;border:1px solid var(--line)}
+.search input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+#prBar .rbar{flex-wrap:nowrap}#prBar .rsort{flex:1;min-width:0}#prBar .rsort select{width:100%;min-width:0}
+
 /* ================= Tablet und PC ================= */
 .side{display:none}
 #view{container-type:inline-size}
@@ -1265,7 +1273,7 @@ function navTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{}
 function topTabs(){const s=(typeof S!=='undefined'&&S.data&&S.data.settings)||{},top=navTopOf(s);return tabOrder(s).filter(key=>tabOn(key,s)&&top.includes(key)).map(key=>ALL_TABS.find(t=>t[0]===key));}
 
 var DEMO_IMG={};
-const APP_VERSION='33';
+const APP_VERSION='34';
 const MIN_SCRIPT=33;   /* so neu muss Code.gs mindestens sein */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -2771,7 +2779,7 @@ function drawPlanAdd(){
       <div class="row2"><label class="f"><span>kcal (optional)</span><input class="in-t num" inputmode="numeric" id="ptK"></label><label class="f"><span>Eiweiß g (optional)</span><input class="in-t num" inputmode="decimal" id="ptP"></label></div>
       <button class="btn" data-act="planAddText">Planen</button><p class="hint">Beim Eintragen rechnet Claude die Werte aus.</p>`;
   }else{
-    h+=`<div class="search" style="box-shadow:none;background:var(--bg);border:1px solid var(--line)">${ICON.search}<input id="planQ" placeholder="${P.tab==='rez'?'Rezept suchen':'Vorlage suchen'}" value="${esc(P.q)}" autocomplete="off"></div><div id="planList">${planList()}</div>
+    h+=`<div class="search" style="box-shadow:none;background:var(--bg);border:1px solid var(--line)">${ICON.search}<input id="planQ" placeholder="${P.tab==='rez'?'Rezept oder Zutat suchen':'Vorlage suchen'}" value="${esc(P.q)}" autocomplete="off"></div>${P.tab==='rez'?`<div id="prBar">${recipeBar('p')}</div>`:''}<div id="planList">${planList()}</div>
       ${P.tab==='rez'?`<button class="linkbtn" data-act="recNew">${'+ Neues Rezept anlegen'}</button>`:''}`;
   }
   openSheet(h);
@@ -2784,9 +2792,8 @@ function planList(){
     if(!ts.length)return `<div class="empty">${(S.data.templates||[]).length?'Keine Vorlage gefunden.':'Noch keine Vorlagen. Im Tagebuch Einträge lange drücken (am PC: Rechtsklick) und „Als Vorlage“ wählen.'}</div>`;
     return ts.map(t=>`<button class="prow" data-act="planPick" data-type="tpl" data-n="${esc(t.name)}"><span class="pthumb ph">${ICON.copy}</span><span class="pn"><b>${esc(t.name)}</b><small class="num">${t.rows.length} Einträge · ${k(t.rows.reduce((a,r)=>a+(+r[5]||0),0))} kcal</small></span>${ICON.plus}</button>`).join('');
   }
-  const used={};Object.values(S.data.plan||{}).forEach(l=>l.forEach(it=>{used[it.name]=(used[it.name]||0)+1;}));
-  const rs=(S.data.recipes||[]).filter(r=>!q||norm(r.name+' '+r.items.map(i=>i.name).join(' ')).includes(q)).sort((a,b)=>(used[b.name]||0)-(used[a.name]||0)||a.name.localeCompare(b.name,'de'));
-  if(!rs.length)return `<div class="empty">${(S.data.recipes||[]).length?'Kein Rezept gefunden.':'Noch keine Rezepte.'}</div>`;
+  const rs=recipeList('p').map(x=>x[0]),nf=rfCount('p');
+  if(!rs.length)return `<div class="empty">${(S.data.recipes||[]).length?'Kein Rezept gefunden.'+(nf||q?` <button class="linkbtn" data-act="planClearAll">Suche und Filter löschen</button>`:''):'Noch keine Rezepte.'}</div>`;
   return rs.map(r=>`<button class="prow" data-act="planPick" data-type="recipe" data-n="${esc(r.name)}">${pThumb(r.name)||`<span class="pthumb ph">${ICON.rezepte}</span>`}<span class="pn"><b>${esc(r.name)}</b><small class="num">${k(r.per.kcal)} kcal · ${g1(r.per.p)} g Eiweiß pro Portion</small></span>${ICON.plus}</button>`).join('');
 }
 function planAddItem(it,meal){
@@ -2838,7 +2845,7 @@ function vRezepte(){
 }
 function recipeCards(){
   const rs=recipeList();
-  if(!rs.length)return '<div class="card faint">Kein Rezept gefunden.'+(rfCount()?' <button class="linkbtn" data-act="rfReset">Filter zurücksetzen</button>':'')+'</div>';
+  if(!rs.length)return '<div class="card faint">Kein Rezept gefunden.'+(rfCount()||S.recQ?' <button class="linkbtn" data-act="recClearAll">Suche und Filter löschen</button>':'')+'</div>';
   if(rf().view==='list')return rs.map(([r,i])=>recipeRow(r,i)).join('');
   return rs.map(([r,i])=>{const st=rStat(r);const o=S.open['r'+i],hasImg=(S.data.images||{})[r.name],ins=instrFor(r.name);
     return `<div class="card rcard">${recipeImgHtml(r.name)||(imgWanted(r.name)?'<div class="rimg want"><span>Claude sucht beim nächsten Abgleich ein Bild</span></div>':'')}<button class="rc" data-act="toggle" data-key="r${i}"><div class="top2"><b>${esc(r.name)}</b><span class="num">${fitDot(r)}${k(r.per.kcal)} kcal</span></div>
@@ -2972,6 +2979,8 @@ document.addEventListener('click',ev=>{
   case 'planAdd':ev.stopPropagation();openPlanAdd(el.dataset.d,el.dataset.m);break;
   case 'planAddDay':S.padd.d=el.dataset.d;S.padd.m=pickedPlanMeal();el.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===el));break;
   case 'planTab':S.padd.m=pickedPlanMeal();S.padd.tab=el.dataset.t;S.padd.q='';drawPlanAdd();break;
+  case 'recClearAll':{S.recQ='';Object.assign(rf(),RF_CLEAR);rfSave();const q=$('#recQ');if(q){q.value='';const s=q.closest('.search');if(s)s.classList.remove('has');}refreshRecipes();break;}
+  case 'planClearAll':{S.padd.q='';Object.assign(prf(),RF_CLEAR);rfSave();const q=$('#planQ');if(q)q.value='';rfRefresh('p');const s=q&&q.closest('.search');if(s)s.classList.remove('has');break;}
   case 'planPick':planAddItem({type:el.dataset.type,name:el.dataset.n});break;
   case 'planAddText':{const n=val('ptName');if(!n){toast('Bitte eingeben, was es gibt.',true);break;}planAddItem({type:'text',name:n,kcal:numv('ptK')||0,p:numv('ptP')||0});break;}
   case 'planItem':if(S.pdragged){S.pdragged=false;break;}S.open.pins=false;openPlanItem(el.dataset.d,el.dataset.id);break;
@@ -3419,7 +3428,13 @@ const __openSheet=openSheet;openSheet=function(){incpopClose();return __openShee
 const FILTER_SVG='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>';
 const RF_DEF={view:'grid',sort:'name',kmin:'',kmax:'',src:'',fit:false,freq:false,star:0,open:false};
 function rf(){if(!S.rf){let o={};try{o=JSON.parse(localStorage.getItem('et-rf')||'{}')}catch(e){}S.rf=Object.assign({},RF_DEF,o,{open:false});}return S.rf;}
-function rfSave(){const o=Object.assign({},S.rf);delete o.open;try{localStorage.setItem('et-rf',JSON.stringify(o))}catch(e){}}
+function rfSave(){const o=Object.assign({},S.rf);delete o.open;try{localStorage.setItem('et-rf',JSON.stringify(o))}catch(e){}
+  if(S.prf){const p=Object.assign({},S.prf);delete p.open;try{localStorage.setItem('et-prf',JSON.stringify(p))}catch(e){}}}
+/* v33: eigene Filter fürs Planen-Fenster (sc='p'), gleiche Bedienung wie in Rezepte (sc='r') */
+function prf(){if(!S.prf){let o={};try{o=JSON.parse(localStorage.getItem('et-prf')||'{}')}catch(e){}S.prf=Object.assign({},RF_DEF,{sort:'geplant'},o,{open:false});}return S.prf;}
+const rfS=sc=>sc==='p'?prf():rf();
+const RF_CLEAR={kmin:'',kmax:'',src:'',fit:false,freq:false,star:0};
+function planUsed(){const u={};Object.values(S.data.plan||{}).forEach(l=>l.forEach(it=>{u[it.name]=(u[it.name]||0)+1;}));return u;}
 const PROT_SRC=[['Ei',/\beier?\b|huhnerei|omelett|ruhrei|spiegelei/],['Geflügel',/hahnchen|huhn|pute|chicken|geflugel|ente\b/],['Fisch',/lachs|thunfisch|fisch|garnele|pangasius|kabeljau|seelachs|forelle|shrimp|scampi|makrele|hering/],
   ['Rind & Schwein',/rind|hack|schwein|steak|speck|schinken|wurst|lamm|kalb|bockwurst|cevapcici|frikadelle/],
   ['Milchprodukte',/quark|skyr|joghurt|kase|mozzarella|feta|parmesan|milch|whey|protein|hüttenkase|huttenkase|ricotta|kefir/],['Hülsenfrüchte & Tofu',/linse|bohne|kichererbse|tofu|tempeh|edamame|soja|erbse|seitan/]];
@@ -3441,12 +3456,14 @@ function rStat(r){
 function kcalLeft(){const g=S.data.goals||{};return (g.kcalDay||0)-day(today()).kcal;}
 function fitDot(r){const left=kcalLeft(),ok=r.per.kcal<=left;return `<i class="fdot ${ok?'ok':'no'}" title="${ok?'Passt heute noch':'Wäre heute zu viel'} (noch ${k(Math.max(0,left))} kcal frei)"></i>`;}
 function rSince(st){const d=st.created||st.first;return d?shortDate(d)+(d.slice(0,4)!==today().slice(0,4)?' '+d.slice(0,4):''):'';}
-function recipeList(){
-  const F=rf(),q=norm(S.recQ||''),left=kcalLeft();
+function recipeList(sc){
+  const F=rfS(sc),q=norm(sc==='p'?(S.padd&&S.padd.q||''):(S.recQ||'')),left=kcalLeft(),used=F.sort==='geplant'?planUsed():null;
   let rs=(S.data.recipes||[]).map((r,i)=>[r,i]).filter(([r])=>!q||norm(r.name+' '+r.items.map(x=>x.name).join(' ')).includes(q));
   const lo=parseFloat(F.kmin),hi=parseFloat(F.kmax);
-  rs=rs.filter(([r])=>(isNaN(lo)||r.per.kcal>=lo)&&(isNaN(hi)||r.per.kcal<=hi)&&(!F.src||protSrc(r)===F.src)&&(!F.fit||r.per.kcal<=left)&&(!F.freq||rStat(r).n>=3)&&(!F.star||rRating(r.name)>=F.star));
+  /* „Einplanen“ aus einem Rezept: genau dieses Rezept nie wegfiltern */
+  if(!(sc==='p'&&q&&rs.some(([r])=>norm(r.name)===q)))rs=rs.filter(([r])=>(isNaN(lo)||r.per.kcal>=lo)&&(isNaN(hi)||r.per.kcal<=hi)&&(!F.src||protSrc(r)===F.src)&&(!F.fit||r.per.kcal<=left)&&(!F.freq||rStat(r).n>=3)&&(!F.star||rRating(r.name)>=F.star));
   const by={
+    geplant:(a,b)=>(used[b.name]||0)-(used[a.name]||0),
     name:(a,b)=>a.name.localeCompare(b.name,'de'),
     sterne:(a,b)=>rRating(b.name)-rRating(a.name),
     neu:(a,b)=>(rSinceKey(b)).localeCompare(rSinceKey(a)),
@@ -3459,22 +3476,22 @@ function recipeList(){
 }
 const rSinceKey=r=>{const st=rStat(r);return st.created||st.first||'';};
 const RSORTS=[['name','Name A–Z'],['sterne','Beste zuerst'],['neu','Neueste zuerst'],['oft','Am häufigsten gegessen'],['zuletzt','Zuletzt gegessen'],['kauf','Kalorien aufsteigend'],['kab','Kalorien absteigend'],['eiw','Meiste Eiweiß'],['dichte','Eiweiß pro kcal']];
-function rfCount(){const F=rf();return (F.kmin!==''||F.kmax!==''?1:0)+(F.src?1:0)+(F.fit?1:0)+(F.freq?1:0)+(F.star?1:0);}
-function recipeBar(){
-  const F=rf(),n=rfCount(),srcs=[...new Set((S.data.recipes||[]).map(protSrc))].sort((a,b)=>a==='Sonstiges'?1:b==='Sonstiges'?-1:a.localeCompare(b,'de'));
+function rfCount(sc){const F=rfS(sc);return (F.kmin!==''||F.kmax!==''?1:0)+(F.src?1:0)+(F.fit?1:0)+(F.freq?1:0)+(F.star?1:0);}
+function recipeBar(sc){
+  sc=sc||'r';const F=rfS(sc),n=rfCount(sc),srt=sc==='p'?[['geplant','Am häufigsten geplant']].concat(RSORTS):RSORTS,srcs=[...new Set((S.data.recipes||[]).map(protSrc))].sort((a,b)=>a==='Sonstiges'?1:b==='Sonstiges'?-1:a.localeCompare(b,'de'));
   const kc=[['','400','bis 400'],['400','600','400–600'],['600','800','600–800'],['800','','über 800']];
-  return `<div class="rbar"><button class="rb ${F.open||n?'on':''}" data-act="rfOpen">${FILTER_SVG}Filter${n?` <b>${n}</b>`:''}</button>${n?`<button class="rb rbx" data-act="rfReset" aria-label="Alle Filter löschen" title="Alle Filter löschen">✕</button>`:''}
-    <label class="rsort"><span>Sortieren</span><select id="rfSort">${RSORTS.map(([v,l])=>`<option value="${v}" ${F.sort===v?'selected':''}>${l}</option>`).join('')}</select></label>
-    <div class="rview"><button class="${F.view==='grid'?'on':''}" data-act="rfView" data-v="grid" aria-label="Kacheln">▦</button><button class="${F.view==='list'?'on':''}" data-act="rfView" data-v="list" aria-label="Liste">☰</button></div></div>
-  ${F.open?`<div class="rfp card">
+  return `<div class="rbar" data-sc="${sc}"><button class="rb ${F.open||n?'on':''}" data-act="rfOpen">${FILTER_SVG}Filter${n?` <b>${n}</b>`:''}</button>${n?`<button class="rb rbx" data-act="rfReset" aria-label="Alle Filter löschen" title="Alle Filter löschen">✕ <span>Filter löschen</span></button>`:''}
+    <label class="rsort"><span>Sortieren</span><select data-rfsort="1">${srt.map(([v,l])=>`<option value="${v}" ${F.sort===v?'selected':''}>${l}</option>`).join('')}</select></label>
+    ${sc==='p'?'':`<div class="rview"><button class="${F.view==='grid'?'on':''}" data-act="rfView" data-v="grid" aria-label="Kacheln">▦</button><button class="${F.view==='list'?'on':''}" data-act="rfView" data-v="list" aria-label="Liste">☰</button></div>`}</div>
+  ${F.open?`<div class="rfp card" data-sc="${sc}">
     <div class="rfh">Kalorien pro Portion</div>
     <div class="fchips">${kc.map(([a,b,l])=>`<button class="fchip ${F.kmin===a&&F.kmax===b?'on':''}" data-act="rfK" data-a="${a}" data-b="${b}"><span>${l}</span></button>`).join('')}</div>
-    <div class="rfk"><input class="in-t num" id="rfMin" inputmode="numeric" placeholder="von" value="${esc(F.kmin)}"><span>bis</span><input class="in-t num" id="rfMax" inputmode="numeric" placeholder="bis" value="${esc(F.kmax)}"><span>kcal</span></div>
+    <div class="rfk"><input class="in-t num" data-rfk="kmin" inputmode="numeric" placeholder="von" value="${esc(F.kmin)}"><span>bis</span><input class="in-t num" data-rfk="kmax" inputmode="numeric" placeholder="bis" value="${esc(F.kmax)}"><span>kcal</span></div>
     <div class="rfh">Bewertung</div>
     <div class="fchips">${[[6,'ab 3 ★'],[8,'ab 4 ★'],[9,'ab 4½ ★'],[10,'nur 5 ★']].map(([v,l])=>`<button class="fchip ${F.star===v?'on':''}" data-act="rfStar" data-v="${v}"><span>${l}</span></button>`).join('')}</div>
     <div class="rfh">Eiweißquelle</div>
     <div class="fchips">${srcs.map(s=>`<button class="fchip ${F.src===s?'on':''}" data-act="rfSrc" data-s="${esc(s)}"><span>${esc(s)}</span></button>`).join('')}</div>
-    <label class="sw"><div><b><i class="fdot ok"></i> Passt heute noch</b><span>Nur Rezepte, deren Portion in die restlichen ${k(Math.max(0,kcalLeft()))} kcal passt</span></div><span class="tg"><input type="checkbox" data-rf="fit" ${F.fit?'checked':''}><i></i></span></label>
+    ${sc==='p'?'':`<label class="sw"><div><b><i class="fdot ok"></i> Passt heute noch</b><span>Nur Rezepte, deren Portion in die restlichen ${k(Math.max(0,kcalLeft()))} kcal passt</span></div><span class="tg"><input type="checkbox" data-rf="fit" ${F.fit?'checked':''}><i></i></span></label>`}
     <label class="sw"><div><b>Oft gegessen</b><span>Mindestens 3-mal im Tagebuch</span></div><span class="tg"><input type="checkbox" data-rf="freq" ${F.freq?'checked':''}><i></i></span></label>
     ${n?'<button class="linkbtn" data-act="rfReset">Alle Filter zurücksetzen</button>':''}</div>`:''}`;
 }
@@ -3493,21 +3510,36 @@ function recipeDetail(r,i,ins){
     <div class="racts">${mods().wochenplan?`<button class="linkbtn" data-act="recPlan" data-n="${esc(r.name)}">Einplanen</button>`:''}<button class="linkbtn" data-act="recEdit" data-n="${esc(r.name)}">Bearbeiten</button><button class="linkbtn" data-act="recShare" data-n="${esc(r.name)}">Teilen</button></div>`;
 }
 function refreshRecipes(){const g=$('#rgrid');if(g){g.className=rf().view==='list'?'rlist':'rgrid';g.innerHTML=recipeCards();loadImages();}const b=$('#rbarBox');if(b)b.innerHTML=recipeBar();}
+function rfRefresh(sc){if(sc==='p'){const l=$('#planList');if(l)l.innerHTML=planList();const b=$('#prBar');if(b)b.innerHTML=recipeBar('p');}else refreshRecipes();}
+const rfScOf=el=>{const w=el.closest('[data-sc]');return w?w.dataset.sc:'r';};
 document.addEventListener('click',ev=>{
-  const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act,F=rf();
+  const el=ev.target.closest('[data-act]');if(!el||!/^rf/.test(el.dataset.act))return;const a=el.dataset.act,sc=rfScOf(el),F=rfS(sc),refreshRecipes=()=>rfRefresh(sc);
   if(a==='rfOpen'){F.open=!F.open;refreshRecipes();return;}
   if(a==='rfView'){F.view=el.dataset.v;rfSave();refreshRecipes();return;}
   if(a==='rfK'){const same=F.kmin===el.dataset.a&&F.kmax===el.dataset.b;F.kmin=same?'':el.dataset.a;F.kmax=same?'':el.dataset.b;rfSave();refreshRecipes();return;}
   if(a==='rfStar'){F.star=F.star===+el.dataset.v?0:+el.dataset.v;rfSave();refreshRecipes();return;}
   if(a==='rfSrc'){F.src=F.src===el.dataset.s?'':el.dataset.s;rfSave();refreshRecipes();return;}
-  if(a==='rfReset'){Object.assign(F,{kmin:'',kmax:'',src:'',fit:false,freq:false,star:0});rfSave();refreshRecipes();toast('Filter gelöscht.');return;}
+  if(a==='rfReset'){Object.assign(F,RF_CLEAR);rfSave();refreshRecipes();toast('Filter gelöscht.');return;}
 });
 document.addEventListener('change',ev=>{
-  const t=ev.target,F=S.rf;if(!F)return;
-  if(t.id==='rfSort'){F.sort=t.value;rfSave();refreshRecipes();return;}
-  if(t.dataset&&t.dataset.rf){F[t.dataset.rf]=t.checked;rfSave();refreshRecipes();return;}
-  if(t.id==='rfMin'||t.id==='rfMax'){F[t.id==='rfMin'?'kmin':'kmax']=t.value.replace(/[^\d]/g,'');rfSave();refreshRecipes();}
+  const t=ev.target;if(!t.dataset||!(t.dataset.rfsort||t.dataset.rf||t.dataset.rfk))return;const sc=rfScOf(t),F=rfS(sc),refreshRecipes=()=>rfRefresh(sc);
+  if(t.dataset.rfsort){F.sort=t.value;rfSave();refreshRecipes();return;}
+  if(t.dataset.rf){F[t.dataset.rf]=t.checked;rfSave();refreshRecipes();return;}
+  if(t.dataset.rfk){F[t.dataset.rfk]=t.value.replace(/[^\d]/g,'');rfSave();refreshRecipes();}
 });
+
+/* v33: ✕ in jedem Suchfeld – leert die Suche (löst dasselbe aus wie Tippen) */
+(function(){
+  let raf=0;
+  const deco=()=>{document.querySelectorAll('.search').forEach(s=>{const i=s.querySelector('input');if(!i)return;
+    if(!s.querySelector('.sclear')){const b=document.createElement('button');b.type='button';b.className='sclear';b.tabIndex=-1;b.setAttribute('aria-label','Suche löschen');b.textContent='✕';s.appendChild(b);}
+    s.classList.toggle('has',!!i.value);});};
+  new MutationObserver(()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(deco);}).observe(document.body,{childList:true,subtree:true});
+  document.addEventListener('input',e=>{const s=e.target.closest&&e.target.closest('.search');if(s)s.classList.toggle('has',!!e.target.value);});
+  document.addEventListener('click',e=>{const b=e.target.closest('.sclear');if(!b)return;e.preventDefault();e.stopPropagation();
+    const s=b.closest('.search'),i=s&&s.querySelector('input');if(!i)return;i.value='';s.classList.remove('has');
+    i.dispatchEvent(new Event('input',{bubbles:true}));try{i.focus();}catch(_){}},true);
+})();
 /* ================= Ziel-Rechner (Vorschlag, v22) =================
    Mifflin-St-Jeor-Grundumsatz × Aktivität, minus Defizit für das Abnehm-Tempo. Nur Vorschlag, übernehmen per Knopf. */
 const CALC_ACT=[[1.2,'Kaum Bewegung','Bürojob, wenig Sport'],[1.375,'Leicht aktiv','1–3× pro Woche Sport oder viel zu Fuß'],[1.55,'Mäßig aktiv','3–5× pro Woche Sport'],[1.725,'Sehr aktiv','6–7× pro Woche Sport'],[1.9,'Extrem aktiv','Körperliche Arbeit und viel Sport']];
